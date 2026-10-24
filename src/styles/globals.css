@@ -1,0 +1,149 @@
+@import "tailwindcss";
+
+:root {
+  /* Page sits a shade off-white so the white panels read as cards. */
+  --background: #f7f7f8;
+  --surface: #ffffff;
+  --foreground: #1c1c1c;
+
+  --brand: #7e0917;
+  /* Soft brand wash behind the chart track and spec cells. */
+  --brand-tint: #f9ebec;
+  /* One step warmer than brand-tint — quick-action buttons. */
+  --brand-soft: #fbeef0;
+
+  --gold: #fce9a0;
+  --muted: #6b7280;
+  --border: #ebebeb;
+  /* Unfilled rail behind a progress bar. */
+  --track: #d9d9d9;
+  --success: #22c55e;
+  --danger: #dc2626;
+
+  --gradient-gold: linear-gradient(
+    179.79deg,
+    #fbe18f 0.18%,
+    #f7e3a7 50.48%,
+    #fedb75 99.82%
+  );
+}
+
+/**
+ * `inline` matters: the utilities emit the resolved value rather than another
+ * var() hop, so `font-newsreader` still works inside an element that has
+ * redefined --newsreader.
+ *
+ * next/font owns --newsreader and --nunito on <html>; the theme keys below are
+ * what Tailwind turns into class names. Keeping the two sets of names distinct
+ * avoids a self-referential `--font-nunito: var(--font-nunito)`.
+ */
+@theme inline {
+  --font-newsreader: var(--newsreader), Georgia, "Times New Roman", serif;
+  --font-nunito: var(--nunito), ui-sans-serif, system-ui, sans-serif;
+  /* Admin screens are dense and data-heavy, so the sans face is the default
+     and the serif is opted into for titles and figures. */
+  --font-sans: var(--nunito), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--newsreader), Georgia, "Times New Roman", serif;
+
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-foreground: var(--foreground);
+  --color-brand: var(--brand);
+  --color-brand-tint: var(--brand-tint);
+  --color-brand-soft: var(--brand-soft);
+  --color-gold: var(--gold);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-track: var(--track);
+  --color-success: var(--success);
+  --color-danger: var(--danger);
+
+  --background-image-gold: var(--gradient-gold);
+}
+
+/**
+ * The right-side slide-over (components/ui/drawer.jsx).
+ *
+ * A modal <dialog> is display:none until showModal(), so animating it in needs
+ * two things CSS only recently grew: `allow-discrete`, to let `display` and
+ * `overlay` participate in a transition, and @starting-style, to say what the
+ * first frame looks like. Browsers that support neither skip straight to the
+ * open state — the drawer works, it just appears rather than slides.
+ */
+.drawer-panel {
+  translate: 0 0;
+  transition:
+    translate 220ms ease,
+    display 220ms allow-discrete,
+    overlay 220ms allow-discrete;
+}
+
+@starting-style {
+  .drawer-panel[open] {
+    translate: 100% 0;
+  }
+}
+
+.drawer-panel::backdrop {
+  background-color: rgb(0 0 0 / 0.4);
+  transition:
+    background-color 220ms ease,
+    display 220ms allow-discrete,
+    overlay 220ms allow-discrete;
+}
+
+@starting-style {
+  .drawer-panel[open]::backdrop {
+    background-color: rgb(0 0 0 / 0);
+  }
+}
+
+/**
+ * Quiet scrollbar for the sidebar and long panels, where the platform default
+ * paints a bright grey stripe with arrow buttons — louder than anything else
+ * on screen. Thin translucent thumb, no track.
+ *
+ * Both syntaxes on purpose: browsers that support the standard
+ * `scrollbar-width` ignore the ::-webkit rules, and older WebKit ignores the
+ * standard one. Whichever lands, the result is the same.
+ */
+.scrollbar-subtle {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.4) transparent;
+}
+
+.scrollbar-subtle::-webkit-scrollbar {
+  width: 4px;
+}
+
+.scrollbar-subtle::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-subtle::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.4);
+  border-radius: 9999px;
+}
+
+.scrollbar-subtle::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(255, 255, 255, 0.6);
+}
+
+/* The same quiet scrollbar for panels on white — the dropdown list. */
+.scrollbar-subtle-dark {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(28, 28, 28, 0.2) transparent;
+}
+
+.scrollbar-subtle-dark::-webkit-scrollbar {
+  width: 4px;
+}
+
+.scrollbar-subtle-dark::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-subtle-dark::-webkit-scrollbar-thumb {
+  background-color: rgba(28, 28, 28, 0.2);
+  border-radius: 9999px;
+}
