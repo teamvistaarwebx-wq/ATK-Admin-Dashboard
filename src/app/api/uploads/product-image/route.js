@@ -45,8 +45,14 @@ export async function POST(request) {
     // honest client. The real guard is the type pinned into the signature.
     const size = Number(body.size);
     if (Number.isFinite(size) && size > MAX_IMAGE_BYTES) {
-      return badRequest(`That image is too large. Keep it under ${MAX_IMAGE_MB}MB.`);
+      return badRequest(
+        `That image is too large. Keep it under ${MAX_IMAGE_MB}MB.`
+      );
     }
+
+    // `npm run demo` has no R2 bucket. Tell the browser to keep the photo
+    // itself (a resized data URL) rather than failing the upload.
+    if (process.env.DEMO_MODE === "1") return ok({ demo: true });
 
     return ok(await presignProductImageUpload({ contentType }));
   } catch (error) {

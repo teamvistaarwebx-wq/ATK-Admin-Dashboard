@@ -5,7 +5,23 @@ banners and gift options. The UI follows Shopify's admin: a dark sidebar,
 flat white cards on a grey canvas, Inter, one charcoal primary action per
 screen, and Polaris-style status badges.
 
-## Run
+## Try it with dummy data (no database needed)
+
+```bash
+npm install
+npm run demo         # http://localhost:3011
+```
+
+Sign in with **demo@atk.test** / **DemoPass2026**. `npm run demo` starts a
+throwaway MongoDB of its own (the first run downloads it, about 100MB), fills
+it with a demo store — 18 products, ~200 orders over four months, storefront
+visits, live visitors and carts, inquiries — and runs the app against it.
+Everything works: adding and editing products, stock, CSV import and export,
+order status changes. Photos are kept in the demo database, so no R2 bucket is
+needed. Changes survive a restart; `npm run demo -- --reset` starts over with
+fresh dummy data. Nothing connects to a real database or the storefront.
+
+## Run against a real database
 
 ```bash
 npm install

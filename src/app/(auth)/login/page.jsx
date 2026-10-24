@@ -31,6 +31,14 @@ export default async function LoginPage({ searchParams }) {
         </p>
       </header>
 
+      {/* Only under `npm run demo`, which seeds this account. */}
+      {process.env.DEMO_MODE === "1" ? (
+        <p className="rounded-lg bg-badge-info px-3 py-2 text-[0.8125rem] text-badge-info-ink">
+          Demo store with dummy data. Sign in with{" "}
+          <strong>demo@atk.test</strong> and <strong>DemoPass2026</strong>.
+        </p>
+      ) : null}
+
       <LoginForm from={params?.from ?? ""} />
     </div>
   );

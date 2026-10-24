@@ -10,7 +10,8 @@
     "seed:catalog": "node scripts/seed-catalog.js",
     "seed:admin": "node --env-file=.env.local scripts/seed-super-admin.js",
     "print:vocabulary": "node --env-file=.env.local scripts/print-product-vocabulary.js",
-    "migrate:descriptions": "node --env-file=.env.local scripts/migrate/plain-text-descriptions.js"
+    "migrate:descriptions": "node --env-file=.env.local scripts/migrate/plain-text-descriptions.js",
+    "demo": "node demo/start.mjs"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1124.0",
@@ -28,6 +29,7 @@
     "@tailwindcss/postcss": "^4",
     "eslint": "^9",
     "eslint-config-next": "16.3.0",
+    "mongodb-memory-server": "^10.4.3",
     "tailwindcss": "^4"
   }
 }

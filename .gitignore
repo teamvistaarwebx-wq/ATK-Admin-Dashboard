@@ -44,3 +44,5 @@ next-env.d.ts
 
 scripts/*
 tests/*
+# npm run demo
+/.demo-db
