@@ -100,7 +100,9 @@ export function GiftOptionForm({ option = EMPTY, type }) {
                 name="maxMessageLength"
                 label="Message limit"
                 inputMode="numeric"
-                defaultValue={String(option.maxMessageLength ?? DEFAULT_MESSAGE_LENGTH)}
+                defaultValue={String(
+                  option.maxMessageLength ?? DEFAULT_MESSAGE_LENGTH
+                )}
                 error={errors.maxMessageLength}
                 disabled={isPending}
                 hint="Characters that fit on this card."
@@ -111,7 +113,9 @@ export function GiftOptionForm({ option = EMPTY, type }) {
                 name="capacity"
                 label="Capacity"
                 inputMode="numeric"
-                defaultValue={option.capacity == null ? "" : String(option.capacity)}
+                defaultValue={
+                  option.capacity == null ? "" : String(option.capacity)
+                }
                 error={errors.capacity}
                 disabled={isPending}
                 placeholder="Not tracked"
@@ -138,7 +142,7 @@ export function GiftOptionForm({ option = EMPTY, type }) {
                 name="isActive"
                 defaultChecked={isNew ? true : option.isActive}
                 disabled={isPending}
-                className="h-4 w-4 accent-brand"
+                className="h-4 w-4 accent-[#303030]"
               />
               Active
               <span className="text-xs text-muted">— shown on the cart</span>
@@ -155,7 +159,7 @@ export function GiftOptionForm({ option = EMPTY, type }) {
                 name="isDefault"
                 defaultChecked={option.isDefault}
                 disabled={isPending}
-                className="h-4 w-4 accent-brand"
+                className="h-4 w-4 accent-[#303030]"
               />
               Default
               <span className="text-xs text-muted">
@@ -182,7 +186,11 @@ export function GiftOptionForm({ option = EMPTY, type }) {
           {isPending ? (
             <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
           ) : null}
-          {isPending ? "Saving" : isCard ? "Save card design" : "Save packaging"}
+          {isPending
+            ? "Saving"
+            : isCard
+              ? "Save card design"
+              : "Save packaging"}
         </Button>
 
         <Link

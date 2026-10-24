@@ -1,4 +1,5 @@
 import { PageHeader } from "@/components/layout/page-header";
+import { Settings } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { ADMIN_ROLE } from "@/constants/enums";
 import { requireAdmin } from "@/lib/auth/dal";
@@ -18,6 +19,7 @@ export default async function SettingsPage() {
     <>
       <PageHeader
         title="Settings"
+        icon={<Settings className="h-5 w-5" strokeWidth={2} />}
         subtitle="Who can sign in to this admin, and what they can reach."
       />
 

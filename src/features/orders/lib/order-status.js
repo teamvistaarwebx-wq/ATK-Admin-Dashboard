@@ -9,19 +9,35 @@ import { ORDER_STATUS } from "@/constants/enums";
  * null where the column has nothing to say.
  */
 const PAID = { label: "Paid", tone: "neutral", progress: "complete" };
-const UNFULFILLED = { label: "Unfulfilled", tone: "attention", progress: "incomplete" };
+const UNFULFILLED = {
+  label: "Unfulfilled",
+  tone: "attention",
+  progress: "incomplete",
+};
 const FULFILLED = { label: "Fulfilled", tone: "neutral", progress: "complete" };
 
 const VIEWS = {
   [ORDER_STATUS.PENDING_PAYMENT]: {
-    payment: { label: "Payment pending", tone: "warning", progress: "incomplete" },
+    payment: {
+      label: "Payment pending",
+      tone: "warning",
+      progress: "incomplete",
+    },
     fulfillment: UNFULFILLED,
     delivery: null,
   },
-  [ORDER_STATUS.PAID]: { payment: PAID, fulfillment: UNFULFILLED, delivery: null },
+  [ORDER_STATUS.PAID]: {
+    payment: PAID,
+    fulfillment: UNFULFILLED,
+    delivery: null,
+  },
   [ORDER_STATUS.CONFIRMED]: {
     payment: PAID,
-    fulfillment: { label: "In progress", tone: "attention", progress: "partial" },
+    fulfillment: {
+      label: "In progress",
+      tone: "attention",
+      progress: "partial",
+    },
     delivery: null,
   },
   [ORDER_STATUS.SHIPPED]: {
@@ -35,7 +51,11 @@ const VIEWS = {
     delivery: { label: "Delivered", tone: "success" },
   },
   [ORDER_STATUS.PAYMENT_FAILED]: {
-    payment: { label: "Payment failed", tone: "critical", progress: "incomplete" },
+    payment: {
+      label: "Payment failed",
+      tone: "critical",
+      progress: "incomplete",
+    },
     fulfillment: null,
     delivery: null,
   },
@@ -52,7 +72,13 @@ const VIEWS = {
 };
 
 export function orderStatusView(status) {
-  return VIEWS[status] ?? { payment: { label: status, tone: "neutral" }, fulfillment: null, delivery: null };
+  return (
+    VIEWS[status] ?? {
+      payment: { label: status, tone: "neutral" },
+      fulfillment: null,
+      delivery: null,
+    }
+  );
 }
 
 /**
@@ -72,7 +98,11 @@ export const ORDER_VIEWS = [
   {
     key: "closed",
     label: "Cancelled & failed",
-    statuses: [ORDER_STATUS.CANCELLED, ORDER_STATUS.PAYMENT_FAILED, ORDER_STATUS.EXPIRED],
+    statuses: [
+      ORDER_STATUS.CANCELLED,
+      ORDER_STATUS.PAYMENT_FAILED,
+      ORDER_STATUS.EXPIRED,
+    ],
   },
 ];
 

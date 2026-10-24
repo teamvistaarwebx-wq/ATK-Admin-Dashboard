@@ -13,7 +13,10 @@ export async function RecentOrdersCard() {
     <Card
       title="Recent orders"
       action={
-        <Link href="/orders" className="text-xs font-semibold text-link hover:underline">
+        <Link
+          href="/orders"
+          className="text-xs font-semibold text-link hover:underline"
+        >
           View all
         </Link>
       }
@@ -33,13 +36,19 @@ export async function RecentOrdersCard() {
                   <span className="min-w-0 flex-1">
                     <span className="block truncate text-[0.8125rem] font-semibold text-foreground">
                       {order.orderNumber}
-                      <span className="font-normal text-muted"> · {order.contact.fullName}</span>
+                      <span className="font-normal text-muted">
+                        {" "}
+                        · {order.contact.fullName}
+                      </span>
                     </span>
                     <span className="block text-xs text-muted">
                       {formatRelativeDateTime(order.createdAt)}
                     </span>
                   </span>
-                  <Badge tone={view.payment.tone} progress={view.payment.progress}>
+                  <Badge
+                    tone={view.payment.tone}
+                    progress={view.payment.progress}
+                  >
                     {view.payment.label}
                   </Badge>
                   <span className="w-20 shrink-0 text-right text-[0.8125rem] tabular-nums text-foreground">

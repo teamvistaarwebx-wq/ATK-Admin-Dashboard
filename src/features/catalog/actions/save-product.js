@@ -20,7 +20,6 @@ import { revalidateStorefront } from "@/lib/revalidate-storefront";
 /** The two lists a saved product can be returned to. */
 const RETURN_PATHS = ["/products", "/made-to-order"];
 
-
 /**
  * Creates or updates a product.
  *
@@ -70,7 +69,8 @@ export async function saveProduct(_prevState, formData) {
   try {
     if (isUpdate) {
       const saved = await updateProduct(id, document, session.adminId);
-      if (!saved) return { errors: { _form: "That product no longer exists." } };
+      if (!saved)
+        return { errors: { _form: "That product no longer exists." } };
 
       /**
        * Stock is edited on the product, like Shopify, rather than on a
@@ -160,7 +160,9 @@ function toFieldErrors(error, typedSku = "") {
     // anything typed — say something retryable instead of naming a field the
     // form no longer shows.
     if (field === "slug" || field.includes("sku")) {
-      return { _form: "Something else was saved at the same moment. Try again." };
+      return {
+        _form: "Something else was saved at the same moment. Try again.",
+      };
     }
     return { _form: "Another product already uses one of those values." };
   }

@@ -4,11 +4,7 @@ import { Inquiry } from "@/models/inquiry.model";
 import { Order } from "@/models/order.model";
 import { SiteSession } from "@/models/site-session.model";
 import { PAID_ORDER_STATUS_VALUES } from "@/constants/enums";
-import {
-  bucketKeyOf,
-  buildBuckets,
-  dateTruncFor,
-} from "@/lib/date-range";
+import { bucketKeyOf, buildBuckets, dateTruncFor } from "@/lib/date-range";
 
 /**
  * Everything the dashboard's headline chart needs, for a range and the range
@@ -34,12 +30,16 @@ export const getOverview = cache(async function getOverview(range) {
     total: current.totals[name],
     previous: previous ? previous.totals[name] : null,
     series: current.series.map((point) => point[name]),
-    previousSeries: previous ? previous.series.map((point) => point[name]) : null,
+    previousSeries: previous
+      ? previous.series.map((point) => point[name])
+      : null,
   });
 
   return {
     labels: current.buckets.map((bucket) => bucket.label),
-    previousLabels: previous ? previous.buckets.map((bucket) => bucket.label) : null,
+    previousLabels: previous
+      ? previous.buckets.map((bucket) => bucket.label)
+      : null,
     metrics: {
       revenue: metric("revenue"),
       orders: metric("orders"),
@@ -58,7 +58,12 @@ async function readPeriod(period, granularity) {
 
   const [sales, sessions, visitorCount, inquiries] = await Promise.all([
     Order.aggregate([
-      { $match: { status: { $in: PAID_ORDER_STATUS_VALUES }, createdAt: window } },
+      {
+        $match: {
+          status: { $in: PAID_ORDER_STATUS_VALUES },
+          createdAt: window,
+        },
+      },
       {
         $group: {
           _id: dateTruncFor("$createdAt", granularity),
@@ -90,7 +95,12 @@ async function readPeriod(period, granularity) {
 
     Inquiry.aggregate([
       { $match: { createdAt: window } },
-      { $group: { _id: dateTruncFor("$createdAt", granularity), inquiries: { $sum: 1 } } },
+      {
+        $group: {
+          _id: dateTruncFor("$createdAt", granularity),
+          inquiries: { $sum: 1 },
+        },
+      },
     ]),
   ]);
 
@@ -101,9 +111,15 @@ async function readPeriod(period, granularity) {
     return byKey.get(key);
   };
 
-  for (const row of sales) Object.assign(at(row._id), { orders: row.orders, revenue: row.revenue });
-  for (const row of sessions) Object.assign(at(row._id), { sessions: row.sessions, visitors: row.visitors });
-  for (const row of inquiries) Object.assign(at(row._id), { inquiries: row.inquiries });
+  for (const row of sales)
+    Object.assign(at(row._id), { orders: row.orders, revenue: row.revenue });
+  for (const row of sessions)
+    Object.assign(at(row._id), {
+      sessions: row.sessions,
+      visitors: row.visitors,
+    });
+  for (const row of inquiries)
+    Object.assign(at(row._id), { inquiries: row.inquiries });
 
   const series = buckets.map(({ key }) => {
     const found = byKey.get(key) ?? {};

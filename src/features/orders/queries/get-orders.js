@@ -24,7 +24,8 @@ export function buildOrderFilter({ view, status, q, range } = {}) {
   const filter = {};
 
   const statuses = statusesFor(view ?? status);
-  if (statuses) filter.status = statuses.length === 1 ? statuses[0] : { $in: statuses };
+  if (statuses)
+    filter.status = statuses.length === 1 ? statuses[0] : { $in: statuses };
 
   if (range?.start && range?.end) {
     filter.createdAt = { $gte: range.start, $lt: range.end };
@@ -94,21 +95,40 @@ export async function getOrderRangeStats({ q, range } = {}) {
         orders: { $sum: 1 },
         items: { $sum: { $sum: "$items.quantity" } },
         paid: {
-          $sum: { $cond: [{ $in: ["$status", PAID_ORDER_STATUS_VALUES] }, 1, 0] },
+          $sum: {
+            $cond: [{ $in: ["$status", PAID_ORDER_STATUS_VALUES] }, 1, 0],
+          },
         },
         revenue: {
           $sum: {
-            $cond: [{ $in: ["$status", PAID_ORDER_STATUS_VALUES] }, "$amounts.total", 0],
+            $cond: [
+              { $in: ["$status", PAID_ORDER_STATUS_VALUES] },
+              "$amounts.total",
+              0,
+            ],
           },
         },
         toFulfil: {
           $sum: {
-            $cond: [{ $in: ["$status", [ORDER_STATUS.PAID, ORDER_STATUS.CONFIRMED]] }, 1, 0],
+            $cond: [
+              { $in: ["$status", [ORDER_STATUS.PAID, ORDER_STATUS.CONFIRMED]] },
+              1,
+              0,
+            ],
           },
         },
         fulfilled: {
           $sum: {
-            $cond: [{ $in: ["$status", [ORDER_STATUS.SHIPPED, ORDER_STATUS.DELIVERED]] }, 1, 0],
+            $cond: [
+              {
+                $in: [
+                  "$status",
+                  [ORDER_STATUS.SHIPPED, ORDER_STATUS.DELIVERED],
+                ],
+              },
+              1,
+              0,
+            ],
           },
         },
         delivered: {

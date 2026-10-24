@@ -40,7 +40,11 @@ export function AdjustStockForm({ row, returnTo, onCancel }) {
   const after = row.onHand + delta;
 
   return (
-    <form action={formAction} noValidate className="flex min-h-0 flex-1 flex-col">
+    <form
+      action={formAction}
+      noValidate
+      className="flex min-h-0 flex-1 flex-col"
+    >
       <div className="flex min-h-0 flex-1 flex-col gap-5 overflow-y-auto px-6 py-5">
         <input type="hidden" name="productId" value={row.productId} />
         <input type="hidden" name="sku" value={row.sku} />
@@ -54,7 +58,11 @@ export function AdjustStockForm({ row, returnTo, onCancel }) {
           <dl className="mt-3 grid grid-cols-3 gap-2 text-xs">
             <Figure label="On hand" value={row.onHand} />
             <Figure label="Held" value={row.reserved} />
-            <Figure label="Available" value={row.available} danger={row.available < 0} />
+            <Figure
+              label="Available"
+              value={row.available}
+              danger={row.available < 0}
+            />
           </dl>
         </div>
 
@@ -99,7 +107,7 @@ export function AdjustStockForm({ row, returnTo, onCancel }) {
             className={`rounded-lg px-3 py-2.5 text-sm ${
               after < 0
                 ? "bg-danger/8 text-danger"
-                : "bg-brand-tint text-brand"
+                : "bg-black/[0.08] text-foreground"
             }`}
           >
             {after < 0 ? (

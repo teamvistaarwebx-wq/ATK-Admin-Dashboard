@@ -84,7 +84,13 @@ export async function ProductsSection({
             total={total}
             noun="product"
             buildHref={(target) =>
-              buildProductsHref({ q, subcategory, stock, page: target, basePath })
+              buildProductsHref({
+                q,
+                subcategory,
+                stock,
+                page: target,
+                basePath,
+              })
             }
           />
         </div>

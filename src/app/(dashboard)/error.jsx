@@ -16,7 +16,7 @@
 export default function DashboardError({ error, reset }) {
   return (
     <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4 px-6 text-center">
-      <h2 className="text-xl font-semibold text-brand">
+      <h2 className="text-xl font-semibold text-foreground">
         Something went wrong
       </h2>
 

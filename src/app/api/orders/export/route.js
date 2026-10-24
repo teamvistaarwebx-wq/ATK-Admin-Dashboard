@@ -22,10 +22,19 @@ const rupees = (paise) => (Number(paise ?? 0) / 100).toFixed(2);
 /** One column per thing a packer, an accountant or a courier would sort by. */
 const COLUMNS = [
   { header: "Order", value: (o) => o.orderNumber },
-  { header: "Date (IST)", value: (o) => IST_DATE_TIME.format(new Date(o.createdAt)) },
+  {
+    header: "Date (IST)",
+    value: (o) => IST_DATE_TIME.format(new Date(o.createdAt)),
+  },
   { header: "Status", value: (o) => o.status.replace(/_/g, " ") },
-  { header: "Payment", value: (o) => orderStatusView(o.status).payment?.label ?? "" },
-  { header: "Fulfillment", value: (o) => orderStatusView(o.status).fulfillment?.label ?? "" },
+  {
+    header: "Payment",
+    value: (o) => orderStatusView(o.status).payment?.label ?? "",
+  },
+  {
+    header: "Fulfillment",
+    value: (o) => orderStatusView(o.status).fulfillment?.label ?? "",
+  },
   { header: "Customer", value: (o) => o.contact?.fullName },
   { header: "Email", value: (o) => o.contact?.email },
   { header: "Phone", value: (o) => o.contact?.phone },
@@ -35,7 +44,10 @@ const COLUMNS = [
     header: "Line items",
     value: (o) =>
       (o.items ?? [])
-        .map((item) => `${item.title}${item.sku ? ` [${item.sku}]` : ""} x ${item.quantity}`)
+        .map(
+          (item) =>
+            `${item.title}${item.sku ? ` [${item.sku}]` : ""} x ${item.quantity}`
+        )
         .join("; "),
   },
   { header: "Subtotal (INR)", value: (o) => rupees(o.amounts?.subtotal) },
@@ -48,7 +60,10 @@ const COLUMNS = [
   { header: "State", value: (o) => o.address?.state },
   { header: "Pincode", value: (o) => o.address?.pincode },
   { header: "Card message", value: (o) => o.cardMessage },
-  { header: "Razorpay payment", value: (o) => o.payment?.razorpayPaymentId ?? "" },
+  {
+    header: "Razorpay payment",
+    value: (o) => o.payment?.razorpayPaymentId ?? "",
+  },
 ];
 
 /**
@@ -61,7 +76,8 @@ const COLUMNS = [
  */
 export async function GET(request) {
   const session = await getSession();
-  if (!session) return Response.json({ error: "Not signed in" }, { status: 401 });
+  if (!session)
+    return Response.json({ error: "Not signed in" }, { status: 401 });
 
   try {
     const params = request.nextUrl.searchParams;
@@ -80,7 +96,9 @@ export async function GET(request) {
       range,
     });
 
-    const span = range.from ? `${range.from}_to_${range.to}` : `all_to_${todayKey()}`;
+    const span = range.from
+      ? `${range.from}_to_${range.to}`
+      : `all_to_${todayKey()}`;
 
     return new Response(toCsv(orders, COLUMNS), {
       headers: {

@@ -57,7 +57,12 @@ export function InviteForm() {
 
         <FormError message={state?.error} />
 
-        <Button type="submit" size="sm" className="self-start" disabled={isPending}>
+        <Button
+          type="submit"
+          size="sm"
+          className="self-start"
+          disabled={isPending}
+        >
           {isPending ? (
             <>
               <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
@@ -94,8 +99,8 @@ function InviteLink({ url }) {
   }
 
   return (
-    <div className="flex flex-col gap-2 rounded-lg bg-brand-soft p-4">
-      <p className="text-xs font-semibold text-brand">
+    <div className="flex flex-col gap-2 rounded-lg bg-surface-subdued p-4">
+      <p className="text-xs font-semibold text-foreground">
         Send this link to them — it is shown only once
       </p>
 
@@ -104,7 +109,7 @@ function InviteLink({ url }) {
           readOnly
           value={url}
           onFocus={(event) => event.target.select()}
-          className="h-9 min-w-0 flex-1 rounded-md border border-brand/20 bg-surface px-2.5 text-xs text-foreground outline-none"
+          className="h-9 min-w-0 flex-1 rounded-md border border-border-strong bg-surface px-2.5 text-xs text-foreground outline-none"
         />
         <Button type="button" size="sm" variant="outline" onClick={copy}>
           {copied ? (
@@ -121,7 +126,7 @@ function InviteLink({ url }) {
         </Button>
       </div>
 
-      <p className="text-xs text-brand/70">
+      <p className="text-xs text-muted">
         The link expires in 7 days and can only be used once.
       </p>
     </div>

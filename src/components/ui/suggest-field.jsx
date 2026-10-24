@@ -21,7 +21,8 @@ import { POPOVER_LIST_CLASS, popoverPosition } from "./popover-position";
  */
 const BASE =
   "h-9 w-full rounded-lg border bg-surface px-3 text-sm text-foreground outline-none transition placeholder:text-muted/70 focus:ring-2 disabled:bg-background";
-const NEUTRAL = "border-border-strong focus:border-foreground/50 focus:ring-black/5";
+const NEUTRAL =
+  "border-border-strong focus:border-foreground/50 focus:ring-black/5";
 const INVALID = "border-danger focus:border-danger focus:ring-danger/10";
 
 export function SuggestField({
@@ -159,7 +160,8 @@ export function SuggestField({
       ?.scrollIntoView({ block: "nearest" });
   }, [visible, activeIndex]);
 
-  const activeId = visible && activeIndex >= 0 ? `${listId}-${activeIndex}` : undefined;
+  const activeId =
+    visible && activeIndex >= 0 ? `${listId}-${activeIndex}` : undefined;
 
   return (
     <div className={`flex flex-col gap-1.5 ${className}`}>
@@ -226,7 +228,9 @@ export function SuggestField({
             onClick={() => choose(index)}
             onPointerMove={() => setActiveIndex(index)}
             className={`cursor-pointer rounded-md px-3 py-2 transition-colors ${
-              index === activeIndex ? "bg-surface-hover text-foreground" : "text-foreground"
+              index === activeIndex
+                ? "bg-surface-hover text-foreground"
+                : "text-foreground"
             }`}
           >
             <Highlighted text={match} query={value} />
@@ -276,7 +280,9 @@ function Highlighted({ text, query }) {
   return (
     <>
       {text.slice(0, at)}
-      <strong className="font-semibold">{text.slice(at, at + needle.length)}</strong>
+      <strong className="font-semibold">
+        {text.slice(at, at + needle.length)}
+      </strong>
       {text.slice(at + needle.length)}
     </>
   );

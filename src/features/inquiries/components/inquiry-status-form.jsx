@@ -55,7 +55,7 @@ export function InquiryStatusForm({ id, status, internalNotes }) {
           rows={5}
           defaultValue={internalNotes}
           placeholder="What was agreed on the call, who is chasing it, what the quote was."
-          className="resize-y rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground outline-none transition focus:border-brand"
+          className="resize-y rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground outline-none transition focus:border-foreground/50"
         />
         <p className="text-xs text-muted">
           Only visible to the team — never shown to the enquirer.

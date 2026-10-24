@@ -48,7 +48,11 @@ export default async function InventoryPage({ searchParams }) {
         icon={<Warehouse className="h-5 w-5" strokeWidth={2} />}
         subtitle="Stock is set on each product. Adjust counts here, or update many at once by CSV."
       >
-        <a href="/api/products/export" download className={buttonClass("secondary")}>
+        <a
+          href="/api/products/export"
+          download
+          className={buttonClass("secondary")}
+        >
           Export
         </a>
         <Link href="/products/import" className={buttonClass("secondary")}>

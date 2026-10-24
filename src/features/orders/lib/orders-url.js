@@ -11,7 +11,8 @@ export function buildOrdersHref(current, changes = {}, path = "/orders") {
     const value = key in changes ? changes[key] : current[key];
     if (value) params.set(key, value);
   }
-  if (changes.page && changes.page > 1) params.set("page", String(changes.page));
+  if (changes.page && changes.page > 1)
+    params.set("page", String(changes.page));
   const query = params.toString();
   return query ? `${path}?${query}` : path;
 }

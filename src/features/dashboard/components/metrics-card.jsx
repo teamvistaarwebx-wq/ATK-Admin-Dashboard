@@ -20,7 +20,9 @@ const MetricLineChart = dynamic(
   () => import("./metric-line-chart").then((mod) => mod.MetricLineChart),
   {
     ssr: false,
-    loading: () => <div className="h-64 w-full animate-pulse rounded-lg bg-surface-subdued" />,
+    loading: () => (
+      <div className="h-64 w-full animate-pulse rounded-lg bg-surface-subdued" />
+    ),
   }
 );
 
@@ -45,7 +47,13 @@ const FORMATS = {
  * Every series is already here, so switching tabs is instant — there is no
  * round trip for something that is a few dozen numbers.
  */
-export function MetricsCard({ metrics, labels, previousLabels, rangeLabel, comparisonLabel }) {
+export function MetricsCard({
+  metrics,
+  labels,
+  previousLabels,
+  rangeLabel,
+  comparisonLabel,
+}) {
   const [selected, setSelected] = useState(metrics[0].key);
   const metric = metrics.find((m) => m.key === selected) ?? metrics[0];
   const format = FORMATS[metric.format] ?? FORMATS.count;
@@ -55,7 +63,7 @@ export function MetricsCard({ metrics, labels, previousLabels, rangeLabel, compa
       <div
         role="tablist"
         aria-label="Metrics"
-        className="grid grid-cols-2 border-b border-border sm:grid-cols-3 xl:grid-cols-6"
+        className="-mb-px grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6"
       >
         {metrics.map((item) => (
           <MetricTab
@@ -70,7 +78,10 @@ export function MetricsCard({ metrics, labels, previousLabels, rangeLabel, compa
       <div className="px-4 pb-4 pt-3">
         <div className="mb-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted">
           <span className="inline-flex items-center gap-1.5">
-            <span aria-hidden="true" className="h-0.5 w-4 rounded-full bg-[#7e0917]" />
+            <span
+              aria-hidden="true"
+              className="h-0.5 w-4 rounded-full bg-[#7e0917]"
+            />
             {rangeLabel}
           </span>
           {comparisonLabel ? (
@@ -113,12 +124,15 @@ function MetricTab({ metric, active, onSelect }) {
       role="tab"
       aria-selected={active}
       onClick={onSelect}
-      className={`relative flex flex-col items-start gap-1 border-border px-4 py-3 text-left transition [&:not(:last-child)]:border-r ${
+      className={`relative flex min-w-0 flex-col items-start gap-1 border-b border-r border-border px-4 py-3 text-left transition xl:border-b-0 xl:last:border-r-0 ${
         active ? "bg-surface-subdued" : "hover:bg-surface-subdued/60"
       }`}
     >
       {active ? (
-        <span aria-hidden="true" className="absolute inset-x-0 bottom-0 h-0.5 bg-foreground" />
+        <span
+          aria-hidden="true"
+          className="absolute inset-x-0 bottom-0 h-0.5 bg-foreground"
+        />
       ) : null}
       <span className="border-b border-dashed border-border-strong text-xs font-semibold text-foreground">
         {metric.label}
@@ -142,7 +156,8 @@ export function Change({ value, hasComparison = true }) {
   }
 
   const rounded = Math.round(value);
-  if (rounded === 0) return <span className="text-xs font-medium text-muted">0%</span>;
+  if (rounded === 0)
+    return <span className="text-xs font-medium text-muted">0%</span>;
 
   const up = rounded > 0;
   const Icon = up ? ArrowUpRight : ArrowDownRight;
@@ -155,7 +170,9 @@ export function Change({ value, hasComparison = true }) {
     >
       <Icon className="h-3.5 w-3.5" strokeWidth={2.25} aria-hidden="true" />
       {Math.abs(rounded)}%
-      <span className="sr-only">{up ? " up" : " down"} on the comparison period</span>
+      <span className="sr-only">
+        {up ? " up" : " down"} on the comparison period
+      </span>
     </span>
   );
 }

@@ -106,7 +106,11 @@ export function ProductFilters({
       <div className="flex flex-wrap items-center justify-between gap-2 px-2 py-2">
         {/* Made to order has no stock to filter by, so its strip is a lone
             "All" tab. */}
-        <div className="flex flex-wrap items-center gap-1" role="group" aria-label="Stock">
+        <div
+          className="flex flex-wrap items-center gap-1"
+          role="group"
+          aria-label="Stock"
+        >
           {(showStock ? STOCK_CHIPS : STOCK_CHIPS.slice(0, 1)).map((chip) => {
             const active = chip.value === stock;
 
@@ -162,7 +166,9 @@ export function ProductFilters({
                 aria-pressed={active}
                 // Clicking the lit pill clears it — the row doubles as its own
                 // "all categories" control, so it needs no extra pill.
-                onClick={() => applyNow({ subcategory: active ? "" : sub.slug })}
+                onClick={() =>
+                  applyNow({ subcategory: active ? "" : sub.slug })
+                }
                 className={`${PILL} ${active ? PILL_ON : PILL_OFF}`}
               >
                 {sub.name}

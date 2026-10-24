@@ -16,7 +16,13 @@ import { publishBanner } from "../actions/publish-banner";
  * the rest, and passing the images would serialise two URLs per row for
  * nothing.
  */
-export function BannerRowActions({ id, name, isActive, canDelete, deleteIcon }) {
+export function BannerRowActions({
+  id,
+  name,
+  isActive,
+  canDelete,
+  deleteIcon,
+}) {
   const [confirming, setConfirming] = useState(false);
   const [error, setError] = useState("");
   const [isPending, startTransition] = useTransition();
@@ -57,7 +63,7 @@ export function BannerRowActions({ id, name, isActive, canDelete, deleteIcon }) 
           className={
             isActive
               ? "rounded-md px-2.5 py-1.5 text-xs font-semibold text-muted transition hover:bg-background disabled:opacity-60"
-              : "rounded-md px-2.5 py-1.5 text-xs font-semibold text-brand transition hover:bg-brand-soft disabled:opacity-60"
+              : "rounded-md px-2.5 py-1.5 text-xs font-semibold text-foreground transition hover:bg-black/5 disabled:opacity-60"
           }
         >
           {isActive ? "Unpublish" : "Publish"}

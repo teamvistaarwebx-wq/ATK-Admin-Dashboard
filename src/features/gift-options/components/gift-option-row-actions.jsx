@@ -33,7 +33,7 @@ export function GiftOptionRowActions({ id, isActive, isDefault }) {
             type="button"
             onClick={() => run(() => makeGiftOptionDefault(id))}
             disabled={isPending}
-            className="rounded-md px-2.5 py-1.5 text-xs font-semibold text-brand transition hover:bg-brand-soft disabled:opacity-60"
+            className="rounded-md px-2.5 py-1.5 text-xs font-semibold text-foreground transition hover:bg-black/5 disabled:opacity-60"
           >
             Make default
           </button>
@@ -46,7 +46,7 @@ export function GiftOptionRowActions({ id, isActive, isDefault }) {
           className={
             isActive
               ? "rounded-md px-2.5 py-1.5 text-xs font-semibold text-muted transition hover:bg-background disabled:opacity-60"
-              : "rounded-md px-2.5 py-1.5 text-xs font-semibold text-brand transition hover:bg-brand-soft disabled:opacity-60"
+              : "rounded-md px-2.5 py-1.5 text-xs font-semibold text-foreground transition hover:bg-black/5 disabled:opacity-60"
           }
         >
           {isActive ? "Deactivate" : "Activate"}

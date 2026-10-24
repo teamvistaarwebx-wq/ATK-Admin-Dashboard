@@ -62,10 +62,7 @@ export function Drawer({ title, onClose, children }) {
     >
       <div className="flex h-full flex-col">
         <header className="flex shrink-0 items-center justify-between gap-4 border-b border-border px-5 py-3.5">
-          <h2
-            id={titleId}
-            className="text-base font-semibold text-foreground"
-          >
+          <h2 id={titleId} className="text-base font-semibold text-foreground">
             {title}
           </h2>
 

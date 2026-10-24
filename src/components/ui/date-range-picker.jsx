@@ -101,7 +101,9 @@ function RangePanel({ range, allowAllTime, onApply, onCancel }) {
   const [anchor, setAnchor] = useState(null);
   const [hover, setHover] = useState(null);
   // The left-hand month of the pair.
-  const [view, setView] = useState(() => monthOf(addMonthsKey(to ?? today, -1)));
+  const [view, setView] = useState(() =>
+    monthOf(addMonthsKey(to ?? today, -1))
+  );
 
   const [fromText, setFromText] = useState(from);
   const [toText, setToText] = useState(to);
@@ -160,7 +162,8 @@ function RangePanel({ range, allowAllTime, onApply, onCancel }) {
   }
 
   // While choosing the second end, preview the range under the pointer.
-  const previewFrom = anchor && hover ? (hover < anchor ? hover : anchor) : from;
+  const previewFrom =
+    anchor && hover ? (hover < anchor ? hover : anchor) : from;
   const previewTo = anchor && hover ? (hover < anchor ? anchor : hover) : to;
 
   return (
@@ -188,7 +191,10 @@ function RangePanel({ range, allowAllTime, onApply, onCancel }) {
               {item.label}
             </PresetItem>
           ))}
-          <PresetItem active={preset === "custom"} onClick={() => setPreset("custom")}>
+          <PresetItem
+            active={preset === "custom"}
+            onClick={() => setPreset("custom")}
+          >
             Custom
           </PresetItem>
         </ul>
@@ -211,7 +217,9 @@ function RangePanel({ range, allowAllTime, onApply, onCancel }) {
             />
           </div>
 
-          <div className={`mt-4 ${preset === ALL_TIME.key ? "pointer-events-none opacity-40" : ""}`}>
+          <div
+            className={`mt-4 ${preset === ALL_TIME.key ? "pointer-events-none opacity-40" : ""}`}
+          >
             <div className="flex items-center justify-between">
               <button
                 type="button"

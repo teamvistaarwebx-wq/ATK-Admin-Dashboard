@@ -126,7 +126,8 @@ function validate(body) {
   }
 
   const a = body.address ?? {};
-  if (!a.line1?.trim() || a.line1.trim().length < 5) return "Address is required";
+  if (!a.line1?.trim() || a.line1.trim().length < 5)
+    return "Address is required";
   if (!a.city?.trim()) return "City is required";
   if (!a.state?.trim()) return "State is required";
   if (!/^\d{6}$/.test(String(a.pincode ?? "").trim())) {

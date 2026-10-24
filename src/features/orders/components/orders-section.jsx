@@ -2,7 +2,13 @@ import Link from "next/link";
 import { AlertCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Pagination } from "@/components/ui/pagination";
-import { formatCompactPrice, formatCount, formatPrice, formatRelativeDateTime } from "@/lib/format";
+import {
+  formatCompactPrice,
+  formatCount,
+  formatPrice,
+  formatRelativeDateTime,
+} from "@/lib/format";
+import { CODE_BY_STATE } from "@/constants/india";
 import { orderStatusView } from "../lib/order-status";
 import { buildOrdersHref } from "../lib/orders-url";
 
@@ -28,18 +34,38 @@ export async function OrdersSection({ ordersPromise, current, filtered }) {
     <>
       <div className="overflow-x-auto">
         <table className="w-full min-w-[72rem] text-left text-[0.8125rem]">
-          <thead className="border-y border-border bg-surface-subdued text-xs text-muted">
+          <thead className="whitespace-nowrap border-y border-border bg-surface-subdued text-xs text-muted">
             <tr>
-              <th scope="col" className="py-2 pl-4 pr-3 font-medium">Order</th>
-              <th scope="col" className="px-3 py-2 font-medium">Date</th>
-              <th scope="col" className="px-3 py-2 font-medium">Customer</th>
-              <th scope="col" className="px-3 py-2 font-medium">Channel</th>
-              <th scope="col" className="px-3 py-2 text-right font-medium">Total</th>
-              <th scope="col" className="px-3 py-2 font-medium">Payment status</th>
-              <th scope="col" className="px-3 py-2 font-medium">Fulfillment status</th>
-              <th scope="col" className="px-3 py-2 font-medium">Items</th>
-              <th scope="col" className="px-3 py-2 font-medium">Delivery status</th>
-              <th scope="col" className="py-2 pl-3 pr-4 font-medium">Destination</th>
+              <th scope="col" className="py-2 pl-4 pr-3 font-medium">
+                Order
+              </th>
+              <th scope="col" className="px-3 py-2 font-medium">
+                Date
+              </th>
+              <th scope="col" className="px-3 py-2 font-medium">
+                Customer
+              </th>
+              <th scope="col" className="px-3 py-2 font-medium">
+                Channel
+              </th>
+              <th scope="col" className="px-3 py-2 text-right font-medium">
+                Total
+              </th>
+              <th scope="col" className="px-3 py-2 font-medium">
+                Payment status
+              </th>
+              <th scope="col" className="px-3 py-2 font-medium">
+                Fulfillment status
+              </th>
+              <th scope="col" className="px-3 py-2 font-medium">
+                Items
+              </th>
+              <th scope="col" className="px-3 py-2 font-medium">
+                Delivery status
+              </th>
+              <th scope="col" className="py-2 pl-3 pr-4 font-medium">
+                Destination
+              </th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
@@ -73,10 +99,15 @@ function OrderRow({ order }) {
   const href = `/orders/${order.orderNumber}`;
 
   return (
-    <tr className={`transition hover:bg-surface-subdued ${done ? "text-muted" : "text-foreground"}`}>
+    <tr
+      className={`transition hover:bg-surface-subdued ${done ? "text-muted" : "text-foreground"}`}
+    >
       <td className="py-2 pl-4 pr-3">
         <span className="flex items-center gap-1.5">
-          <Link href={href} className="font-semibold text-foreground hover:underline">
+          <Link
+            href={href}
+            className="font-semibold text-foreground hover:underline"
+          >
             {order.orderNumber}
           </Link>
           {order.needsReview ? (
@@ -88,10 +119,14 @@ function OrderRow({ order }) {
           ) : null}
         </span>
       </td>
-      <td className="whitespace-nowrap px-3 py-2">{formatRelativeDateTime(order.createdAt)}</td>
+      <td className="whitespace-nowrap px-3 py-2">
+        {formatRelativeDateTime(order.createdAt)}
+      </td>
       <td className="max-w-48 truncate px-3 py-2">{order.contact.fullName}</td>
       <td className="whitespace-nowrap px-3 py-2">
-        {order.companyName ? `Corporate · ${order.companyName}` : "Online store"}
+        {order.companyName
+          ? `Corporate · ${order.companyName}`
+          : "Online store"}
       </td>
       <td className="whitespace-nowrap px-3 py-2 text-right tabular-nums">
         {formatPrice(order.total)}
@@ -109,7 +144,9 @@ function OrderRow({ order }) {
         <StatusBadge badge={view.delivery} />
       </td>
       <td className="whitespace-nowrap py-2 pl-3 pr-4 uppercase">
-        {[order.city, order.state].filter(Boolean).join(", ") || "—"}
+        {[order.city, CODE_BY_STATE[order.state] ?? order.state, "IN"]
+          .filter(Boolean)
+          .join(", ")}
       </td>
     </tr>
   );
@@ -136,7 +173,11 @@ export async function OrdersStats({ statsPromise }) {
     <>
       <Stat label="Orders" value={formatCount(stats.orders)} />
       <Stat label="Items ordered" value={formatCount(stats.items)} />
-      <Stat label="Sales" value={formatCompactPrice(stats.revenue)} note={`${formatCount(stats.paid)} paid`} />
+      <Stat
+        label="Sales"
+        value={formatCompactPrice(stats.revenue)}
+        note={`${formatCount(stats.paid)} paid`}
+      />
       <Stat label="To fulfil" value={formatCount(stats.toFulfil)} />
       <Stat label="Orders fulfilled" value={formatCount(stats.fulfilled)} />
       <Stat label="Orders delivered" value={formatCount(stats.delivered)} />
@@ -148,10 +189,14 @@ export function Stat({ label, value, note }) {
   return (
     <div className="min-w-32 shrink-0 border-l border-border px-4 py-3">
       <p className="text-xs font-semibold text-foreground">
-        <span className="border-b border-dashed border-border-strong">{label}</span>
+        <span className="border-b border-dashed border-border-strong">
+          {label}
+        </span>
       </p>
       <p className="mt-1 flex items-baseline gap-1.5">
-        <span className="text-base font-semibold tabular-nums text-foreground">{value}</span>
+        <span className="text-base font-semibold tabular-nums text-foreground">
+          {value}
+        </span>
         {note ? <span className="text-xs text-muted">{note}</span> : null}
       </p>
     </div>

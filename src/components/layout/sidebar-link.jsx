@@ -38,7 +38,9 @@ export function SidebarNav({ items, counts }) {
                   <li key={child.href}>
                     <Link
                       href={child.href}
-                      aria-current={activeChild(pathname, item, child) ? "page" : undefined}
+                      aria-current={
+                        activeChild(pathname, item, child) ? "page" : undefined
+                      }
                       className={`flex h-7 items-center rounded-lg pl-9 pr-2 text-[0.8125rem] transition ${
                         activeChild(pathname, item, child)
                           ? "bg-sidebar-active font-semibold text-white"

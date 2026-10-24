@@ -70,7 +70,11 @@ export function InventoryFilters({ q, view, searchIcon, children }) {
   return (
     <section className="overflow-hidden rounded-xl bg-surface shadow-card">
       <div className="flex flex-wrap items-center justify-between gap-2 px-2 py-2">
-        <div className="flex flex-wrap items-center gap-1" role="group" aria-label="Stock views">
+        <div
+          className="flex flex-wrap items-center gap-1"
+          role="group"
+          aria-label="Stock views"
+        >
           {VIEWS.map((chip) => {
             const active = chip.value === view;
 

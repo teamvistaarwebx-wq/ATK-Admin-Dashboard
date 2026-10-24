@@ -84,7 +84,8 @@ export function MetricLineChart({
           backgroundColor: "rgba(126, 9, 23, 0.06)",
           fill: true,
           borderWidth: 2,
-          tension: 0.35,
+          // Monotone so a curve never dips below zero between two points.
+          cubicInterpolationMode: "monotone",
           pointRadius: series.length === 1 ? 3 : 0,
           pointHoverRadius: 4,
           pointHoverBorderWidth: 2,
@@ -99,7 +100,7 @@ export function MetricLineChart({
                 borderColor: PREVIOUS,
                 borderDash: [4, 4],
                 borderWidth: 2,
-                tension: 0.35,
+                cubicInterpolationMode: "monotone",
                 fill: false,
                 pointRadius: 0,
                 pointHoverRadius: 4,

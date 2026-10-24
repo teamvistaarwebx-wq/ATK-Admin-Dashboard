@@ -44,7 +44,9 @@ export async function getLiveView(now = new Date()) {
       },
     ]),
     Reservation.aggregate([
-      { $match: { status: RESERVATION_STATUS.ACTIVE, expiresAt: { $gt: now } } },
+      {
+        $match: { status: RESERVATION_STATUS.ACTIVE, expiresAt: { $gt: now } },
+      },
       // One checkout can hold several SKUs; count checkouts, not rows.
       { $group: { _id: { $ifNull: ["$orderId", "$sessionId"] } } },
       { $count: "count" },
@@ -77,9 +79,13 @@ export async function getLiveView(now = new Date()) {
     cartValue: carts[0]?.value ?? 0,
     checkingOut: checkouts[0]?.count ?? 0,
     places: places.map((row) => ({
-      label: [row._id.city, row._id.state].filter(Boolean).join(", ") || "Unknown",
+      label:
+        [row._id.city, row._id.state].filter(Boolean).join(", ") || "Unknown",
       visitors: row.visitors,
     })),
-    pages: pages.map((row) => ({ path: row._id.split("?")[0], visitors: row.visitors })),
+    pages: pages.map((row) => ({
+      path: row._id.split("?")[0],
+      visitors: row.visitors,
+    })),
   };
 }

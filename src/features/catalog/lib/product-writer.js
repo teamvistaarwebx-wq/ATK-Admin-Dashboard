@@ -34,7 +34,12 @@ const REGEX_SPECIALS = /[.*+?^${}()|[\]\\]/g;
  * given (a supplier's code, or a row in an import). Both are unique indexes,
  * so a clash on a typed SKU is reported rather than stepped around.
  */
-export async function createProduct(document, adminId, subcategory, typedSku = "") {
+export async function createProduct(
+  document,
+  adminId,
+  subcategory,
+  typedSku = ""
+) {
   const slug = await generateSlug(document.title);
 
   for (let attempt = 0; attempt < SKU_ATTEMPTS; attempt += 1) {
@@ -182,4 +187,3 @@ async function highestSkuNumber(match) {
 
   return row?.max ?? 0;
 }
-

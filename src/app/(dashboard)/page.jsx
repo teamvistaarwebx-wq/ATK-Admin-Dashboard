@@ -1,7 +1,10 @@
 import { Suspense } from "react";
 import { House } from "lucide-react";
 import { PageBody, PageHeader } from "@/components/layout/page-header";
-import { CompareSelect, DateRangePicker } from "@/components/ui/date-range-picker";
+import {
+  CompareSelect,
+  DateRangePicker,
+} from "@/components/ui/date-range-picker";
 import { requireAdmin } from "@/lib/auth/dal";
 import { formatRangeLabel, resolveDateRange } from "@/lib/date-range";
 import { getOverview } from "@/features/analytics/queries/get-overview";
@@ -64,8 +67,10 @@ export default async function DashboardPage({ searchParams }) {
           <Overview range={range} />
         </Suspense>
 
-        <div className="grid gap-4 lg:grid-cols-3">
-          <div className="lg:col-span-2">
+        {/* grid-cols-1 + min-w-0: a wide table scrolls inside its card
+            rather than stretching the page on a phone. */}
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+          <div className="min-w-0 lg:col-span-2">
             <Suspense fallback={<PanelSkeleton height="h-96" />}>
               <RegionCard range={range} />
             </Suspense>
@@ -76,7 +81,7 @@ export default async function DashboardPage({ searchParams }) {
           </Suspense>
         </div>
 
-        <div className="grid gap-4 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
           <Suspense fallback={<PanelSkeleton height="h-80" />}>
             <RecentOrdersCard />
           </Suspense>
@@ -108,8 +113,20 @@ async function Overview({ range }) {
     { key: "revenue", label: "Total sales", format: "money", ...m.revenue },
     { key: "orders", label: "Orders", format: "count", ...m.orders },
     { key: "aov", label: "Average order value", format: "money", ...m.aov },
-    { key: "visitors", label: "Visitors", format: "count", empty: noTraffic, ...m.visitors },
-    { key: "sessions", label: "Sessions", format: "count", empty: noTraffic, ...m.sessions },
+    {
+      key: "visitors",
+      label: "Visitors",
+      format: "count",
+      empty: noTraffic,
+      ...m.visitors,
+    },
+    {
+      key: "sessions",
+      label: "Sessions",
+      format: "count",
+      empty: noTraffic,
+      ...m.sessions,
+    },
     { key: "inquiries", label: "Inquiries", format: "count", ...m.inquiries },
   ];
 

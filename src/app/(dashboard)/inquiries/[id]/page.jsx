@@ -161,7 +161,7 @@ export default async function InquiryDetailPage({ params }) {
                       ? "Indicative value at catalogue price"
                       : "Indicative value of the selection"}
                   </p>
-                  <p className="shrink-0 text-lg font-semibold text-brand">
+                  <p className="shrink-0 text-lg font-semibold text-foreground">
                     {formatPrice(inquiry.amounts?.total ?? inquiry.budget)}
                   </p>
                 </div>

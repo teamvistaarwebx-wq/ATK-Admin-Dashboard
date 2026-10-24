@@ -8,7 +8,10 @@ import { Product } from "@/models/product.model";
 import { Subcategory } from "@/models/subcategory.model";
 import { MOVEMENT_REASON, PRODUCT_STATUS } from "@/constants/enums";
 import { getProductForForm } from "@/features/catalog/queries/get-product-for-form";
-import { normaliseSku, parseProductForm } from "@/features/catalog/lib/product-input";
+import {
+  normaliseSku,
+  parseProductForm,
+} from "@/features/catalog/lib/product-input";
 import {
   IMPORT_BATCH_SIZE,
   IMPORT_COLUMNS,
@@ -48,10 +51,15 @@ const LONG_COLUMNS = new Set(["description"]);
  *
  * Rows are independent. One bad row is reported and the rest carry on.
  */
-export async function importProducts({ rows, updateExisting = false, defaultStatus } = {}) {
+export async function importProducts({
+  rows,
+  updateExisting = false,
+  defaultStatus,
+} = {}) {
   const session = await requireAdmin();
 
-  if (!Array.isArray(rows) || rows.length === 0) return { error: "Nothing to import." };
+  if (!Array.isArray(rows) || rows.length === 0)
+    return { error: "Nothing to import." };
   if (rows.length > IMPORT_BATCH_SIZE) {
     return { error: `Send at most ${IMPORT_BATCH_SIZE} rows at a time.` };
   }
@@ -62,7 +70,9 @@ export async function importProducts({ rows, updateExisting = false, defaultStat
   const context = {
     categories,
     updateExisting: Boolean(updateExisting),
-    defaultStatus: [PRODUCT_STATUS.ACTIVE, PRODUCT_STATUS.DRAFT].includes(defaultStatus)
+    defaultStatus: [PRODUCT_STATUS.ACTIVE, PRODUCT_STATUS.DRAFT].includes(
+      defaultStatus
+    )
       ? defaultStatus
       : PRODUCT_STATUS.DRAFT,
     adminId: session.adminId,
@@ -81,7 +91,11 @@ export async function importProducts({ rows, updateExisting = false, defaultStat
     }
   }
 
-  if (results.some((result) => result.status === "created" || result.status === "updated")) {
+  if (
+    results.some(
+      (result) => result.status === "created" || result.status === "updated"
+    )
+  ) {
     revalidatePath("/products");
     revalidatePath("/inventory");
     revalidatePath("/");
@@ -91,7 +105,10 @@ export async function importProducts({ rows, updateExisting = false, defaultStat
   return { results };
 }
 
-async function importRow(row, { categories, updateExisting, defaultStatus, adminId }) {
+async function importRow(
+  row,
+  { categories, updateExisting, defaultStatus, adminId }
+) {
   const sku = normaliseSku(row.sku);
 
   // The unique index counts deleted products too, so look there as well.
@@ -100,7 +117,9 @@ async function importRow(row, { categories, updateExisting, defaultStatus, admin
     : null;
 
   if (holder?.isDeleted) {
-    return failure(row, ["This SKU belongs to a deleted product. Use a different one."]);
+    return failure(row, [
+      "This SKU belongs to a deleted product. Use a different one.",
+    ]);
   }
   if (holder && !updateExisting) {
     return {
@@ -108,7 +127,9 @@ async function importRow(row, { categories, updateExisting, defaultStatus, admin
       sku,
       title: row.title ?? "",
       status: "skipped",
-      messages: ["A product with this SKU already exists. Tick “Update existing products” to change it."],
+      messages: [
+        "A product with this SKU already exists. Tick “Update existing products” to change it.",
+      ],
     };
   }
 
@@ -121,8 +142,12 @@ async function importRow(row, { categories, updateExisting, defaultStatus, admin
   });
   if (errors.length > 0) return failure(row, errors);
 
-  const category = row.category ? resolveCategory(row, categories).category : null;
-  const base = isNew ? NEW_PRODUCT_FORM : await getProductForForm(String(holder._id));
+  const category = row.category
+    ? resolveCategory(row, categories).category
+    : null;
+  const base = isNew
+    ? NEW_PRODUCT_FORM
+    : await getProductForForm(String(holder._id));
   if (!base) return failure(row, ["That product no longer exists."]);
 
   const form = mergeRowIntoForm(row, base, { category, defaultStatus });
@@ -136,7 +161,9 @@ async function importRow(row, { categories, updateExisting, defaultStatus, admin
   const parsed = parseProductForm(formData);
   if (parsed.errors) return failure(row, Object.values(parsed.errors));
 
-  const subcategory = categories.find((c) => c.id === parsed.values.subcategory);
+  const subcategory = categories.find(
+    (c) => c.id === parsed.values.subcategory
+  );
   if (!subcategory) return failure(row, ["Choose a category."]);
 
   const document = { ...parsed.values, category: subcategory.categoryId };
@@ -184,7 +211,8 @@ async function importRow(row, { categories, updateExisting, defaultStatus, admin
         note: "Set by CSV import",
         actor: adminId,
       });
-      if (result.error) messages.push(`Saved, but stock was not changed: ${result.error}`);
+      if (result.error)
+        messages.push(`Saved, but stock was not changed: ${result.error}`);
     }
 
     return {
@@ -240,7 +268,9 @@ function sanitise(raw) {
   for (const key of COLUMN_KEYS) {
     const value = raw?.[key];
     if (value == null || value === "") continue;
-    row[key] = String(value).trim().slice(0, LONG_COLUMNS.has(key) ? 10000 : 1000);
+    row[key] = String(value)
+      .trim()
+      .slice(0, LONG_COLUMNS.has(key) ? 10000 : 1000);
   }
   return row;
 }

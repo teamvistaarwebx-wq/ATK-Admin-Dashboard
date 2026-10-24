@@ -58,7 +58,7 @@ export function CardLogoPreview({ logo }) {
 
       <a
         href={downloadUrl}
-        className="w-fit text-sm font-semibold text-brand underline-offset-2 hover:underline"
+        className="w-fit text-sm font-semibold text-link hover:underline"
       >
         Download original
       </a>

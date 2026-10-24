@@ -28,7 +28,9 @@ export function PageHeader({
 }) {
   return (
     <header className="sticky top-0 z-20 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
-      <div className={`mx-auto flex w-full ${WIDTHS[width] ?? WIDTHS.wide} flex-wrap items-center justify-between gap-3 px-4 py-4 sm:px-6`}>
+      <div
+        className={`mx-auto flex w-full ${WIDTHS[width] ?? WIDTHS.wide} flex-wrap items-center justify-between gap-3 px-4 py-4 sm:px-6`}
+      >
         <div className="flex min-w-0 items-center gap-2">
           {backHref ? (
             <Link
@@ -36,7 +38,11 @@ export function PageHeader({
               aria-label="Back"
               className="-ml-1 rounded-lg p-1 text-muted transition hover:bg-black/5 hover:text-foreground"
             >
-              <ArrowLeft className="h-4 w-4" strokeWidth={2} aria-hidden="true" />
+              <ArrowLeft
+                className="h-4 w-4"
+                strokeWidth={2}
+                aria-hidden="true"
+              />
             </Link>
           ) : null}
 

@@ -82,13 +82,21 @@ export function ProductImport({ categories, existingSkus }) {
       const errors = checkImportRow(row, {
         categories,
         isNew,
-        resolveImage: (value) => isImageUrl(value) || photosByName.has(value.toLowerCase()),
+        resolveImage: (value) =>
+          isImageUrl(value) || photosByName.has(value.toLowerCase()),
       });
       if (sku) {
         if (seen.has(sku)) errors.push(`Same SKU as row ${seen.get(sku)}.`);
         else seen.set(sku, row.line);
       }
-      const action = errors.length > 0 ? "error" : exists ? (updateExisting ? "update" : "skip") : "create";
+      const action =
+        errors.length > 0
+          ? "error"
+          : exists
+            ? updateExisting
+              ? "update"
+              : "skip"
+            : "create";
       return { row, errors, action };
     });
   }, [rows, categories, known, photosByName, updateExisting]);
@@ -97,7 +105,9 @@ export function ProductImport({ categories, existingSkus }) {
     (sum, item) => ({ ...sum, [item.action]: (sum[item.action] ?? 0) + 1 }),
     {}
   );
-  const importable = checked.filter((item) => item.action === "create" || item.action === "update");
+  const importable = checked.filter(
+    (item) => item.action === "create" || item.action === "update"
+  );
 
   async function readCsv(file) {
     setFileError("");
@@ -109,7 +119,9 @@ export function ProductImport({ categories, existingSkus }) {
     const columns = new Set(headers.map(canonicalKey));
     if (!columns.has("title") && !columns.has("sku")) {
       setRows([]);
-      return setFileError("This does not look like a product CSV — the first line should be the column headers. Start from the sample file.");
+      return setFileError(
+        "This does not look like a product CSV — the first line should be the column headers. Start from the sample file."
+      );
     }
     if (records.length === 0) {
       setRows([]);
@@ -117,7 +129,9 @@ export function ProductImport({ categories, existingSkus }) {
     }
     if (records.length > MAX_IMPORT_ROWS) {
       setRows([]);
-      return setFileError(`That is ${records.length} rows. Split it into files of ${MAX_IMPORT_ROWS} or fewer.`);
+      return setFileError(
+        `That is ${records.length} rows. Split it into files of ${MAX_IMPORT_ROWS} or fewer.`
+      );
     }
     setRows(records.map(normaliseImportRecord));
   }
@@ -130,7 +144,11 @@ export function ProductImport({ categories, existingSkus }) {
     const needed = new Map();
     for (const row of items) {
       for (const image of rowImages(row)) {
-        if (!isImageUrl(image)) needed.set(image.toLowerCase(), photosByName.get(image.toLowerCase()));
+        if (!isImageUrl(image))
+          needed.set(
+            image.toLowerCase(),
+            photosByName.get(image.toLowerCase())
+          );
       }
     }
 
@@ -152,7 +170,9 @@ export function ProductImport({ categories, existingSkus }) {
         setProgress({ label: "Uploading photos", done, total: needed.size });
       }
     }
-    await Promise.all(Array.from({ length: Math.min(UPLOAD_CONCURRENCY, queue.length) }, worker));
+    await Promise.all(
+      Array.from({ length: Math.min(UPLOAD_CONCURRENCY, queue.length) }, worker)
+    );
 
     // A row whose photo failed keeps the file name; the server rejects it
     // with a message that says which one.
@@ -171,7 +191,11 @@ export function ProductImport({ categories, existingSkus }) {
     for (let start = 0; start < items.length; start += IMPORT_BATCH_SIZE) {
       const batch = items.slice(start, start + IMPORT_BATCH_SIZE);
       try {
-        const response = await importProducts({ rows: batch, updateExisting, defaultStatus });
+        const response = await importProducts({
+          rows: batch,
+          updateExisting,
+          defaultStatus,
+        });
         if (response?.error) throw new Error(response.error);
         all.push(...response.results);
       } catch (error) {
@@ -181,20 +205,35 @@ export function ProductImport({ categories, existingSkus }) {
             sku: row.sku ?? "",
             title: row.title ?? "",
             status: "failed",
-            messages: [error.message || "The server did not answer. Try these rows again."],
+            messages: [
+              error.message ||
+                "The server did not answer. Try these rows again.",
+            ],
           }))
         );
       }
-      setProgress({ label: "Importing products", done: Math.min(items.length, start + batch.length), total: items.length });
+      setProgress({
+        label: "Importing products",
+        done: Math.min(items.length, start + batch.length),
+        total: items.length,
+      });
     }
 
     for (const result of all) {
       const row = items.find((item) => item.line === result.line);
       const missing = row
-        ? rowImages(row).filter((image) => failedUploads.has(image.toLowerCase()))
+        ? rowImages(row).filter((image) =>
+            failedUploads.has(image.toLowerCase())
+          )
         : [];
       if (missing.length > 0) {
-        result.messages = [...result.messages, ...missing.map((name) => `Photo “${name}”: ${failedUploads.get(name.toLowerCase())}`)];
+        result.messages = [
+          ...result.messages,
+          ...missing.map(
+            (name) =>
+              `Photo “${name}”: ${failedUploads.get(name.toLowerCase())}`
+          ),
+        ];
       }
     }
 
@@ -206,7 +245,10 @@ export function ProductImport({ categories, existingSkus }) {
         sku: item.row.sku ?? "",
         title: item.row.title ?? "",
         status: item.action === "skip" ? "skipped" : "failed",
-        messages: item.action === "skip" ? ["SKU already exists — updating was switched off."] : item.errors,
+        messages:
+          item.action === "skip"
+            ? ["SKU already exists — updating was switched off."]
+            : item.errors,
       }));
 
     setResults([...all, ...notSent].toSorted((a, b) => a.line - b.line));
@@ -223,32 +265,49 @@ export function ProductImport({ categories, existingSkus }) {
   }
 
   if (step === "importing") return <ImportProgress progress={progress} />;
-  if (step === "done") return <ImportResults results={results} onReset={reset} />;
+  if (step === "done")
+    return <ImportResults results={results} onReset={reset} />;
 
   return (
     <div className="flex flex-col gap-4">
       <section className="rounded-xl bg-surface p-4 shadow-card">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <h2 className="text-sm font-semibold text-foreground">Start from the sample file</h2>
+            <h2 className="text-sm font-semibold text-foreground">
+              Start from the sample file
+            </h2>
             <p className="mt-0.5 max-w-2xl text-xs text-muted">
               One row per product, with its SKU, name, category, price, stock,
-              photos and SEO title and description. The same columns as
-              Export, so you can export, edit and upload straight back.
+              photos and SEO title and description. The same columns as Export,
+              so you can export, edit and upload straight back.
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
             <button
               type="button"
-              onClick={() => download("product_import_sample.csv", toCsv(SAMPLE_ROWS, TEMPLATE_COLUMNS))}
+              onClick={() =>
+                download(
+                  "product_import_sample.csv",
+                  toCsv(SAMPLE_ROWS, TEMPLATE_COLUMNS)
+                )
+              }
               className={buttonClass("secondary")}
             >
-              <Download className="h-4 w-4" strokeWidth={2} aria-hidden="true" />
+              <Download
+                className="h-4 w-4"
+                strokeWidth={2}
+                aria-hidden="true"
+              />
               Sample CSV
             </button>
             <button
               type="button"
-              onClick={() => download("product_import_template.csv", toCsv([], TEMPLATE_COLUMNS))}
+              onClick={() =>
+                download(
+                  "product_import_template.csv",
+                  toCsv([], TEMPLATE_COLUMNS)
+                )
+              }
               className={buttonClass("plain")}
             >
               Blank template
@@ -257,9 +316,15 @@ export function ProductImport({ categories, existingSkus }) {
         </div>
       </section>
 
-      <div className="grid gap-4 lg:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         <DropZone
-          icon={<FileSpreadsheet className="h-6 w-6" strokeWidth={1.75} aria-hidden="true" />}
+          icon={
+            <FileSpreadsheet
+              className="h-6 w-6"
+              strokeWidth={1.75}
+              aria-hidden="true"
+            />
+          }
           title="Product CSV"
           hint="Saved as CSV (UTF-8) from Excel or Google Sheets."
           accept=".csv,text/csv"
@@ -268,7 +333,13 @@ export function ProductImport({ categories, existingSkus }) {
           error={fileError}
         />
         <DropZone
-          icon={<ImagePlus className="h-6 w-6" strokeWidth={1.75} aria-hidden="true" />}
+          icon={
+            <ImagePlus
+              className="h-6 w-6"
+              strokeWidth={1.75}
+              aria-hidden="true"
+            />
+          }
           title="Product photos (optional)"
           hint="Pick every photo the CSV names by file name — JPEG, PNG, WebP or AVIF, 2MB each. Cells with a URL need no file."
           accept={IMAGE_ACCEPT}
@@ -276,8 +347,11 @@ export function ProductImport({ categories, existingSkus }) {
           files={photos}
           onFiles={(files) =>
             setPhotos((current) => {
-              const byName = new Map(current.map((file) => [file.name.toLowerCase(), file]));
-              for (const file of files) byName.set(file.name.toLowerCase(), file);
+              const byName = new Map(
+                current.map((file) => [file.name.toLowerCase(), file])
+              );
+              for (const file of files)
+                byName.set(file.name.toLowerCase(), file);
               return [...byName.values()];
             })
           }
@@ -293,7 +367,9 @@ export function ProductImport({ categories, existingSkus }) {
             className="h-4 w-4 accent-[#303030]"
           />
           Update existing products with the same SKU
-          <span className="text-xs text-muted">(only the filled-in columns change)</span>
+          <span className="text-xs text-muted">
+            (only the filled-in columns change)
+          </span>
         </label>
         <label className="flex items-center gap-2 text-[0.8125rem] text-foreground">
           New products without a Status are
@@ -324,7 +400,9 @@ export function ProductImport({ categories, existingSkus }) {
 
 function Preview({ checked, counts, importable, onImport }) {
   const [onlyProblems, setOnlyProblems] = useState(false);
-  const visible = onlyProblems ? checked.filter((item) => item.action === "error") : checked;
+  const visible = onlyProblems
+    ? checked.filter((item) => item.action === "error")
+    : checked;
 
   return (
     <section className="overflow-hidden rounded-xl bg-surface shadow-card">
@@ -337,7 +415,9 @@ function Preview({ checked, counts, importable, onImport }) {
             {counts.update ? <span>{counts.update} to update</span> : null}
             {counts.skip ? <span>{counts.skip} skipped</span> : null}
             {counts.error ? (
-              <span className="font-semibold text-danger">{counts.error} with problems</span>
+              <span className="font-semibold text-danger">
+                {counts.error} with problems
+              </span>
             ) : null}
           </p>
         </div>
@@ -389,18 +469,36 @@ function Preview({ checked, counts, importable, onImport }) {
           <tbody className="divide-y divide-border">
             {visible.map(({ row, errors, action }) => (
               <tr key={row.line} className="align-top">
-                <td className="py-2 pl-4 pr-2 tabular-nums text-muted">{row.line}</td>
-                <td className="max-w-64 px-2 py-2">
-                  <span className="line-clamp-2 font-medium text-foreground">{row.title || "—"}</span>
+                <td className="py-2 pl-4 pr-2 tabular-nums text-muted">
+                  {row.line}
                 </td>
-                <td className="px-2 py-2 text-muted">{row.sku || "Generated"}</td>
-                <td className="px-2 py-2">{[row.parent_category, row.category].filter(Boolean).join(" › ") || "—"}</td>
-                <td className="px-2 py-2 text-right tabular-nums">{row.price ? `₹${row.price}` : "—"}</td>
-                <td className="px-2 py-2 text-right tabular-nums">{row.quantity || "—"}</td>
-                <td className="px-2 py-2 tabular-nums">{rowImages(row).length}</td>
+                <td className="max-w-64 px-2 py-2">
+                  <span className="line-clamp-2 font-medium text-foreground">
+                    {row.title || "—"}
+                  </span>
+                </td>
+                <td className="px-2 py-2 text-muted">
+                  {row.sku || "Generated"}
+                </td>
+                <td className="px-2 py-2">
+                  {[row.parent_category, row.category]
+                    .filter(Boolean)
+                    .join(" › ") || "—"}
+                </td>
+                <td className="px-2 py-2 text-right tabular-nums">
+                  {row.price
+                    ? `₹${row.price.replace(/^(₹|rs\.?)\s*/i, "")}`
+                    : "—"}
+                </td>
+                <td className="px-2 py-2 text-right tabular-nums">
+                  {row.quantity || "—"}
+                </td>
+                <td className="px-2 py-2 tabular-nums">
+                  {rowImages(row).length}
+                </td>
                 <td className="py-2 pl-2 pr-4">
                   {action === "error" ? (
-                    <div className="flex flex-col gap-1">
+                    <div className="flex flex-col items-start gap-1">
                       <Badge tone="critical">Problem</Badge>
                       <ul className="flex flex-col gap-0.5 text-xs text-badge-critical-ink">
                         {errors.map((message) => (
@@ -426,14 +524,18 @@ function Preview({ checked, counts, importable, onImport }) {
 }
 
 function ImportProgress({ progress }) {
-  const percent = progress.total > 0 ? Math.round((progress.done / progress.total) * 100) : 0;
+  const percent =
+    progress.total > 0 ? Math.round((progress.done / progress.total) * 100) : 0;
 
   return (
     <section className="flex flex-col items-center gap-3 rounded-xl bg-surface px-6 py-16 text-center shadow-card">
       <Loader2 className="h-6 w-6 animate-spin text-muted" aria-hidden="true" />
       <p className="text-sm font-semibold text-foreground">{progress.label}…</p>
       <div className="h-1.5 w-full max-w-sm overflow-hidden rounded-full bg-black/[0.06]">
-        <div className="h-full rounded-full bg-primary transition-all" style={{ width: `${percent}%` }} />
+        <div
+          className="h-full rounded-full bg-primary transition-all"
+          style={{ width: `${percent}%` }}
+        />
       </div>
       <p className="text-xs tabular-nums text-muted" aria-live="polite">
         {progress.done} of {progress.total} · keep this tab open
@@ -445,7 +547,9 @@ function ImportProgress({ progress }) {
 function ImportResults({ results, onReset }) {
   const created = results.filter((r) => r.status === "created").length;
   const updated = results.filter((r) => r.status === "updated").length;
-  const problems = results.filter((r) => r.status === "failed" || r.messages.length > 0);
+  const problems = results.filter(
+    (r) => r.status === "failed" || r.messages.length > 0
+  );
 
   function downloadReport() {
     download(
@@ -467,24 +571,38 @@ function ImportResults({ results, onReset }) {
           {problems.length === 0 ? (
             <CheckCircle2 className="h-6 w-6 text-success" aria-hidden="true" />
           ) : (
-            <TriangleAlert className="h-6 w-6 text-[#b28400]" aria-hidden="true" />
+            <TriangleAlert
+              className="h-6 w-6 text-[#b28400]"
+              aria-hidden="true"
+            />
           )}
           <div>
             <h2 className="text-sm font-semibold text-foreground">
               {created} created · {updated} updated
-              {problems.length > 0 ? ` · ${problems.length} need attention` : ""}
+              {problems.length > 0
+                ? ` · ${problems.length} need attention`
+                : ""}
             </h2>
             <p className="text-xs text-muted">
-              Stock for every imported product is set and logged in stock history.
+              Stock for every imported product is set and logged in stock
+              history.
             </p>
           </div>
         </div>
         <div className="flex flex-wrap gap-2">
-          <button type="button" onClick={downloadReport} className={buttonClass("secondary")}>
+          <button
+            type="button"
+            onClick={downloadReport}
+            className={buttonClass("secondary")}
+          >
             <Download className="h-4 w-4" strokeWidth={2} aria-hidden="true" />
             Download report
           </button>
-          <button type="button" onClick={onReset} className={buttonClass("secondary")}>
+          <button
+            type="button"
+            onClick={onReset}
+            className={buttonClass("secondary")}
+          >
             Import another file
           </button>
           <Link href="/products" className={buttonClass("primary")}>
@@ -495,14 +613,25 @@ function ImportResults({ results, onReset }) {
 
       {problems.length > 0 ? (
         <section className="overflow-hidden rounded-xl bg-surface shadow-card">
-          <h3 className="px-4 py-3 text-sm font-semibold text-foreground">Needs attention</h3>
+          <h3 className="px-4 py-3 text-sm font-semibold text-foreground">
+            Needs attention
+          </h3>
           <ul className="divide-y divide-border border-t border-border">
             {problems.map((result) => (
-              <li key={`${result.line}-${result.status}`} className="flex flex-wrap items-start gap-3 px-4 py-2.5 text-[0.8125rem]">
-                <span className="w-14 shrink-0 tabular-nums text-muted">Row {result.line}</span>
+              <li
+                key={`${result.line}-${result.status}`}
+                className="flex flex-wrap items-start gap-3 px-4 py-2.5 text-[0.8125rem]"
+              >
+                <span className="w-14 shrink-0 tabular-nums text-muted">
+                  Row {result.line}
+                </span>
                 <span className="min-w-0 flex-1">
-                  <span className="block font-medium text-foreground">{result.title || result.sku || "Untitled"}</span>
-                  <span className="block text-xs text-badge-critical-ink">{result.messages.join(" ")}</span>
+                  <span className="block font-medium text-foreground">
+                    {result.title || result.sku || "Untitled"}
+                  </span>
+                  <span className="block text-xs text-badge-critical-ink">
+                    {result.messages.join(" ")}
+                  </span>
                 </span>
                 <Badge tone={RESULT_BADGE[result.status]?.tone ?? "neutral"}>
                   {RESULT_BADGE[result.status]?.label ?? result.status}
@@ -516,7 +645,16 @@ function ImportResults({ results, onReset }) {
   );
 }
 
-function DropZone({ icon, title, hint, accept, multiple = false, files, onFiles, error }) {
+function DropZone({
+  icon,
+  title,
+  hint,
+  accept,
+  multiple = false,
+  files,
+  onFiles,
+  error,
+}) {
   const inputRef = useRef(null);
   const [over, setOver] = useState(false);
 
@@ -533,12 +671,20 @@ function DropZone({ icon, title, hint, accept, multiple = false, files, onFiles,
         onFiles([...event.dataTransfer.files]);
       }}
       className={`flex flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed bg-surface px-6 py-8 text-center transition ${
-        over ? "border-foreground/50 bg-surface-subdued" : error ? "border-danger/60" : "border-border-strong"
+        over
+          ? "border-foreground/50 bg-surface-subdued"
+          : error
+            ? "border-danger/60"
+            : "border-border-strong"
       }`}
     >
       <span className="text-muted">{icon}</span>
       <p className="text-sm font-semibold text-foreground">{title}</p>
-      <button type="button" onClick={() => inputRef.current?.click()} className={buttonClass("secondary", "sm")}>
+      <button
+        type="button"
+        onClick={() => inputRef.current?.click()}
+        className={buttonClass("secondary", "sm")}
+      >
         {multiple
           ? files.length > 0
             ? "Add more photos"
@@ -550,7 +696,9 @@ function DropZone({ icon, title, hint, accept, multiple = false, files, onFiles,
       <p className="max-w-sm text-xs text-muted">{hint}</p>
       {files.length > 0 ? (
         <p className="text-xs font-medium text-foreground">
-          {multiple ? `${files.length} ${files.length === 1 ? "photo" : "photos"} ready` : files[0].name}
+          {multiple
+            ? `${files.length} ${files.length === 1 ? "photo" : "photos"} ready`
+            : files[0].name}
         </p>
       ) : null}
       {error ? (
@@ -578,7 +726,10 @@ function ColumnGuide({ categories }) {
     <details className="group overflow-hidden rounded-xl bg-surface shadow-card">
       <summary className="flex cursor-pointer list-none items-center justify-between px-4 py-3 text-sm font-semibold text-foreground">
         Column guide
-        <span aria-hidden="true" className="text-muted transition group-open:rotate-180">
+        <span
+          aria-hidden="true"
+          className="text-muted transition group-open:rotate-180"
+        >
           ▾
         </span>
       </summary>
@@ -587,25 +738,40 @@ function ColumnGuide({ categories }) {
           <thead className="bg-surface-subdued text-xs text-muted">
             <tr>
               <th className="py-2 pl-4 pr-3 font-medium">Column</th>
-              <th className="px-3 py-2 font-medium">Needed for a new product</th>
+              <th className="px-3 py-2 font-medium">
+                Needed for a new product
+              </th>
               <th className="py-2 pl-3 pr-4 font-medium">What goes in it</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
             {IMPORT_COLUMNS.map((column) => (
               <tr key={column.key}>
-                <td className="whitespace-nowrap py-2 pl-4 pr-3 font-medium text-foreground">{column.header}</td>
-                <td className="px-3 py-2">{column.required ? <Badge tone="attention">Required</Badge> : <span className="text-muted">Optional</span>}</td>
-                <td className="py-2 pl-3 pr-4 text-muted">{column.note ?? ""}</td>
+                <td className="whitespace-nowrap py-2 pl-4 pr-3 font-medium text-foreground">
+                  {column.header}
+                </td>
+                <td className="px-3 py-2">
+                  {column.required ? (
+                    <Badge tone="attention">Required</Badge>
+                  ) : (
+                    <span className="text-muted">Optional</span>
+                  )}
+                </td>
+                <td className="py-2 pl-3 pr-4 text-muted">
+                  {column.note ?? ""}
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
       <div className="border-t border-border px-4 py-3">
-        <p className="text-xs font-semibold text-foreground">Categories you can use</p>
+        <p className="text-xs font-semibold text-foreground">
+          Categories you can use
+        </p>
         <p className="mt-1 text-xs leading-relaxed text-muted">
-          {categories.map((c) => `${c.parentName} › ${c.name}`).join(" · ") || "None set up yet."}
+          {categories.map((c) => `${c.parentName} › ${c.name}`).join(" · ") ||
+            "None set up yet."}
         </p>
       </div>
     </details>
@@ -613,7 +779,9 @@ function ColumnGuide({ categories }) {
 }
 
 function download(name, text) {
-  const url = URL.createObjectURL(new Blob([text], { type: "text/csv;charset=utf-8" }));
+  const url = URL.createObjectURL(
+    new Blob([text], { type: "text/csv;charset=utf-8" })
+  );
   const link = document.createElement("a");
   link.href = url;
   link.download = name;

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { History } from "lucide-react";
 import { PageHeader } from "@/components/layout/page-header";
 import { EmptyState } from "@/components/ui/empty-state";
 import {
@@ -14,7 +15,10 @@ export const metadata = { title: "Stock history | AKT Gifting Admin" };
 
 const REASON_OPTIONS = [
   { value: "", label: "All reasons" },
-  ...MOVEMENT_REASON_VALUES.map((value) => ({ value, label: capitalize(value) })),
+  ...MOVEMENT_REASON_VALUES.map((value) => ({
+    value,
+    label: capitalize(value),
+  })),
 ];
 
 /**
@@ -50,6 +54,8 @@ export default async function MovementsPage({ searchParams }) {
     <>
       <PageHeader
         title="Stock history"
+        backHref="/inventory"
+        icon={<History className="h-5 w-5" strokeWidth={2} />}
         subtitle="Every change to what is on the shelf, and who made it."
       >
         <Link
@@ -63,7 +69,10 @@ export default async function MovementsPage({ searchParams }) {
       <div className="mx-auto w-full max-w-[1400px] px-4 pb-10 sm:px-6">
         {/* A plain GET form: this page has no live filtering to keep
             responsive, so a client component would buy nothing. */}
-        <form action="/inventory/movements" className="flex flex-wrap items-end gap-3">
+        <form
+          action="/inventory/movements"
+          className="flex flex-wrap items-end gap-3"
+        >
           {/* Labelled by id, not wrapped: see components/ui/select.jsx. */}
           <div className="flex flex-col gap-1 text-xs text-muted">
             <label id="movements-sku-label" htmlFor="movements-sku">
@@ -109,7 +118,11 @@ export default async function MovementsPage({ searchParams }) {
         {items.length === 0 ? (
           <div className="mt-6">
             <EmptyState
-              title={sku || reason ? "No matching movements" : "Nothing has moved yet"}
+              title={
+                sku || reason
+                  ? "No matching movements"
+                  : "Nothing has moved yet"
+              }
               description={
                 sku || reason
                   ? "Try a different SKU or reason."
@@ -120,14 +133,29 @@ export default async function MovementsPage({ searchParams }) {
         ) : (
           <div className="mt-6 overflow-x-auto rounded-xl border border-border bg-surface">
             <table className="w-full min-w-3xl text-left text-sm">
-              <thead className="border-b border-border bg-background text-xs uppercase tracking-wide text-muted">
+              <thead className="border-y border-border bg-surface-subdued text-xs text-muted">
                 <tr>
-                  <th scope="col" className="px-4 py-3 font-semibold">When</th>
-                  <th scope="col" className="px-4 py-3 font-semibold">Product</th>
-                  <th scope="col" className="px-4 py-3 text-right font-semibold">Change</th>
-                  <th scope="col" className="px-4 py-3 font-semibold">Reason</th>
-                  <th scope="col" className="px-4 py-3 font-semibold">Note</th>
-                  <th scope="col" className="px-4 py-3 font-semibold">By</th>
+                  <th scope="col" className="px-4 py-3 font-semibold">
+                    When
+                  </th>
+                  <th scope="col" className="px-4 py-3 font-semibold">
+                    Product
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-4 py-3 text-right font-semibold"
+                  >
+                    Change
+                  </th>
+                  <th scope="col" className="px-4 py-3 font-semibold">
+                    Reason
+                  </th>
+                  <th scope="col" className="px-4 py-3 font-semibold">
+                    Note
+                  </th>
+                  <th scope="col" className="px-4 py-3 font-semibold">
+                    By
+                  </th>
                 </tr>
               </thead>
 
@@ -156,7 +184,8 @@ export default async function MovementsPage({ searchParams }) {
                     <td className="px-4 py-3">
                       <span
                         className={`inline-block rounded-full px-2.5 py-1 text-xs font-medium capitalize ${
-                          REASON_STYLES[row.reason] ?? "bg-gray-100 text-gray-600"
+                          REASON_STYLES[row.reason] ??
+                          "bg-badge-neutral text-muted"
                         }`}
                       >
                         {row.reason}
@@ -167,7 +196,7 @@ export default async function MovementsPage({ searchParams }) {
                       {row.orderRef ? (
                         <Link
                           href={`/orders/${row.orderRef}`}
-                          className="text-brand underline-offset-2 hover:underline"
+                          className="text-link hover:underline"
                         >
                           View order
                         </Link>

@@ -17,7 +17,12 @@ const TONES = {
  * "partial" a half-filled one — the same shapes Shopify uses for payment and
  * fulfilment.
  */
-export function Badge({ tone = "neutral", progress, children, className = "" }) {
+export function Badge({
+  tone = "neutral",
+  progress,
+  children,
+  className = "",
+}) {
   return (
     <span
       className={`inline-flex items-center gap-1 whitespace-nowrap rounded-lg px-2 py-0.5 text-xs font-medium ${
@@ -32,7 +37,11 @@ export function Badge({ tone = "neutral", progress, children, className = "" }) 
 
 function ProgressIcon({ progress }) {
   return (
-    <svg viewBox="0 0 10 10" className="h-2.5 w-2.5 shrink-0" aria-hidden="true">
+    <svg
+      viewBox="0 0 10 10"
+      className="h-2.5 w-2.5 shrink-0"
+      aria-hidden="true"
+    >
       <circle
         cx="5"
         cy="5"

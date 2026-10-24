@@ -139,13 +139,17 @@ export async function getAdminProducts({
   const currentPage = normalizePage(page);
   const madeToOrder = fulfillment === FULFILLMENT.MADE_TO_ORDER;
   // Made to order has no stock, so there is nothing for the toggle to filter.
-  const stockFilter = madeToOrder ? STOCK_FILTER.ALL : normalizeStockFilter(stock);
+  const stockFilter = madeToOrder
+    ? STOCK_FILTER.ALL
+    : normalizeStockFilter(stock);
 
   // Products and Made to Order are two separate lists — never one with a
   // filter on it — so a product only ever turns up on the screen it belongs to.
   const match = {
     isDeleted: false,
-    ...(madeToOrder ? { fulfillment: FULFILLMENT.MADE_TO_ORDER } : IN_STOCK_FILTER),
+    ...(madeToOrder
+      ? { fulfillment: FULFILLMENT.MADE_TO_ORDER }
+      : IN_STOCK_FILTER),
   };
 
   const term = String(q).trim();
@@ -175,7 +179,9 @@ export async function getAdminProducts({
   const [result] = await Product.aggregate([
     { $match: match },
     ...JOIN_STAGES,
-    ...(Object.keys(postJoinMatch).length > 0 ? [{ $match: postJoinMatch }] : []),
+    ...(Object.keys(postJoinMatch).length > 0
+      ? [{ $match: postJoinMatch }]
+      : []),
     { $sort: LIST_SORT },
     {
       $facet: {

@@ -13,10 +13,7 @@ import {
   PRODUCT_STATUS,
   TAX_CLASS_VALUES,
 } from "@/constants/enums";
-import {
-  PRODUCT_COLOURS,
-  PRODUCT_TYPES,
-} from "@/constants/product-vocabulary";
+import { PRODUCT_COLOURS, PRODUCT_TYPES } from "@/constants/product-vocabulary";
 import { useDrawerClose } from "@/features/catalog/hooks/use-drawer-close";
 import { saveProduct } from "../actions/save-product";
 import { DetailRowsField } from "./detail-rows-field";
@@ -244,7 +241,10 @@ export function ProductForm({
         <Group title="Inventory">
           {product.id ? (
             <p className="text-xs text-muted">
-              SKU <span className="font-semibold text-foreground">{product.sku || "—"}</span>
+              SKU{" "}
+              <span className="font-semibold text-foreground">
+                {product.sku || "—"}
+              </span>
             </p>
           ) : (
             <TextField
@@ -261,8 +261,8 @@ export function ProductForm({
 
           {madeToOrder ? (
             <p className="text-xs leading-relaxed text-muted">
-              Made to order — woven once a customer commits to a quantity, so
-              no stock is counted and it never appears on the Inventory screen.
+              Made to order — woven once a customer commits to a quantity, so no
+              stock is counted and it never appears on the Inventory screen.
             </p>
           ) : (
             <Checkbox
@@ -281,7 +281,11 @@ export function ProductForm({
                     applies the difference — a sale landing while this is open
                     is not overwritten. */}
                 {product.id ? (
-                  <input type="hidden" name="stockOriginal" value={product.onHand ?? 0} />
+                  <input
+                    type="hidden"
+                    name="stockOriginal"
+                    value={product.onHand ?? 0}
+                  />
                 ) : null}
                 <TextField
                   id="product-stock"
@@ -563,7 +567,10 @@ function Section({ title, children }) {
     <details className="group rounded-xl border border-border">
       <summary className="flex cursor-pointer list-none items-center justify-between px-4 py-3 text-[0.8125rem] font-semibold text-foreground transition hover:bg-surface-subdued">
         {title}
-        <span aria-hidden="true" className="text-muted transition group-open:rotate-180">
+        <span
+          aria-hidden="true"
+          className="text-muted transition group-open:rotate-180"
+        >
           ▾
         </span>
       </summary>
@@ -578,7 +585,9 @@ function Section({ title, children }) {
 function Group({ title, children }) {
   return (
     <section className="flex flex-col gap-4 rounded-xl border border-border px-4 py-4">
-      <h3 className="text-[0.8125rem] font-semibold text-foreground">{title}</h3>
+      <h3 className="text-[0.8125rem] font-semibold text-foreground">
+        {title}
+      </h3>
       {children}
     </section>
   );
@@ -589,7 +598,14 @@ function Group({ title, children }) {
  * fields that depend on it. Uncontrolled otherwise, so the leaf options keep
  * posting their own value without a state variable each.
  */
-function Checkbox({ name, label, checked, onChange, defaultChecked, disabled }) {
+function Checkbox({
+  name,
+  label,
+  checked,
+  onChange,
+  defaultChecked,
+  disabled,
+}) {
   return (
     <label className="flex items-center gap-2.5 text-[0.8125rem] text-foreground">
       <input

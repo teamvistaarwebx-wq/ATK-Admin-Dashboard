@@ -26,7 +26,8 @@ export async function uploadProductImage(file) {
   });
 
   const payload = await signed.json().catch(() => ({}));
-  if (!signed.ok) throw new Error(payload.error ?? "Could not start the upload");
+  if (!signed.ok)
+    throw new Error(payload.error ?? "Could not start the upload");
 
   const { uploadUrl, publicUrl } = payload.data;
 

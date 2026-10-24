@@ -27,7 +27,11 @@ const ICON = "h-4 w-4";
  * show while their parent section is open, so the list stays short.
  */
 const MAIN_NAV = [
-  { href: "/", label: "Home", icon: <House className={ICON} strokeWidth={2} /> },
+  {
+    href: "/",
+    label: "Home",
+    icon: <House className={ICON} strokeWidth={2} />,
+  },
   {
     href: "/orders",
     label: "Orders",

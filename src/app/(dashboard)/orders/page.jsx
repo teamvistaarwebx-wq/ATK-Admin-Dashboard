@@ -6,8 +6,15 @@ import { buttonClass } from "@/components/ui/button";
 import { chipClass } from "@/components/ui/chip";
 import { DateRangePicker } from "@/components/ui/date-range-picker";
 import { Skeleton, TableSkeleton } from "@/components/ui/skeleton";
-import { OrdersSection, OrdersStats, Stat } from "@/features/orders/components/orders-section";
-import { getOrderRangeStats, getOrders } from "@/features/orders/queries/get-orders";
+import {
+  OrdersSection,
+  OrdersStats,
+  Stat,
+} from "@/features/orders/components/orders-section";
+import {
+  getOrderRangeStats,
+  getOrders,
+} from "@/features/orders/queries/get-orders";
 import { ORDER_VIEWS } from "@/features/orders/lib/order-status";
 import { buildOrdersHref } from "@/features/orders/lib/orders-url";
 import { requireAdmin } from "@/lib/auth/dal";
@@ -54,7 +61,10 @@ export default async function OrdersPage({ searchParams }) {
 
   return (
     <>
-      <PageHeader title="Orders" icon={<Inbox className="h-5 w-5" strokeWidth={2} />}>
+      <PageHeader
+        title="Orders"
+        icon={<Inbox className="h-5 w-5" strokeWidth={2} />}
+      >
         {/* A plain link: the browser handles the download, no JS needed. */}
         <a href={exportHref} className={buttonClass("secondary")} download>
           <Download className="h-4 w-4" strokeWidth={2} aria-hidden="true" />
@@ -63,7 +73,10 @@ export default async function OrdersPage({ searchParams }) {
       </PageHeader>
 
       <PageBody className="flex flex-col gap-4">
-        <section className="flex items-stretch overflow-x-auto rounded-xl bg-surface shadow-card">
+        {/* Only the figures scroll sideways on a narrow screen. The picker
+            stays outside that scroller, which would otherwise clip its
+            popover. */}
+        <section className="relative z-10 flex items-stretch rounded-xl bg-surface shadow-card">
           <div className="flex shrink-0 items-center px-3 py-3">
             <DateRangePicker
               range={{
@@ -76,14 +89,19 @@ export default async function OrdersPage({ searchParams }) {
               allowAllTime
             />
           </div>
-          <Suspense fallback={<StatsSkeleton />}>
-            <OrdersStats statsPromise={statsPromise} />
-          </Suspense>
+          <div className="flex min-w-0 flex-1 items-stretch overflow-x-auto">
+            <Suspense fallback={<StatsSkeleton />}>
+              <OrdersStats statsPromise={statsPromise} />
+            </Suspense>
+          </div>
         </section>
 
         <section className="overflow-hidden rounded-xl bg-surface shadow-card">
           <div className="flex flex-wrap items-center justify-between gap-2 px-2 py-2">
-            <nav aria-label="Order views" className="flex flex-wrap items-center gap-1">
+            <nav
+              aria-label="Order views"
+              className="flex flex-wrap items-center gap-1"
+            >
               {ORDER_VIEWS.map((item) => (
                 <Link
                   key={item.key || "all"}
@@ -142,11 +160,20 @@ export default async function OrdersPage({ searchParams }) {
 function StatsSkeleton() {
   return (
     <>
-      {["Orders", "Items ordered", "Sales", "To fulfil", "Orders fulfilled", "Orders delivered"].map(
-        (label) => (
-          <Stat key={label} label={label} value={<Skeleton className="inline-block h-4 w-10" />} />
-        )
-      )}
+      {[
+        "Orders",
+        "Items ordered",
+        "Sales",
+        "To fulfil",
+        "Orders fulfilled",
+        "Orders delivered",
+      ].map((label) => (
+        <Stat
+          key={label}
+          label={label}
+          value={<Skeleton className="inline-block h-4 w-10" />}
+        />
+      ))}
     </>
   );
 }

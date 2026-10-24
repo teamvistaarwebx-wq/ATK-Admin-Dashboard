@@ -1,4 +1,8 @@
-import { PageSkeleton, Skeleton, TableSkeleton } from "@/components/ui/skeleton";
+import {
+  PageSkeleton,
+  Skeleton,
+  TableSkeleton,
+} from "@/components/ui/skeleton";
 
 /** Mirrors the orders page: the figures strip, then the table card. */
 export default function OrdersLoading() {

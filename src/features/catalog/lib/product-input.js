@@ -51,7 +51,9 @@ const SKU_PATTERN = /^[A-Z0-9][A-Z0-9/_.-]{1,47}$/;
 
 /** " aki/sar/1569 " → "AKI/SAR/1569", or "" when blank. */
 export function normaliseSku(value) {
-  return String(value ?? "").trim().toUpperCase();
+  return String(value ?? "")
+    .trim()
+    .toUpperCase();
 }
 
 export function isValidSku(value) {
@@ -265,7 +267,8 @@ export function parseProductForm(formData) {
   const stock = toNumber(formData.get("stockQuantity"));
   if (trackInventory && stock != null) {
     if (!Number.isInteger(stock)) errors.stockQuantity = "Use a whole number.";
-    else if (stock > MAX_STOCK) errors.stockQuantity = "That looks like a typo.";
+    else if (stock > MAX_STOCK)
+      errors.stockQuantity = "That looks like a typo.";
   }
   const stockOriginal = toNumber(formData.get("stockOriginal"));
 

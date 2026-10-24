@@ -1,4 +1,6 @@
 import { Suspense } from "react";
+import { MessageSquare } from "lucide-react";
+import { buttonClass } from "@/components/ui/button";
 import { PageHeader } from "@/components/layout/page-header";
 import { Skeleton, TableSkeleton } from "@/components/ui/skeleton";
 import {
@@ -19,7 +21,10 @@ export const metadata = { title: "Inquiries | AKT Gifting Admin" };
 
 const STATUS_OPTIONS = [
   { value: "", label: "All" },
-  ...INQUIRY_STATUS_VALUES.map((value) => ({ value, label: capitalize(value) })),
+  ...INQUIRY_STATUS_VALUES.map((value) => ({
+    value,
+    label: capitalize(value),
+  })),
 ];
 
 const SOURCE_OPTIONS = [
@@ -80,6 +85,7 @@ export default async function InquiriesPage({ searchParams }) {
     <>
       <PageHeader
         title="Inquiries"
+        icon={<MessageSquare className="h-5 w-5" strokeWidth={2} />}
         subtitle="Gift-box and made-to-order enquiries, and where each one stands."
       >
         <Suspense fallback={<Skeleton className="h-4 w-24" />}>
@@ -88,57 +94,53 @@ export default async function InquiriesPage({ searchParams }) {
       </PageHeader>
 
       <div className="mx-auto w-full max-w-[1400px] px-4 pb-10 sm:px-6">
-        <form className="flex flex-wrap items-end gap-3" action="/inquiries">
-          <label className="flex flex-col gap-1 text-xs text-muted">
-            Search
-            <input
-              type="search"
-              name="q"
-              defaultValue={q}
-              placeholder="Reference, company, contact, phone or email"
-              className="w-80 max-w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground outline-none transition focus:border-brand"
-            />
-          </label>
-
-          {/* Labelled by id, not wrapped: see components/ui/select.jsx. */}
-          <FilterSelect
-            id="inquiries-status"
-            name="status"
-            label="Status"
-            options={STATUS_OPTIONS}
-            defaultValue={status}
-          />
-
-          <FilterSelect
-            id="inquiries-source"
-            name="source"
-            label="Type"
-            options={SOURCE_OPTIONS}
-            defaultValue={source}
-          />
-
-          <button
-            type="submit"
-            className="h-8 rounded-lg bg-primary px-3 text-[0.8125rem] font-semibold shadow-primary hover:bg-primary-hover text-white transition"
+        <section className="overflow-hidden rounded-xl bg-surface shadow-card">
+          <form
+            className="flex flex-wrap items-end gap-3 px-3 py-3"
+            action="/inquiries"
           >
-            Filter
-          </button>
-        </form>
+            <label className="flex flex-col gap-1 text-xs text-muted">
+              Search
+              <input
+                type="search"
+                name="q"
+                defaultValue={q}
+                placeholder="Reference, company, contact, phone or email"
+                className="h-8 w-80 max-w-full rounded-lg border border-border-strong bg-surface px-3 text-[0.8125rem] text-foreground outline-none transition placeholder:text-subtle focus:border-foreground/50 focus:ring-2 focus:ring-black/5"
+              />
+            </label>
 
-        <Suspense
-          fallback={
-            <div className="mt-6">
-              <TableSkeleton rows={8} columns={6} />
-            </div>
-          }
-        >
-          <InquiriesSection
-            inquiriesPromise={inquiriesPromise}
-            q={q}
-            status={status}
-            source={source}
-          />
-        </Suspense>
+            {/* Labelled by id, not wrapped: see components/ui/select.jsx. */}
+            <FilterSelect
+              id="inquiries-status"
+              name="status"
+              label="Status"
+              options={STATUS_OPTIONS}
+              defaultValue={status}
+            />
+
+            <FilterSelect
+              id="inquiries-source"
+              name="source"
+              label="Type"
+              options={SOURCE_OPTIONS}
+              defaultValue={source}
+            />
+
+            <button type="submit" className={buttonClass("secondary")}>
+              Filter
+            </button>
+          </form>
+
+          <Suspense fallback={<TableSkeleton rows={8} columns={6} />}>
+            <InquiriesSection
+              inquiriesPromise={inquiriesPromise}
+              q={q}
+              status={status}
+              source={source}
+            />
+          </Suspense>
+        </section>
       </div>
     </>
   );

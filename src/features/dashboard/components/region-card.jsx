@@ -36,11 +36,21 @@ export async function RegionCard({ range }) {
           <table className="w-full min-w-[34rem] text-left text-[0.8125rem]">
             <thead className="border-y border-border bg-surface-subdued text-xs text-muted">
               <tr>
-                <th scope="col" className="px-4 py-2 font-medium">State</th>
-                <th scope="col" className="px-3 py-2 text-right font-medium">Sessions</th>
-                <th scope="col" className="px-3 py-2 text-right font-medium">Orders</th>
-                <th scope="col" className="px-3 py-2 text-right font-medium">Sales</th>
-                <th scope="col" className="px-4 py-2 text-right font-medium">Inquiries</th>
+                <th scope="col" className="px-4 py-2 font-medium">
+                  State
+                </th>
+                <th scope="col" className="px-3 py-2 text-right font-medium">
+                  Sessions
+                </th>
+                <th scope="col" className="px-3 py-2 text-right font-medium">
+                  Orders
+                </th>
+                <th scope="col" className="px-3 py-2 text-right font-medium">
+                  Sales
+                </th>
+                <th scope="col" className="px-4 py-2 text-right font-medium">
+                  Inquiries
+                </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
@@ -55,7 +65,9 @@ export async function RegionCard({ range }) {
                     {rows.length - VISIBLE_ROWS} more{" "}
                     {rows.length - VISIBLE_ROWS === 1 ? "state" : "states"} ·{" "}
                     {formatCount(
-                      rows.slice(VISIBLE_ROWS).reduce((s, r) => s + r.sessions, 0)
+                      rows
+                        .slice(VISIBLE_ROWS)
+                        .reduce((s, r) => s + r.sessions, 0)
                     )}{" "}
                     sessions,{" "}
                     {formatCount(
@@ -69,10 +81,18 @@ export async function RegionCard({ range }) {
             <tfoot className="border-t border-border bg-surface-subdued text-xs font-semibold text-foreground">
               <tr>
                 <td className="px-4 py-2">Total</td>
-                <td className="px-3 py-2 text-right tabular-nums">{formatCount(totals.sessions)}</td>
-                <td className="px-3 py-2 text-right tabular-nums">{formatCount(totals.orders)}</td>
-                <td className="px-3 py-2 text-right tabular-nums">{formatCompactPrice(totals.revenue)}</td>
-                <td className="px-4 py-2 text-right tabular-nums">{formatCount(totals.inquiries)}</td>
+                <td className="px-3 py-2 text-right tabular-nums">
+                  {formatCount(totals.sessions)}
+                </td>
+                <td className="px-3 py-2 text-right tabular-nums">
+                  {formatCount(totals.orders)}
+                </td>
+                <td className="px-3 py-2 text-right tabular-nums">
+                  {formatCompactPrice(totals.revenue)}
+                </td>
+                <td className="px-4 py-2 text-right tabular-nums">
+                  {formatCount(totals.inquiries)}
+                </td>
               </tr>
             </tfoot>
           </table>
@@ -86,17 +106,30 @@ function RegionRow({ row, share }) {
   return (
     <tr className="transition hover:bg-surface-subdued">
       <td className="px-4 py-2">
-        <span className="block truncate font-medium text-foreground">{row.state}</span>
-        <span className="mt-1 block h-1 w-full max-w-40 rounded-full bg-black/[0.06]" aria-hidden="true">
+        <span className="block truncate font-medium text-foreground">
+          {row.state}
+        </span>
+        <span
+          className="mt-1 block h-1 w-full max-w-40 rounded-full bg-black/[0.06]"
+          aria-hidden="true"
+        >
           <span
             className="block h-1 rounded-full bg-[#7e0917]"
-            style={{ width: `${Math.max(share > 0 ? 3 : 0, Math.round(share * 100))}%` }}
+            style={{
+              width: `${Math.max(share > 0 ? 3 : 0, Math.round(share * 100))}%`,
+            }}
           />
         </span>
       </td>
-      <td className="px-3 py-2 text-right tabular-nums text-foreground">{formatCount(row.sessions)}</td>
-      <td className="px-3 py-2 text-right tabular-nums text-foreground">{formatCount(row.orders)}</td>
-      <td className="px-3 py-2 text-right tabular-nums text-foreground">{formatCompactPrice(row.revenue)}</td>
+      <td className="px-3 py-2 text-right tabular-nums text-foreground">
+        {formatCount(row.sessions)}
+      </td>
+      <td className="px-3 py-2 text-right tabular-nums text-foreground">
+        {formatCount(row.orders)}
+      </td>
+      <td className="px-3 py-2 text-right tabular-nums text-foreground">
+        {formatCompactPrice(row.revenue)}
+      </td>
       <td className="px-4 py-2 text-right tabular-nums text-foreground">
         {formatCount(row.inquiries)}
       </td>

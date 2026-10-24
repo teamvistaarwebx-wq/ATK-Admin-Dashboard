@@ -20,13 +20,14 @@ export async function GiftingRequests() {
       }
     >
       {items.length === 0 ? (
-        <p className="px-4 pb-5 pt-3 text-sm text-muted">
-          No open enquiries.
-        </p>
+        <p className="px-4 pb-5 pt-3 text-sm text-muted">No open enquiries.</p>
       ) : (
         <ul className="flex flex-col gap-3.5 px-4 pb-4 pt-4">
           {items.map((item) => (
-            <li key={item.id} className="flex items-start justify-between gap-4">
+            <li
+              key={item.id}
+              className="flex items-start justify-between gap-4"
+            >
               <div className="min-w-0">
                 <p className="truncate text-[0.8125rem] font-semibold text-foreground">
                   {item.contactName}

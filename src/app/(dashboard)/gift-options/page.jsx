@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Gift } from "lucide-react";
 import { PageHeader } from "@/components/layout/page-header";
 import { EmptyState } from "@/components/ui/empty-state";
 import { getGiftOptionsForAdmin } from "@/features/gift-options/queries/get-gift-options-admin";
@@ -24,7 +25,8 @@ export default async function GiftOptionsPage() {
   return (
     <>
       <PageHeader
-        title="Gift Options"
+        title="Gift options"
+        icon={<Gift className="h-5 w-5" strokeWidth={2} />}
         subtitle="Packaging and card designs shoppers choose on the cart."
       />
 
@@ -55,9 +57,7 @@ function OptionSection({ title, type, newLabel, options, emptyWarning }) {
   return (
     <section className="flex flex-col gap-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-muted">
-          {title}
-        </h2>
+        <h2 className="text-sm font-semibold text-foreground">{title}</h2>
 
         <Link
           href={`/gift-options/new?type=${type}`}
@@ -122,7 +122,7 @@ function OptionRow({ option }) {
         <div className="flex flex-wrap items-center gap-2">
           <Link
             href={`/gift-options/${option.id}/edit`}
-            className="font-medium text-brand underline-offset-2 hover:underline"
+            className="font-medium text-link hover:underline"
           >
             {option.name}
           </Link>
@@ -134,7 +134,7 @@ function OptionRow({ option }) {
           ) : null}
 
           {option.isActive ? null : (
-            <span className="rounded-full bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-500">
+            <span className="rounded-full bg-badge-neutral px-2.5 py-1 text-xs font-medium text-muted">
               Inactive
             </span>
           )}

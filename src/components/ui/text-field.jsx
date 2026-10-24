@@ -10,7 +10,8 @@
  */
 const BASE =
   "h-9 rounded-lg border bg-surface px-3 text-sm text-foreground outline-none transition placeholder:text-muted/70 focus:ring-2 disabled:bg-background";
-const NEUTRAL = "border-border-strong focus:border-foreground/50 focus:ring-black/5";
+const NEUTRAL =
+  "border-border-strong focus:border-foreground/50 focus:ring-black/5";
 const INVALID = "border-danger focus:border-danger focus:ring-danger/10";
 
 export function TextField({
@@ -26,10 +27,7 @@ export function TextField({
 
   return (
     <div className={`flex flex-col gap-1.5 ${className}`}>
-      <label
-        htmlFor={id}
-        className="text-xs font-semibold text-foreground"
-      >
+      <label htmlFor={id} className="text-xs font-semibold text-foreground">
         {label}
         {required ? (
           <span className="text-danger" aria-hidden="true">

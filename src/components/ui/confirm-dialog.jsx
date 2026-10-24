@@ -47,10 +47,7 @@ export function ConfirmDialog({
       className="m-auto w-[min(28rem,calc(100vw-2rem))] rounded-xl border border-border bg-surface p-0 text-foreground shadow-xl backdrop:bg-black/40"
     >
       <div className="p-6">
-        <h2
-          id={titleId}
-          className="text-base font-semibold text-foreground"
-        >
+        <h2 id={titleId} className="text-base font-semibold text-foreground">
           {title}
         </h2>
 
@@ -62,10 +59,7 @@ export function ConfirmDialog({
 
         {/* Kept mounted so a screen reader announces a failure that arrives
             after the dialog is already open. */}
-        <p
-          aria-live="polite"
-          className="mt-3 min-h-4 text-xs text-danger"
-        >
+        <p aria-live="polite" className="mt-3 min-h-4 text-xs text-danger">
           {error}
         </p>
 

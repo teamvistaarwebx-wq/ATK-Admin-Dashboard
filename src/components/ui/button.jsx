@@ -36,5 +36,7 @@ export function Button({
   className = "",
   ...props
 }) {
-  return <button className={buttonClass(variant, size, className)} {...props} />;
+  return (
+    <button className={buttonClass(variant, size, className)} {...props} />
+  );
 }

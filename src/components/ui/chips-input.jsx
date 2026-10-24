@@ -54,7 +54,10 @@ export function ChipsInput({
 
   return (
     <div className="flex flex-col gap-1.5">
-      <label htmlFor={inputId} className="text-xs font-semibold text-foreground">
+      <label
+        htmlFor={inputId}
+        className="text-xs font-semibold text-foreground"
+      >
         {label}
       </label>
 
@@ -70,7 +73,9 @@ export function ChipsInput({
             <button
               type="button"
               disabled={disabled}
-              onClick={() => setItems((current) => current.filter((v) => v !== item))}
+              onClick={() =>
+                setItems((current) => current.filter((v) => v !== item))
+              }
               aria-label={`Remove ${item}`}
               className="transition hover:opacity-70"
             >

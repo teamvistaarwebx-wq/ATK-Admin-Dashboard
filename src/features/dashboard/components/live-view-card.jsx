@@ -23,7 +23,9 @@ export function LiveViewCard({ initial }) {
 
     async function refresh() {
       try {
-        const response = await fetch("/api/analytics/live", { cache: "no-store" });
+        const response = await fetch("/api/analytics/live", {
+          cache: "no-store",
+        });
         if (!response.ok) throw new Error(String(response.status));
         const payload = await response.json();
         if (!cancelled) {
@@ -77,8 +79,14 @@ export function LiveViewCard({ initial }) {
 
       <dl className="grid grid-cols-3 gap-px px-4 pt-3">
         <LiveFigure label="Visitors now" value={formatCount(live.visitors)} />
-        <LiveFigure label="Active carts" value={formatCount(live.activeCarts)} />
-        <LiveFigure label="Checking out" value={formatCount(live.checkingOut)} />
+        <LiveFigure
+          label="Active carts"
+          value={formatCount(live.activeCarts)}
+        />
+        <LiveFigure
+          label="Checking out"
+          value={formatCount(live.checkingOut)}
+        />
       </dl>
 
       <p className="px-4 pt-1 text-xs text-muted">
@@ -91,12 +99,18 @@ export function LiveViewCard({ initial }) {
         <LiveList
           title="Top locations"
           empty="No one on the store"
-          rows={live.places.map((row) => ({ label: row.label, value: row.visitors }))}
+          rows={live.places.map((row) => ({
+            label: row.label,
+            value: row.visitors,
+          }))}
         />
         <LiveList
           title="Pages being viewed"
           empty="—"
-          rows={live.pages.map((row) => ({ label: row.path, value: row.visitors }))}
+          rows={live.pages.map((row) => ({
+            label: row.path,
+            value: row.visitors,
+          }))}
         />
       </div>
     </section>
@@ -107,7 +121,9 @@ function LiveFigure({ label, value }) {
   return (
     <div className="flex flex-col-reverse">
       <dt className="text-xs text-muted">{label}</dt>
-      <dd className="text-2xl font-semibold tabular-nums text-foreground">{value}</dd>
+      <dd className="text-2xl font-semibold tabular-nums text-foreground">
+        {value}
+      </dd>
     </div>
   );
 }
@@ -121,9 +137,14 @@ function LiveList({ title, rows, empty }) {
       ) : (
         <ul className="mt-1.5 flex flex-col gap-1">
           {rows.map((row) => (
-            <li key={row.label} className="flex items-center justify-between gap-3 text-xs">
+            <li
+              key={row.label}
+              className="flex items-center justify-between gap-3 text-xs"
+            >
               <span className="truncate text-foreground">{row.label}</span>
-              <span className="shrink-0 tabular-nums text-muted">{row.value}</span>
+              <span className="shrink-0 tabular-nums text-muted">
+                {row.value}
+              </span>
             </li>
           ))}
         </ul>

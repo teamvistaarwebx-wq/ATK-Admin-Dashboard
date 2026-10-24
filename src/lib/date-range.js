@@ -147,7 +147,12 @@ export function presetDays(key, today) {
       return { from: startOfQuarter(today), to: today, unit: 3 };
     case "last_quarter": {
       const from = addMonths(startOfQuarter(today), -3);
-      return { from, to: addDays(addMonths(from, 3), -1), unit: 3, complete: true };
+      return {
+        from,
+        to: addDays(addMonths(from, 3), -1),
+        unit: 3,
+        complete: true,
+      };
     }
     case "this_year":
       return { from: `${today.slice(0, 4)}-01-01`, to: today, unit: 12 };
@@ -179,7 +184,9 @@ export function resolveDateRange(
     // Clamp rather than refuse an over-long range; the picker never offers
     // one, so this is a hand-edited URL.
     const start =
-      daysBetween(a, b) > MAX_RANGE_DAYS ? addDays(b, -(MAX_RANGE_DAYS - 1)) : a;
+      daysBetween(a, b) > MAX_RANGE_DAYS
+        ? addDays(b, -(MAX_RANGE_DAYS - 1))
+        : a;
     key = "custom";
     days = { from: start, to: b, unit: null };
   }
@@ -256,14 +263,19 @@ function comparisonFor({ from, to, unit, complete }, compareKey) {
     // shifted back a month is 30 Aug, which would drop the 31st.
     range = {
       from: shifted,
-      to: complete ? addDays(addMonths(shifted, unit), -1) : addMonths(to, -unit),
+      to: complete
+        ? addDays(addMonths(shifted, unit), -1)
+        : addMonths(to, -unit),
     };
   } else {
     const length = daysBetween(from, to);
     range = { from: addDays(from, -length), to: addDays(to, -length) };
   }
 
-  return { ...describe(range.from, range.to), label: formatRangeLabel(range.from, range.to) };
+  return {
+    ...describe(range.from, range.to),
+    label: formatRangeLabel(range.from, range.to),
+  };
 }
 
 /** One point per hour for a single day, per day up to a quarter, then weeks. */
@@ -338,7 +350,10 @@ export function buildBuckets({ from, to }, granularity) {
   }
 
   for (let key = startOfMonth(from); key <= to; key = addMonths(key, 1)) {
-    buckets.push({ key: key.slice(0, 7), label: MONTH_YEAR.format(keyToUtc(key)) });
+    buckets.push({
+      key: key.slice(0, 7),
+      label: MONTH_YEAR.format(keyToUtc(key)),
+    });
   }
   return buckets;
 }
@@ -370,7 +385,9 @@ export function formatRangeLabel(fromKey, toKey) {
   if (fromKey === toKey) return SHORT_DAY_YEAR.format(keyToUtc(fromKey));
 
   const sameYear = fromKey.slice(0, 4) === toKey.slice(0, 4);
-  const start = (sameYear ? SHORT_DAY : SHORT_DAY_YEAR).format(keyToUtc(fromKey));
+  const start = (sameYear ? SHORT_DAY : SHORT_DAY_YEAR).format(
+    keyToUtc(fromKey)
+  );
   return `${start} – ${SHORT_DAY_YEAR.format(keyToUtc(toKey))}`;
 }
 
@@ -378,7 +395,9 @@ export function formatRangeLabel(fromKey, toKey) {
 export function rangeToParams(range) {
   if (!range || range.key === ALL_TIME.key) return { range: ALL_TIME.key };
   const params =
-    range.key === "custom" ? { from: range.from, to: range.to } : { range: range.key };
+    range.key === "custom"
+      ? { from: range.from, to: range.to }
+      : { range: range.key };
   if (range.compare && range.compare !== "previous_period") {
     params.compare = range.compare;
   }

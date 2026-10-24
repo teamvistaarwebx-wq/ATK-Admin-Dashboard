@@ -58,3 +58,60 @@ export const ALL_INDIAN_STATES = [
   ...INDIAN_STATES,
   ...INDIAN_UNION_TERRITORIES,
 ];
+
+/**
+ * ISO 3166-2:IN subdivision codes → the names above. Vercel's geo headers
+ * send these, and the orders list shows them ("KOTA, RJ, IN") the way
+ * Shopify does. Where a state has had two codes (OD/OR, TG/TS, UK/UT, CG/CT)
+ * both are listed, the current one first.
+ */
+export const STATE_BY_CODE = {
+  AN: "Andaman and Nicobar Islands",
+  AP: "Andhra Pradesh",
+  AR: "Arunachal Pradesh",
+  AS: "Assam",
+  BR: "Bihar",
+  CH: "Chandigarh",
+  CG: "Chhattisgarh",
+  CT: "Chhattisgarh",
+  DH: "Dadra and Nagar Haveli and Daman and Diu",
+  DN: "Dadra and Nagar Haveli and Daman and Diu",
+  DD: "Dadra and Nagar Haveli and Daman and Diu",
+  DL: "Delhi",
+  GA: "Goa",
+  GJ: "Gujarat",
+  HP: "Himachal Pradesh",
+  HR: "Haryana",
+  JH: "Jharkhand",
+  JK: "Jammu and Kashmir",
+  KA: "Karnataka",
+  KL: "Kerala",
+  LA: "Ladakh",
+  LD: "Lakshadweep",
+  MH: "Maharashtra",
+  ML: "Meghalaya",
+  MN: "Manipur",
+  MP: "Madhya Pradesh",
+  MZ: "Mizoram",
+  NL: "Nagaland",
+  OD: "Odisha",
+  OR: "Odisha",
+  PB: "Punjab",
+  PY: "Puducherry",
+  RJ: "Rajasthan",
+  SK: "Sikkim",
+  TG: "Telangana",
+  TS: "Telangana",
+  TN: "Tamil Nadu",
+  TR: "Tripura",
+  UP: "Uttar Pradesh",
+  UK: "Uttarakhand",
+  UT: "Uttarakhand",
+  WB: "West Bengal",
+};
+
+/** Name → current code, for display. Codes listed later never overwrite. */
+export const CODE_BY_STATE = Object.entries(STATE_BY_CODE).reduce(
+  (codes, [code, name]) => (codes[name] ? codes : { ...codes, [name]: code }),
+  {}
+);

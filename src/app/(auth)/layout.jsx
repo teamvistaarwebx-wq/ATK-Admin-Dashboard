@@ -29,9 +29,7 @@ export default function AuthLayout({ children }) {
           </p>
         </div>
 
-        <p className="text-xs text-white/50">
-          Atulya Karigari · Admin
-        </p>
+        <p className="text-xs text-white/50">Atulya Karigari · Admin</p>
       </aside>
 
       <main className="flex items-center justify-center bg-surface px-6 py-14 sm:px-12">

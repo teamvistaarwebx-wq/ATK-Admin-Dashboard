@@ -31,7 +31,8 @@ export async function LowStock() {
           className="mx-4 mt-3 block rounded-lg bg-badge-critical px-3 py-2.5 transition hover:brightness-95"
         >
           <p className="text-xs font-semibold text-badge-critical-ink">
-            {oversoldCount} {oversoldCount === 1 ? "SKU is" : "SKUs are"} oversold
+            {oversoldCount} {oversoldCount === 1 ? "SKU is" : "SKUs are"}{" "}
+            oversold
           </p>
           <p className="text-[11px] text-badge-critical-ink/90">
             Paid for but not on the shelf — someone needs to call the customer.

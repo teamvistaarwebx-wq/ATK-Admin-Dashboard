@@ -22,7 +22,10 @@ export function popoverPosition(anchor) {
     left: rect.left,
     minWidth: rect.width,
     ...(upward
-      ? { bottom: window.innerHeight - rect.top + GAP, maxHeight: rect.top - GAP * 4 }
+      ? {
+          bottom: window.innerHeight - rect.top + GAP,
+          maxHeight: rect.top - GAP * 4,
+        }
       : { top: rect.bottom + GAP, maxHeight: below - GAP * 4 }),
   };
 }

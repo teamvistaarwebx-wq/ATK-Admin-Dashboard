@@ -48,7 +48,9 @@ export async function InventorySection({ inventoryPromise, q, view }) {
             totalPages={totalPages}
             total={total}
             noun="SKU"
-            buildHref={(target) => buildInventoryHref({ q, view, page: target })}
+            buildHref={(target) =>
+              buildInventoryHref({ q, view, page: target })
+            }
           />
         </div>
       ) : null}

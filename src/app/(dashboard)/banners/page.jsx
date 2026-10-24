@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Trash2 } from "lucide-react";
+import { Image as ImageIcon, Trash2 } from "lucide-react";
 import { PageHeader } from "@/components/layout/page-header";
 import { EmptyState } from "@/components/ui/empty-state";
 import { getBanners } from "@/features/banners/queries/get-banners";
@@ -28,6 +28,7 @@ export default async function BannersPage() {
     <>
       <PageHeader
         title="Banners"
+        icon={<ImageIcon className="h-5 w-5" strokeWidth={2} />}
         subtitle="The hero shown on the storefront home page."
       >
         <Link
@@ -58,7 +59,7 @@ export default async function BannersPage() {
                   <div className="flex flex-wrap items-center gap-2">
                     <Link
                       href={`/banners/${banner.id}/edit`}
-                      className="font-medium text-brand underline-offset-2 hover:underline"
+                      className="font-medium text-link hover:underline"
                     >
                       {banner.name}
                     </Link>
@@ -68,7 +69,7 @@ export default async function BannersPage() {
                         Live
                       </span>
                     ) : (
-                      <span className="rounded-full bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-500">
+                      <span className="rounded-full bg-badge-neutral px-2.5 py-1 text-xs font-medium text-muted">
                         Draft
                       </span>
                     )}
@@ -96,7 +97,11 @@ export default async function BannersPage() {
                   /* Already-rendered so lucide-react stays in the server
                      bundle — the same trick DeleteProductButton uses. */
                   deleteIcon={
-                    <Trash2 className="h-4 w-4" strokeWidth={2} aria-hidden="true" />
+                    <Trash2
+                      className="h-4 w-4"
+                      strokeWidth={2}
+                      aria-hidden="true"
+                    />
                   }
                 />
               </li>

@@ -24,7 +24,11 @@ const TARGET_RATIO = GIFT_OPTION_IMAGE.width / GIFT_OPTION_IMAGE.height;
  *
  * Only the URL is posted; the model stores nothing else.
  */
-export function GiftOptionImageField({ defaultValue = "", error = "", disabled = false }) {
+export function GiftOptionImageField({
+  defaultValue = "",
+  error = "",
+  disabled = false,
+}) {
   const [url, setUrl] = useState(defaultValue);
   const [size, setSize] = useState(null);
   const [uploading, setUploading] = useState(false);
@@ -124,12 +128,16 @@ export function GiftOptionImageField({ defaultValue = "", error = "", disabled =
             type="button"
             disabled={disabled || uploading}
             onClick={() => inputRef.current?.click()}
-            className="inline-flex items-center gap-2 rounded-lg border border-dashed border-border bg-background px-3 py-2 text-xs font-semibold text-muted transition hover:border-brand/50 hover:text-brand disabled:cursor-not-allowed disabled:opacity-60"
+            className="inline-flex items-center gap-2 rounded-lg border border-dashed border-border bg-background px-3 py-2 text-xs font-semibold text-muted transition hover:border-foreground/40 hover:text-foreground disabled:cursor-not-allowed disabled:opacity-60"
           >
             {uploading ? (
               <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
             ) : (
-              <ImagePlus className="h-4 w-4" strokeWidth={2} aria-hidden="true" />
+              <ImagePlus
+                className="h-4 w-4"
+                strokeWidth={2}
+                aria-hidden="true"
+              />
             )}
             {uploading ? "Uploading" : url ? "Replace" : "Upload"}
           </button>

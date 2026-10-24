@@ -95,7 +95,10 @@ export function OrderStatusControls({ orderId, allowed }) {
             >
               {isPending && pendingStatus === status ? (
                 <>
-                  <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+                  <Loader2
+                    className="h-4 w-4 animate-spin"
+                    aria-hidden="true"
+                  />
                   Saving
                 </>
               ) : (

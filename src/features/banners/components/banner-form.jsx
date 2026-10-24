@@ -128,7 +128,7 @@ export function BannerForm({ banner = EMPTY }) {
             name="openInNewTab"
             defaultChecked={banner.link?.openInNewTab}
             disabled={isPending}
-            className="h-4 w-4 accent-brand"
+            className="h-4 w-4 accent-[#303030]"
           />
           Open in a new tab
         </label>
@@ -140,7 +140,7 @@ export function BannerForm({ banner = EMPTY }) {
           name="isActive"
           defaultChecked={banner.isActive}
           disabled={isPending}
-          className="h-4 w-4 accent-brand"
+          className="h-4 w-4 accent-[#303030]"
         />
         Publish this banner
         <span className="text-xs text-muted">

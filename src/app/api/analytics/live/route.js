@@ -13,10 +13,13 @@ export const dynamic = "force-dynamic";
 
 export async function GET() {
   const session = await getSession();
-  if (!session) return Response.json({ error: "Not signed in" }, { status: 401 });
+  if (!session)
+    return Response.json({ error: "Not signed in" }, { status: 401 });
 
   try {
-    return ok(await getLiveView(), { headers: { "Cache-Control": "no-store" } });
+    return ok(await getLiveView(), {
+      headers: { "Cache-Control": "no-store" },
+    });
   } catch (error) {
     console.error("GET /api/analytics/live failed:", error);
     return serverError("Could not load the live view");

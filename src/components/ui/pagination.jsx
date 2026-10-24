@@ -19,8 +19,7 @@ export function Pagination({ page, totalPages, total, noun, buildHref }) {
       className="mt-4 flex flex-wrap items-center justify-between gap-3 text-xs"
     >
       <p className="text-muted">
-        Page {page} of {totalPages} · {total}{" "}
-        {total === 1 ? noun : `${noun}s`}
+        Page {page} of {totalPages} · {total} {total === 1 ? noun : `${noun}s`}
       </p>
 
       <div className="flex items-center gap-2">

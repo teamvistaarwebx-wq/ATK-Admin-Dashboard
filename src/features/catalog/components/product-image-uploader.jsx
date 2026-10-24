@@ -137,7 +137,11 @@ export function ProductImageUploader({
                 aria-label="Make this the featured photo"
                 className="absolute bottom-1 left-1 rounded-md bg-surface/90 p-1 text-muted opacity-0 transition group-hover:opacity-100 focus-visible:opacity-100 hover:text-foreground"
               >
-                <Star className="h-3.5 w-3.5" strokeWidth={2} aria-hidden="true" />
+                <Star
+                  className="h-3.5 w-3.5"
+                  strokeWidth={2}
+                  aria-hidden="true"
+                />
               </button>
             )}
 
@@ -165,7 +169,11 @@ export function ProductImageUploader({
             {isBusy ? (
               <Loader2 className="h-5 w-5 animate-spin" aria-hidden="true" />
             ) : (
-              <ImagePlus className="h-5 w-5" strokeWidth={2} aria-hidden="true" />
+              <ImagePlus
+                className="h-5 w-5"
+                strokeWidth={2}
+                aria-hidden="true"
+              />
             )}
             <span className="text-[0.625rem] font-semibold">
               {isBusy ? "Uploading" : "Add photo"}

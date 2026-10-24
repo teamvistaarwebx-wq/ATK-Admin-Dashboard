@@ -27,22 +27,31 @@ const GST_LABEL = { GST_5: "5", GST_12: "12", GST_18: "18", EXEMPT: "exempt" };
  */
 export async function GET() {
   const session = await getSession();
-  if (!session) return Response.json({ error: "Not signed in" }, { status: 401 });
+  if (!session)
+    return Response.json({ error: "Not signed in" }, { status: 401 });
 
   try {
     await connectDb();
 
     const [products, stock, subcategories, categories] = await Promise.all([
-      Product.find({ isDeleted: false, hasVariants: { $ne: true }, ...IN_STOCK_FILTER })
+      Product.find({
+        isDeleted: false,
+        hasVariants: { $ne: true },
+        ...IN_STOCK_FILTER,
+      })
         .sort({ createdAt: -1 })
         .lean(),
-      Inventory.aggregate([{ $group: { _id: "$productId", onHand: { $sum: "$onHand" } } }]),
+      Inventory.aggregate([
+        { $group: { _id: "$productId", onHand: { $sum: "$onHand" } } },
+      ]),
       Subcategory.find({}).select("name category").lean(),
       Category.find({}).select("name").lean(),
     ]);
 
     const onHand = new Map(stock.map((row) => [String(row._id), row.onHand]));
-    const categoryName = new Map(categories.map((c) => [String(c._id), c.name]));
+    const categoryName = new Map(
+      categories.map((c) => [String(c._id), c.name])
+    );
     const subcategory = new Map(
       subcategories.map((s) => [
         String(s._id),
@@ -51,7 +60,10 @@ export async function GET() {
     );
 
     const rows = products.map((product) => {
-      const sub = subcategory.get(String(product.subcategory)) ?? { name: "", parent: "" };
+      const sub = subcategory.get(String(product.subcategory)) ?? {
+        name: "",
+        parent: "",
+      };
       const images = (product.images ?? []).toSorted(
         (a, b) => (a.position ?? 0) - (b.position ?? 0)
       );
@@ -68,7 +80,10 @@ export async function GET() {
         price: toRupeeInput(product.price),
         compare_at_price: toRupeeInput(product.compareAtPrice),
         cost_price: toRupeeInput(product.costPrice),
-        quantity: product.trackInventory === false ? "" : String(onHand.get(String(product._id)) ?? 0),
+        quantity:
+          product.trackInventory === false
+            ? ""
+            : String(onHand.get(String(product._id)) ?? 0),
         low_stock_threshold: String(product.lowStockThreshold ?? 5),
         continue_selling: yesNo(product.allowBackorder),
         track_inventory: yesNo(product.trackInventory !== false),
@@ -84,7 +99,10 @@ export async function GET() {
         seo_title: product.seo?.metaTitle ?? "",
         seo_description: product.seo?.metaDescription ?? "",
         hsn_code: product.hsnCode ?? "",
-        gst_rate: product.taxable === false ? "exempt" : (GST_LABEL[product.taxClass] ?? "5"),
+        gst_rate:
+          product.taxable === false
+            ? "exempt"
+            : (GST_LABEL[product.taxClass] ?? "5"),
         weight_grams: product.weight == null ? "" : String(product.weight),
       };
     });

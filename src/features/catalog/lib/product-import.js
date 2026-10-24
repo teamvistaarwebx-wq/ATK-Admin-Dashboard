@@ -23,33 +23,105 @@ export const MAX_IMPORT_ROWS = 1000;
  * only changes the columns that have a value in them.
  */
 export const IMPORT_COLUMNS = [
-  { key: "sku", header: "SKU", note: "Your code, or blank to generate one. Matches existing products when updating." },
+  {
+    key: "sku",
+    header: "SKU",
+    note: "Your code, or blank to generate one. Matches existing products when updating.",
+  },
   { key: "title", header: "Title", required: true, note: "Product name." },
-  { key: "category", header: "Category", required: true, note: "A category name exactly as in the admin, e.g. Saree." },
-  { key: "parent_category", header: "Parent category", note: "Only when the name exists twice, e.g. Women or Men." },
+  {
+    key: "category",
+    header: "Category",
+    required: true,
+    note: "A category name exactly as in the admin, e.g. Saree.",
+  },
+  {
+    key: "parent_category",
+    header: "Parent category",
+    note: "Only when the name exists twice, e.g. Women or Men.",
+  },
   { key: "type", header: "Type", note: "Fabric or type, e.g. Banarasi Silk." },
-  { key: "colour", header: "Colour", note: "Becomes the first specification row." },
-  { key: "status", header: "Status", note: "active, draft or archived. Blank uses the import setting." },
-  { key: "price", header: "Price", required: true, note: "Rupees, e.g. 14559 or 14559.50." },
-  { key: "compare_at_price", header: "Compare-at price", note: "MRP, shown struck through. Must be above Price." },
+  {
+    key: "colour",
+    header: "Colour",
+    note: "Becomes the first specification row.",
+  },
+  {
+    key: "status",
+    header: "Status",
+    note: "active, draft or archived. Blank uses the import setting.",
+  },
+  {
+    key: "price",
+    header: "Price",
+    required: true,
+    note: "Rupees, e.g. 14559 or 14559.50.",
+  },
+  {
+    key: "compare_at_price",
+    header: "Compare-at price",
+    note: "MRP, shown struck through. Must be above Price.",
+  },
   { key: "cost_price", header: "Cost price", note: "Admin only." },
-  { key: "quantity", header: "Quantity", note: "Units on hand. Sets the stock." },
+  {
+    key: "quantity",
+    header: "Quantity",
+    note: "Units on hand. Sets the stock.",
+  },
   { key: "low_stock_threshold", header: "Low stock alert", note: "Default 5." },
-  { key: "continue_selling", header: "Continue selling when out of stock", note: "yes or no." },
-  { key: "track_inventory", header: "Track inventory", note: "yes (default) or no." },
-  { key: "description", header: "Description", required: true, note: "Plain text. Line breaks are kept." },
-  { key: "short_description", header: "Short description", note: "One line for cards and previews." },
+  {
+    key: "continue_selling",
+    header: "Continue selling when out of stock",
+    note: "yes or no.",
+  },
+  {
+    key: "track_inventory",
+    header: "Track inventory",
+    note: "yes (default) or no.",
+  },
+  {
+    key: "description",
+    header: "Description",
+    required: true,
+    note: "Plain text. Line breaks are kept.",
+  },
+  {
+    key: "short_description",
+    header: "Short description",
+    note: "One line for cards and previews.",
+  },
   { key: "tags", header: "Tags", note: "Separated by commas or |." },
   { key: "occasions", header: "Occasions", note: "Separated by commas or |." },
-  { key: "image_1", header: "Image 1", required: true, note: "A URL, or the file name of a photo picked with the CSV. The featured photo." },
+  {
+    key: "image_1",
+    header: "Image 1",
+    required: true,
+    note: "A URL, or the file name of a photo picked with the CSV. The featured photo.",
+  },
   { key: "image_2", header: "Image 2" },
   { key: "image_3", header: "Image 3" },
   { key: "image_4", header: "Image 4" },
-  { key: "image_alt", header: "Image alt text", note: "Describes the featured photo for screen readers." },
-  { key: "seo_title", header: "SEO title", note: "Google page title, up to 70 characters." },
-  { key: "seo_description", header: "SEO description", note: "Google meta description, up to 320 characters." },
+  {
+    key: "image_alt",
+    header: "Image alt text",
+    note: "Describes the featured photo for screen readers.",
+  },
+  {
+    key: "seo_title",
+    header: "SEO title",
+    note: "Google page title, up to 70 characters.",
+  },
+  {
+    key: "seo_description",
+    header: "SEO description",
+    note: "Google meta description, up to 320 characters.",
+  },
   { key: "hsn_code", header: "HSN code" },
-  { key: "gst_rate", header: "GST rate", note: "5, 12, 18 or exempt. Default 5." },
+  {
+    key: "gst_rate",
+    header: "GST rate",
+    note: "5, 12, 18 or exempt. Default 5.",
+  },
   { key: "weight_grams", header: "Weight (grams)" },
 ];
 
@@ -157,25 +229,43 @@ const YES = new Set(["yes", "y", "true", "1", "on"]);
 const NO = new Set(["no", "n", "false", "0", "off"]);
 
 export function readBoolean(value) {
-  const text = String(value ?? "").trim().toLowerCase();
+  const text = String(value ?? "")
+    .trim()
+    .toLowerCase();
   if (YES.has(text)) return true;
   if (NO.has(text)) return false;
   return null;
 }
 
-const GST = { "5": "GST_5", "12": "GST_12", "18": "GST_18", gst_5: "GST_5", gst_12: "GST_12", gst_18: "GST_18" };
+const GST = {
+  5: "GST_5",
+  12: "GST_12",
+  18: "GST_18",
+  gst_5: "GST_5",
+  gst_12: "GST_12",
+  gst_18: "GST_18",
+};
 
 function readGst(value) {
-  const text = String(value ?? "").trim().toLowerCase().replace(/%$/, "").replace(/^gst\s*/, "");
+  const text = String(value ?? "")
+    .trim()
+    .toLowerCase()
+    .replace(/%$/, "")
+    .replace(/^gst\s*/, "");
   if (!text) return { taxClass: null, taxable: null };
-  if (["exempt", "0", "none", "nil"].includes(text)) return { taxClass: "GST_5", taxable: false };
+  if (["exempt", "0", "none", "nil"].includes(text))
+    return { taxClass: "GST_5", taxable: false };
   const taxClass = GST[text] ?? GST[`gst_${text}`];
-  return taxClass ? { taxClass, taxable: true } : { error: "GST rate must be 5, 12, 18 or exempt." };
+  return taxClass
+    ? { taxClass, taxable: true }
+    : { error: "GST rate must be 5, 12, 18 or exempt." };
 }
 
 /** "₹14,559.50" → "14559.50"; blank stays blank. */
 function cleanMoney(value) {
-  return String(value ?? "").replace(/[₹,\s]/g, "").replace(/^rs\.?/i, "");
+  return String(value ?? "")
+    .replace(/[₹,\s]/g, "")
+    .replace(/^rs\.?/i, "");
 }
 
 /**
@@ -201,7 +291,8 @@ export function resolveCategory(row, categories) {
 
   if (narrowed.length === 1) return { category: narrowed[0] };
   if (matches.length === 0) return { error: `No category called “${name}”.` };
-  if (narrowed.length === 0) return { error: `“${name}” is not under “${parent}”.` };
+  if (narrowed.length === 0)
+    return { error: `“${name}” is not under “${parent}”.` };
   return {
     error: `“${name}” exists under ${matches.map((c) => c.parentName).join(" and ")} — fill in Parent category.`,
   };
@@ -220,7 +311,8 @@ export function checkImportRow(row, { categories, isNew, resolveImage }) {
 
   if (isNew) {
     for (const column of IMPORT_COLUMNS) {
-      if (column.required && !row[column.key]) errors.push(`${column.header} is required.`);
+      if (column.required && !row[column.key])
+        errors.push(`${column.header} is required.`);
     }
   }
 
@@ -238,10 +330,16 @@ export function checkImportRow(row, { categories, isNew, resolveImage }) {
     if (!row[key]) continue;
     const value = Number(cleanMoney(row[key]));
     if (!Number.isFinite(value) || value < 0) {
-      errors.push(`${IMPORT_COLUMNS.find((c) => c.key === key).header} must be a number.`);
+      errors.push(
+        `${IMPORT_COLUMNS.find((c) => c.key === key).header} must be a number.`
+      );
     }
   }
-  if (row.price && row.compare_at_price && Number(cleanMoney(row.compare_at_price)) < Number(cleanMoney(row.price))) {
+  if (
+    row.price &&
+    row.compare_at_price &&
+    Number(cleanMoney(row.compare_at_price)) < Number(cleanMoney(row.price))
+  ) {
     errors.push("Compare-at price must be higher than Price.");
   }
 
@@ -249,21 +347,30 @@ export function checkImportRow(row, { categories, isNew, resolveImage }) {
     if (!row[key]) continue;
     const value = Number(row[key]);
     if (!Number.isInteger(value) || value < 0) {
-      errors.push(`${IMPORT_COLUMNS.find((c) => c.key === key).header} must be a whole number.`);
+      errors.push(
+        `${IMPORT_COLUMNS.find((c) => c.key === key).header} must be a whole number.`
+      );
     }
   }
-  if (row.quantity && Number(row.quantity) > MAX_STOCK) errors.push("Quantity looks like a typo.");
+  if (row.quantity && Number(row.quantity) > MAX_STOCK)
+    errors.push("Quantity looks like a typo.");
 
   for (const key of ["continue_selling", "track_inventory"]) {
     if (row[key] && readBoolean(row[key]) == null) {
-      errors.push(`${IMPORT_COLUMNS.find((c) => c.key === key).header} must be yes or no.`);
+      errors.push(
+        `${IMPORT_COLUMNS.find((c) => c.key === key).header} must be yes or no.`
+      );
     }
   }
 
-  if (row.status && !["active", "draft", "archived"].includes(row.status.toLowerCase())) {
+  if (
+    row.status &&
+    !["active", "draft", "archived"].includes(row.status.toLowerCase())
+  ) {
     errors.push("Status must be active, draft or archived.");
   }
-  if (row.gst_rate && readGst(row.gst_rate).error) errors.push(readGst(row.gst_rate).error);
+  if (row.gst_rate && readGst(row.gst_rate).error)
+    errors.push(readGst(row.gst_rate).error);
 
   const images = rowImages(row);
   if (images.length > MAX_PRODUCT_IMAGES) {
@@ -271,11 +378,14 @@ export function checkImportRow(row, { categories, isNew, resolveImage }) {
   }
   for (const image of images) {
     if (!resolveImage(image)) {
-      errors.push(`Image “${image}” is not a URL and was not among the photos picked.`);
+      errors.push(
+        `Image “${image}” is not a URL and was not among the photos picked.`
+      );
     }
   }
 
-  if (row.seo_title && row.seo_title.length > 70) errors.push("SEO title is over 70 characters.");
+  if (row.seo_title && row.seo_title.length > 70)
+    errors.push("SEO title is over 70 characters.");
   if (row.seo_description && row.seo_description.length > 320) {
     errors.push("SEO description is over 320 characters.");
   }
@@ -300,7 +410,8 @@ export function mergeRowIntoForm(row, base, { category, defaultStatus }) {
   else if (!base.id) form.status = defaultStatus;
 
   if (row.price) form.price = cleanMoney(row.price);
-  if (row.compare_at_price) form.compareAtPrice = cleanMoney(row.compare_at_price);
+  if (row.compare_at_price)
+    form.compareAtPrice = cleanMoney(row.compare_at_price);
   if (row.cost_price) form.costPrice = cleanMoney(row.cost_price);
 
   const track = readBoolean(row.track_inventory);
@@ -378,7 +489,8 @@ export const NEW_PRODUCT_FORM = {
  */
 export function formToFormData(form) {
   const data = new FormData();
-  const text = (name, value) => data.set(name, value == null ? "" : String(value));
+  const text = (name, value) =>
+    data.set(name, value == null ? "" : String(value));
 
   text("title", form.title);
   text("subcategory", form.subcategory);

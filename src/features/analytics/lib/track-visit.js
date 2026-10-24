@@ -1,6 +1,6 @@
 import { connectDb } from "@/db/connect";
 import { SiteSession } from "@/models/site-session.model";
-import { ALL_INDIAN_STATES } from "@/constants/india";
+import { ALL_INDIAN_STATES, STATE_BY_CODE } from "@/constants/india";
 
 /** A visit ends after thirty minutes with nothing from the visitor. */
 export const SESSION_IDLE_MS = 30 * 60 * 1000;
@@ -12,51 +12,6 @@ const VISITOR_ID = /^[A-Za-z0-9_-]{8,64}$/;
  * name, and the dashboard groups by the name Order.address.state uses. Only
  * Indian codes are mapped; anything else is stored as sent.
  */
-const IN_REGION_CODES = {
-  AN: "Andaman and Nicobar Islands",
-  AP: "Andhra Pradesh",
-  AR: "Arunachal Pradesh",
-  AS: "Assam",
-  BR: "Bihar",
-  CH: "Chandigarh",
-  CT: "Chhattisgarh",
-  CG: "Chhattisgarh",
-  DH: "Dadra and Nagar Haveli and Daman and Diu",
-  DN: "Dadra and Nagar Haveli and Daman and Diu",
-  DD: "Dadra and Nagar Haveli and Daman and Diu",
-  DL: "Delhi",
-  GA: "Goa",
-  GJ: "Gujarat",
-  HP: "Himachal Pradesh",
-  HR: "Haryana",
-  JH: "Jharkhand",
-  JK: "Jammu and Kashmir",
-  KA: "Karnataka",
-  KL: "Kerala",
-  LA: "Ladakh",
-  LD: "Lakshadweep",
-  MH: "Maharashtra",
-  ML: "Meghalaya",
-  MN: "Manipur",
-  MP: "Madhya Pradesh",
-  MZ: "Mizoram",
-  NL: "Nagaland",
-  OR: "Odisha",
-  OD: "Odisha",
-  PB: "Punjab",
-  PY: "Puducherry",
-  RJ: "Rajasthan",
-  SK: "Sikkim",
-  TG: "Telangana",
-  TS: "Telangana",
-  TN: "Tamil Nadu",
-  TR: "Tripura",
-  UP: "Uttar Pradesh",
-  UK: "Uttarakhand",
-  UT: "Uttarakhand",
-  WB: "West Bengal",
-};
-
 const STATE_BY_LOWER = new Map(
   ALL_INDIAN_STATES.map((name) => [name.toLowerCase(), name])
 );
@@ -67,7 +22,7 @@ export function normaliseState(value, country = "IN") {
   if (!raw) return "";
 
   if (country === "IN" || !country) {
-    const byCode = IN_REGION_CODES[raw.toUpperCase()];
+    const byCode = STATE_BY_CODE[raw.toUpperCase()];
     if (byCode) return byCode;
     const byName = STATE_BY_LOWER.get(raw.toLowerCase());
     if (byName) return byName;
@@ -95,7 +50,11 @@ export function classifySource(referrer, path, ownHost) {
   const params = new URLSearchParams(query);
   const medium = (params.get("utm_medium") ?? "").toLowerCase();
 
-  if (params.has("gclid") || params.has("fbclid") || /cpc|paid|ads?$/.test(medium)) {
+  if (
+    params.has("gclid") ||
+    params.has("fbclid") ||
+    /cpc|paid|ads?$/.test(medium)
+  ) {
     return "paid";
   }
   if (medium === "email") return "email";
@@ -114,7 +73,9 @@ export function classifySource(referrer, path, ownHost) {
 }
 
 function clip(value, max) {
-  return String(value ?? "").trim().slice(0, max);
+  return String(value ?? "")
+    .trim()
+    .slice(0, max);
 }
 
 /**
@@ -151,7 +112,10 @@ export async function trackVisit(input, { ownHost = "" } = {}) {
   const hasCart = input?.cart && typeof input.cart === "object";
   const cart = hasCart
     ? {
-        items: Math.max(0, Math.min(999, Number.parseInt(input.cart.items, 10) || 0)),
+        items: Math.max(
+          0,
+          Math.min(999, Number.parseInt(input.cart.items, 10) || 0)
+        ),
         value: Math.max(0, Math.round(Number(input.cart.value) || 0)),
         updatedAt: now,
       }
@@ -163,7 +127,10 @@ export async function trackVisit(input, { ownHost = "" } = {}) {
   // Geo can arrive late (a heartbeat from a different edge) — keep the first.
 
   const live = await SiteSession.findOneAndUpdate(
-    { visitorId, lastSeenAt: { $gte: new Date(now.getTime() - SESSION_IDLE_MS) } },
+    {
+      visitorId,
+      lastSeenAt: { $gte: new Date(now.getTime() - SESSION_IDLE_MS) },
+    },
     { $set: set, $inc: { pageViews: event === "pageview" ? 1 : 0 } },
     { sort: { lastSeenAt: -1 }, new: true, projection: { _id: 1 } }
   ).lean();
@@ -180,7 +147,9 @@ export async function trackVisit(input, { ownHost = "" } = {}) {
     lastPath: path,
     referrer,
     source: classifySource(referrer, path, ownHost),
-    device: ["mobile", "tablet", "desktop"].includes(input?.device) ? input.device : "",
+    device: ["mobile", "tablet", "desktop"].includes(input?.device)
+      ? input.device
+      : "",
     region,
     ...(cart ? { cart } : {}),
   });

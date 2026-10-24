@@ -20,11 +20,21 @@ export function InventoryTable({ items, buildAdjustHref }) {
       <table className="w-full min-w-3xl text-left text-[0.8125rem]">
         <thead className="border-y border-border bg-surface-subdued text-xs text-muted">
           <tr>
-            <th scope="col" className="px-4 py-2 font-medium">Product</th>
-            <th scope="col" className="px-4 py-2 text-right font-medium">On hand</th>
-            <th scope="col" className="px-4 py-2 text-right font-medium">Held</th>
-            <th scope="col" className="px-4 py-2 text-right font-medium">Available</th>
-            <th scope="col" className="px-4 py-2 font-medium">Status</th>
+            <th scope="col" className="px-4 py-2 font-medium">
+              Product
+            </th>
+            <th scope="col" className="px-4 py-2 text-right font-medium">
+              On hand
+            </th>
+            <th scope="col" className="px-4 py-2 text-right font-medium">
+              Held
+            </th>
+            <th scope="col" className="px-4 py-2 text-right font-medium">
+              Available
+            </th>
+            <th scope="col" className="px-4 py-2 font-medium">
+              Status
+            </th>
             <th scope="col" className="px-4 py-2">
               <span className="sr-only">Actions</span>
             </th>
@@ -54,9 +64,7 @@ export function InventoryTable({ items, buildAdjustHref }) {
                     <p className="truncate font-semibold text-foreground">
                       {row.title}
                     </p>
-                    <p className="truncate text-xs text-muted">
-                      {row.sku}
-                    </p>
+                    <p className="truncate text-xs text-muted">{row.sku}</p>
                   </div>
                 </div>
               </td>

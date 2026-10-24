@@ -205,7 +205,8 @@ export function Select({
     }
   }
 
-  const activeId = open && activeIndex >= 0 ? `${listId}-${activeIndex}` : undefined;
+  const activeId =
+    open && activeIndex >= 0 ? `${listId}-${activeIndex}` : undefined;
 
   return (
     <>
@@ -233,7 +234,9 @@ export function Select({
               : "border-border-strong hover:border-foreground/40 focus-visible:border-foreground/50 focus-visible:ring-black/5"
         } ${className}`}
       >
-        <span className={`truncate ${selected ? "text-foreground" : "text-muted"}`}>
+        <span
+          className={`truncate ${selected ? "text-foreground" : "text-muted"}`}
+        >
           {selected ? selected.label : placeholder}
         </span>
         <ChevronDown
@@ -295,7 +298,14 @@ function OptionList({ options, ...context }) {
           <ul role="group" aria-label={entry.label}>
             {entry.options.map((option) => {
               index += 1;
-              return <Option key={option.value} option={option} index={index} {...context} />;
+              return (
+                <Option
+                  key={option.value}
+                  option={option}
+                  index={index}
+                  {...context}
+                />
+              );
             })}
           </ul>
         </li>
@@ -303,11 +313,21 @@ function OptionList({ options, ...context }) {
     }
 
     index += 1;
-    return <Option key={entry.value} option={entry} index={index} {...context} />;
+    return (
+      <Option key={entry.value} option={entry} index={index} {...context} />
+    );
   });
 }
 
-function Option({ option, index, listId, current, activeIndex, onHover, onChoose }) {
+function Option({
+  option,
+  index,
+  listId,
+  current,
+  activeIndex,
+  onHover,
+  onChoose,
+}) {
   const isSelected = option.value === current;
   const isActive = index === activeIndex;
 
@@ -328,7 +348,11 @@ function Option({ option, index, listId, current, activeIndex, onHover, onChoose
     >
       <span>{option.label}</span>
       {isSelected ? (
-        <Check className="h-4 w-4 shrink-0 text-foreground" strokeWidth={2} aria-hidden="true" />
+        <Check
+          className="h-4 w-4 shrink-0 text-foreground"
+          strokeWidth={2}
+          aria-hidden="true"
+        />
       ) : null}
     </li>
   );

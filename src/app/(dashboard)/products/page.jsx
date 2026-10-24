@@ -14,10 +14,7 @@ import { getAdminProducts } from "@/features/catalog/queries/get-admin-products"
 import { getProductFilters } from "@/features/catalog/queries/get-product-filters";
 import { getProductCategoryOptions } from "@/features/catalog/queries/get-product-category-options";
 import { buildProductsHref } from "@/features/catalog/lib/product-list-url";
-import {
-  normalizePage,
-  normalizeStockFilter,
-} from "@/constants/catalog-query";
+import { normalizePage, normalizeStockFilter } from "@/constants/catalog-query";
 import { CATALOG_DESTRUCTIVE_ROLES } from "@/constants/enums";
 import { requireAdmin } from "@/lib/auth/dal";
 
@@ -96,7 +93,11 @@ export default async function ProductsPage({ searchParams }) {
         icon={<Tag className="h-5 w-5" strokeWidth={2} />}
       >
         {/* A plain link — a download, not a page for the router. */}
-        <a href="/api/products/export" download className={buttonClass("secondary")}>
+        <a
+          href="/api/products/export"
+          download
+          className={buttonClass("secondary")}
+        >
           Export
         </a>
         <Link href="/products/import" className={buttonClass("secondary")}>

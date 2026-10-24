@@ -112,7 +112,8 @@ export function BannerImageField({
   }
 
   // Derived during render — no effect needed to keep it in step with `image`.
-  const ratio = image?.width && image?.height ? image.width / image.height : null;
+  const ratio =
+    image?.width && image?.height ? image.width / image.height : null;
   const offBy = ratio ? Math.abs(ratio - targetRatio) / targetRatio : 0;
   const willCrop = cropped && ratio !== null && offBy > BANNER_RATIO_TOLERANCE;
 
@@ -165,12 +166,16 @@ export function BannerImageField({
             type="button"
             disabled={disabled || uploading}
             onClick={() => inputRef.current?.click()}
-            className="inline-flex items-center gap-2 rounded-lg border border-dashed border-border bg-background px-3 py-2 text-xs font-semibold text-muted transition hover:border-brand/50 hover:text-brand disabled:cursor-not-allowed disabled:opacity-60"
+            className="inline-flex items-center gap-2 rounded-lg border border-dashed border-border bg-background px-3 py-2 text-xs font-semibold text-muted transition hover:border-foreground/40 hover:text-foreground disabled:cursor-not-allowed disabled:opacity-60"
           >
             {uploading ? (
               <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
             ) : (
-              <ImagePlus className="h-4 w-4" strokeWidth={2} aria-hidden="true" />
+              <ImagePlus
+                className="h-4 w-4"
+                strokeWidth={2}
+                aria-hidden="true"
+              />
             )}
             {uploading ? "Uploading" : image?.url ? "Replace" : "Upload"}
           </button>
@@ -199,7 +204,7 @@ export function BannerImageField({
               disabled={disabled}
               onChange={(event) => setAlt(event.target.value)}
               placeholder="Diwali gifting collection — handwoven sarees"
-              className="h-10 rounded-lg border border-border bg-background px-3 text-sm text-foreground outline-none transition focus:border-brand/50 focus:ring-2 focus:ring-brand/10"
+              className="h-9 rounded-lg border border-border-strong bg-background px-3 text-sm text-foreground outline-none transition focus:border-foreground/50 focus:ring-2 focus:ring-brand/10"
             />
             {altError ? (
               <p role="alert" className="text-xs text-danger">

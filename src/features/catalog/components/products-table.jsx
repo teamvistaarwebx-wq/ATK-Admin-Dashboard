@@ -77,7 +77,8 @@ export function ProductsTable({
 }
 
 function ProductRow({ product, canDelete, showStock, editHref }) {
-  const status = STATUS_BADGE[product.status] ?? STATUS_BADGE[PRODUCT_STATUS.DRAFT];
+  const status =
+    STATUS_BADGE[product.status] ?? STATUS_BADGE[PRODUCT_STATUS.DRAFT];
 
   return (
     <tr className="group transition hover:bg-surface-subdued">

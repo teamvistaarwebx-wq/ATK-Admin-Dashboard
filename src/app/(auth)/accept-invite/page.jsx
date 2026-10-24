@@ -20,8 +20,8 @@ export default async function AcceptInvitePage({ searchParams }) {
           Invite link incomplete
         </h1>
         <p className="text-sm leading-relaxed text-muted">
-          This link is missing part of its address. Ask your super admin to
-          send a fresh invite.
+          This link is missing part of its address. Ask your super admin to send
+          a fresh invite.
         </p>
         <Link href="/login" className="text-sm font-semibold text-brand">
           Back to sign in
@@ -33,9 +33,7 @@ export default async function AcceptInvitePage({ searchParams }) {
   return (
     <div className="flex flex-col gap-8">
       <header className="flex flex-col gap-1.5">
-        <h1 className="text-3xl font-semibold text-brand">
-          Welcome aboard
-        </h1>
+        <h1 className="text-3xl font-semibold text-brand">Welcome aboard</h1>
         <p className="text-sm text-muted">
           Set a password to finish setting up your account.
         </p>

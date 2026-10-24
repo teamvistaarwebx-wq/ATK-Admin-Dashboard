@@ -5,7 +5,11 @@ import { Card } from "@/components/ui/card";
 import { getOrder } from "@/features/orders/queries/get-orders";
 import { OrderStatusControls } from "@/features/orders/components/order-status-controls";
 import { ORDER_TRANSITIONS } from "@/constants/inventory";
-import { formatDateTime, formatPrice, formatRelativeDateTime } from "@/lib/format";
+import {
+  formatDateTime,
+  formatPrice,
+  formatRelativeDateTime,
+} from "@/lib/format";
 import { resolveImageUrl } from "@/lib/storefront";
 import { orderStatusView } from "@/features/orders/lib/order-status";
 import { CardLogoPreview } from "@/features/gifting/components/card-logo-preview";
@@ -38,7 +42,9 @@ export default async function OrderDetailPage({ params }) {
           </span>
         }
         subtitle={`${formatRelativeDateTime(order.createdAt)} · ${
-          order.companyName ? `Corporate · ${order.companyName}` : "Online store"
+          order.companyName
+            ? `Corporate · ${order.companyName}`
+            : "Online store"
         }`}
       >
         <OrderStatusControls
@@ -52,7 +58,10 @@ export default async function OrderDetailPage({ params }) {
             item may already have gone to somebody else. Loud on purpose: this
             is a customer who has paid and needs a phone call. */}
         {order.needsReview ? (
-          <div role="alert" className="mb-4 rounded-xl bg-badge-critical px-4 py-3">
+          <div
+            role="alert"
+            className="mb-4 rounded-xl bg-badge-critical px-4 py-3"
+          >
             <p className="text-[0.8125rem] font-semibold text-badge-critical-ink">
               This order needs attention
             </p>
@@ -63,7 +72,7 @@ export default async function OrderDetailPage({ params }) {
           </div>
         ) : null}
 
-        <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_20rem]">
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1fr)_20rem]">
           <div className="flex flex-col gap-4">
             <Card
               title={
@@ -93,9 +102,13 @@ export default async function OrderDetailPage({ params }) {
                       ) : null}
                     </span>
                     <span className="min-w-0 flex-1">
-                      <span className="block truncate font-medium text-link">{item.title}</span>
+                      <span className="block truncate font-medium text-link">
+                        {item.title}
+                      </span>
                       {item.sku ? (
-                        <span className="block text-xs text-muted">SKU: {item.sku}</span>
+                        <span className="block text-xs text-muted">
+                          SKU: {item.sku}
+                        </span>
                       ) : null}
                     </span>
                     <span className="shrink-0 tabular-nums text-muted">
@@ -118,23 +131,44 @@ export default async function OrderDetailPage({ params }) {
             >
               <div className="px-4 pb-4 pt-3">
                 <div className="rounded-lg border border-border">
-                  <Row label="Subtotal" detail={`${order.itemCount} ${order.itemCount === 1 ? "item" : "items"}`} value={formatPrice(order.amounts.subtotal)} />
-                  <Row label="Packaging" detail={order.packaging?.name || ""} value={formatPrice(order.amounts.packaging)} />
-                  <Row label="Card" detail={order.card?.name || ""} value={formatPrice(order.amounts.card)} />
-                  <Row label="Shipping" value={formatPrice(order.amounts.shipping)} />
+                  <Row
+                    label="Subtotal"
+                    detail={`${order.itemCount} ${order.itemCount === 1 ? "item" : "items"}`}
+                    value={formatPrice(order.amounts.subtotal)}
+                  />
+                  <Row
+                    label="Packaging"
+                    detail={order.packaging?.name || ""}
+                    value={formatPrice(order.amounts.packaging)}
+                  />
+                  <Row
+                    label="Card"
+                    detail={order.card?.name || ""}
+                    value={formatPrice(order.amounts.card)}
+                  />
+                  <Row
+                    label="Shipping"
+                    value={formatPrice(order.amounts.shipping)}
+                  />
                   <div className="flex justify-between gap-3 border-t border-border px-3 py-2 text-[0.8125rem] font-semibold">
                     <span>Total</span>
-                    <span className="tabular-nums">{formatPrice(order.amounts.total)}</span>
+                    <span className="tabular-nums">
+                      {formatPrice(order.amounts.total)}
+                    </span>
                   </div>
                 </div>
                 {order.payment.razorpayPaymentId ? (
                   <p className="mt-2 text-xs text-muted">
                     Razorpay payment {order.payment.razorpayPaymentId}
-                    {order.payment.paidAt ? ` · paid ${formatDateTime(order.payment.paidAt)}` : ""}
+                    {order.payment.paidAt
+                      ? ` · paid ${formatDateTime(order.payment.paidAt)}`
+                      : ""}
                   </p>
                 ) : null}
                 {order.payment.failureReason ? (
-                  <p className="mt-2 text-xs text-danger">{order.payment.failureReason}</p>
+                  <p className="mt-2 text-xs text-danger">
+                    {order.payment.failureReason}
+                  </p>
                 ) : null}
               </div>
             </Card>
@@ -159,21 +193,28 @@ export default async function OrderDetailPage({ params }) {
           <div className="flex flex-col gap-4">
             <Card title="Customer">
               <div className="flex flex-col gap-0.5 px-4 pb-4 pt-2 text-[0.8125rem]">
-                <p className="font-medium text-link">{order.contact.fullName}</p>
-                {order.companyName ? <p className="text-muted">{order.companyName}</p> : null}
+                <p className="font-medium text-link">
+                  {order.contact.fullName}
+                </p>
+                {order.companyName ? (
+                  <p className="text-muted">{order.companyName}</p>
+                ) : null}
               </div>
               <Section title="Contact information">
                 <p className="break-all text-link">{order.contact.email}</p>
                 <p>{order.contact.phone}</p>
                 {order.verifiedPhone ? (
-                  <p className="text-xs text-muted">OTP verified · {order.verifiedPhone}</p>
+                  <p className="text-xs text-muted">
+                    OTP verified · {order.verifiedPhone}
+                  </p>
                 ) : null}
               </Section>
               <Section title="Shipping address">
                 <p>{order.contact.fullName}</p>
                 <p>{order.address.line1}</p>
                 <p>
-                  {order.address.city}, {order.address.state} {order.address.pincode}
+                  {order.address.city}, {order.address.state}{" "}
+                  {order.address.pincode}
                 </p>
                 <p>India</p>
               </Section>

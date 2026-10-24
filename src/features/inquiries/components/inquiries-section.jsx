@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/ui/empty-state";
 import { InquiryStatusPill } from "./inquiry-status-pill";
 import { formatCompactPrice, formatDateTime } from "@/lib/format";
@@ -11,15 +12,21 @@ import { INQUIRY_SOURCE, INQUIRY_SOURCE_LABEL } from "@/constants/enums";
  * the same promise to this and to the header's count, so the two render off
  * one read instead of two.
  */
-export async function InquiriesSection({ inquiriesPromise, q, status, source }) {
+export async function InquiriesSection({
+  inquiriesPromise,
+  q,
+  status,
+  source,
+}) {
   const { items, page, totalPages } = await inquiriesPromise;
 
   const isFiltered = Boolean(q || status || source);
 
   if (items.length === 0) {
     return (
-      <div className="mt-6">
+      <div className="border-t border-border">
         <EmptyState
+          bare
           title={isFiltered ? "No matching enquiries" : "No enquiries yet"}
           description={
             isFiltered
@@ -33,34 +40,37 @@ export async function InquiriesSection({ inquiriesPromise, q, status, source }) 
 
   return (
     <>
-      <div className="mt-6 overflow-x-auto rounded-xl border border-border">
-        <table className="w-full min-w-[52rem] text-left text-sm">
-          <thead className="bg-surface text-xs uppercase tracking-wide text-muted">
+      <div className="overflow-x-auto">
+        <table className="w-full min-w-[52rem] text-left text-[0.8125rem]">
+          <thead className="whitespace-nowrap border-y border-border bg-surface-subdued text-xs text-muted">
             <tr>
-              <th className="px-4 py-3 font-semibold">Enquiry</th>
-              <th className="px-4 py-3 font-semibold">Company</th>
-              <th className="px-4 py-3 font-semibold">Contact</th>
-              <th className="px-4 py-3 font-semibold">People / units</th>
-              <th className="px-4 py-3 font-semibold">Est. value</th>
-              <th className="px-4 py-3 font-semibold">Status</th>
-              <th className="px-4 py-3 font-semibold">Received</th>
+              <th className="px-4 py-2 font-medium">Enquiry</th>
+              <th className="px-4 py-2 font-medium">Company</th>
+              <th className="px-4 py-2 font-medium">Contact</th>
+              <th className="px-4 py-2 font-medium">People / units</th>
+              <th className="px-4 py-2 font-medium">Est. value</th>
+              <th className="px-4 py-2 font-medium">Status</th>
+              <th className="px-4 py-2 font-medium">Received</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
             {items.map((inquiry) => (
-              <tr key={inquiry.id} className="hover:bg-surface">
-                <td className="px-4 py-3">
+              <tr
+                key={inquiry.id}
+                className="transition hover:bg-surface-subdued"
+              >
+                <td className="px-4 py-2">
                   <Link
                     href={`/inquiries/${inquiry.id}`}
-                    className="font-medium text-brand underline-offset-2 hover:underline"
+                    className="font-semibold text-foreground hover:underline"
                   >
                     {/* Enquiries typed up by sales carry no reference. */}
                     {inquiry.inquiryNumber ?? "View"}
                   </Link>
                   {inquiry.source === INQUIRY_SOURCE.MADE_TO_ORDER ? (
-                    <span className="mt-1 block w-fit rounded-full border border-brand/30 bg-brand-tint px-2 py-0.5 text-[0.625rem] font-semibold uppercase tracking-wide text-brand">
+                    <Badge tone="info" className="mt-1">
                       {INQUIRY_SOURCE_LABEL[inquiry.source]}
-                    </span>
+                    </Badge>
                   ) : null}
                   {inquiry.occasion ? (
                     <span className="block text-xs text-muted">
@@ -68,11 +78,11 @@ export async function InquiriesSection({ inquiriesPromise, q, status, source }) 
                     </span>
                   ) : null}
                 </td>
-                <td className="px-4 py-3 text-foreground">
+                <td className="px-4 py-2 text-foreground">
                   {/* Made-to-order requests can come from individuals. */}
                   {inquiry.companyName || "—"}
                 </td>
-                <td className="px-4 py-3">
+                <td className="px-4 py-2">
                   <span className="block text-foreground">
                     {inquiry.contactName}
                   </span>
@@ -80,18 +90,18 @@ export async function InquiriesSection({ inquiriesPromise, q, status, source }) 
                     {inquiry.phone || inquiry.email || "—"}
                   </span>
                 </td>
-                <td className="px-4 py-3 text-foreground">
+                <td className="px-4 py-2 text-foreground">
                   {inquiry.source === INQUIRY_SOURCE.MADE_TO_ORDER
                     ? `${inquiry.units} units`
                     : inquiry.headcount || "—"}
                 </td>
-                <td className="px-4 py-3 font-medium text-foreground">
+                <td className="px-4 py-2 font-medium text-foreground">
                   {inquiry.budget ? formatCompactPrice(inquiry.budget) : "—"}
                 </td>
-                <td className="px-4 py-3">
+                <td className="px-4 py-2">
                   <InquiryStatusPill status={inquiry.status} />
                 </td>
-                <td className="px-4 py-3 text-muted">
+                <td className="px-4 py-2 text-muted">
                   {formatDateTime(inquiry.createdAt)}
                 </td>
               </tr>
@@ -101,7 +111,7 @@ export async function InquiriesSection({ inquiriesPromise, q, status, source }) 
       </div>
 
       {totalPages > 1 ? (
-        <p className="mt-4 text-sm text-muted">
+        <p className="border-t border-border px-4 py-3 text-xs text-muted">
           Page {page} of {totalPages}
         </p>
       ) : null}

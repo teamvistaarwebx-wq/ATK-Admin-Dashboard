@@ -111,7 +111,9 @@ export default async function MadeToOrderPage({ searchParams }) {
 
       {isDrawerOpen ? (
         <ProductDrawer
-          title={editId ? "Edit made-to-order product" : "Add made-to-order product"}
+          title={
+            editId ? "Edit made-to-order product" : "Add made-to-order product"
+          }
         >
           {editId ? (
             <Suspense fallback={<ProductFormSkeleton />}>
@@ -133,7 +135,12 @@ export default async function MadeToOrderPage({ searchParams }) {
 }
 
 /** Same wrapper as products/page.jsx — keeps the chip read and the table read parallel. */
-async function FilteredProducts({ subcategoriesPromise, q, subcategory, children }) {
+async function FilteredProducts({
+  subcategoriesPromise,
+  q,
+  subcategory,
+  children,
+}) {
   const subcategories = await subcategoriesPromise;
 
   return (
