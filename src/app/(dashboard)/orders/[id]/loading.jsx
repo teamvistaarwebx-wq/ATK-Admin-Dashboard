@@ -1,16 +1,17 @@
-import { Skeleton } from "@/components/ui/skeleton";
+import { PageHeaderSkeleton, Skeleton } from "@/components/ui/skeleton";
 
-/** Matches the centred `<main>` the order detail lays itself out in. */
+/** Matches the two-column order detail. */
 export default function OrderDetailLoading() {
   return (
-    <main className="mx-auto w-full max-w-4xl px-6 py-8">
-      <Skeleton className="h-8 w-56" />
-      <Skeleton className="mt-2 h-4 w-40" />
-
-      <div className="mt-6 flex flex-col gap-5">
-        <Skeleton className="h-40 rounded-xl" />
+    <>
+      <PageHeaderSkeleton hasAction />
+      <div className="mx-auto grid w-full max-w-[1100px] gap-4 px-4 pb-10 sm:px-6 lg:grid-cols-[minmax(0,1fr)_20rem]">
+        <div className="flex flex-col gap-4">
+          <Skeleton className="h-48 rounded-xl" />
+          <Skeleton className="h-40 rounded-xl" />
+        </div>
         <Skeleton className="h-64 rounded-xl" />
       </div>
-    </main>
+    </>
   );
 }

@@ -1,19 +1,14 @@
-import { Newsreader, Nunito } from "next/font/google";
+import { Inter } from "next/font/google";
 import "@/styles/globals.css";
 
 /**
- * The variable names deliberately avoid `--font-*`: globals.css maps these
- * into Tailwind theme keys called `--font-newsreader` / `--font-nunito`, and a
- * key cannot reference a variable of its own name.
+ * One sans face for the whole admin. Dense tables and figures read better in
+ * Inter than in a display serif, and it is close to what Shopify's own admin
+ * ships. The variable avoids `--font-*` so globals.css can map it into the
+ * Tailwind `--font-sans` key without referencing itself.
  */
-const newsreader = Newsreader({
-  variable: "--newsreader",
-  subsets: ["latin"],
-  display: "swap",
-});
-
-const nunito = Nunito({
-  variable: "--nunito",
+const inter = Inter({
+  variable: "--inter",
   subsets: ["latin"],
   display: "swap",
 });
@@ -28,10 +23,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html
-      lang="en"
-      className={`${newsreader.variable} ${nunito.variable} h-full antialiased`}
-    >
+    <html lang="en" className={`${inter.variable} h-full antialiased`}>
       <body className="min-h-full bg-background font-sans text-foreground">
         {children}
       </body>

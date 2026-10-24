@@ -70,13 +70,13 @@ export default async function MadeToOrderPage({ searchParams }) {
             basePath: BASE_PATH,
             drawer: { new: "1" },
           })}
-          className="inline-flex h-11 items-center justify-center rounded-lg bg-brand px-4 text-sm font-semibold text-white transition hover:bg-brand/90"
+          className="h-8 rounded-lg bg-primary px-3 text-[0.8125rem] font-semibold shadow-primary hover:bg-primary-hover inline-flex items-center justify-center text-white transition"
         >
           + Add Product
         </Link>
       </PageHeader>
 
-      <div className="px-6 py-6 sm:px-8">
+      <div className="mx-auto w-full max-w-[1400px] px-4 pb-10 sm:px-6">
         <Suspense
           fallback={
             <>

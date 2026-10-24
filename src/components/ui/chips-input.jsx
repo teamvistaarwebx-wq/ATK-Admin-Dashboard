@@ -54,17 +54,17 @@ export function ChipsInput({
 
   return (
     <div className="flex flex-col gap-1.5">
-      <label htmlFor={inputId} className="font-nunito text-xs font-semibold text-foreground">
+      <label htmlFor={inputId} className="text-xs font-semibold text-foreground">
         {label}
       </label>
 
       <input type="hidden" name={name} value={JSON.stringify(items)} />
 
-      <div className="flex flex-wrap items-center gap-2 rounded-lg border border-border bg-surface px-2 py-2 transition focus-within:border-brand/50 focus-within:ring-2 focus-within:ring-brand/10">
+      <div className="flex flex-wrap items-center gap-2 rounded-lg border border-border-strong bg-surface px-2 py-1.5 transition focus-within:border-foreground/50 focus-within:ring-2 focus-within:ring-black/5">
         {items.map((item) => (
           <span
             key={item}
-            className="inline-flex items-center gap-1 rounded-full bg-brand-tint px-2.5 py-1 font-nunito text-xs font-medium text-brand"
+            className="inline-flex items-center gap-1 rounded-lg bg-badge-neutral px-2 py-0.5 text-xs font-medium text-foreground"
           >
             {item}
             <button
@@ -89,7 +89,7 @@ export function ChipsInput({
           onKeyDown={handleKeyDown}
           // Losing focus with something half-typed should keep it, not bin it.
           onBlur={() => add(draft)}
-          className="font-nunito min-w-24 flex-1 bg-transparent px-1.5 py-1 text-sm text-foreground outline-none placeholder:text-muted/70"
+          className="min-w-24 flex-1 bg-transparent px-1.5 py-1 text-sm text-foreground outline-none placeholder:text-muted/70"
         />
       </div>
 

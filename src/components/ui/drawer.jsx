@@ -61,10 +61,10 @@ export function Drawer({ title, onClose, children }) {
       className="drawer-panel m-0 ml-auto h-dvh max-h-dvh w-[min(34rem,100vw)] max-w-none rounded-none border-l border-border bg-surface p-0 text-foreground"
     >
       <div className="flex h-full flex-col">
-        <header className="flex shrink-0 items-center justify-between gap-4 border-b border-border px-6 py-5">
+        <header className="flex shrink-0 items-center justify-between gap-4 border-b border-border px-5 py-3.5">
           <h2
             id={titleId}
-            className="font-newsreader text-xl font-semibold text-brand"
+            className="text-base font-semibold text-foreground"
           >
             {title}
           </h2>

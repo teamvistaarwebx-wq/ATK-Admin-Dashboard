@@ -98,3 +98,94 @@ export function formatCompactPrice(paise) {
 
   return RUPEES.format(Math.round(value / 100));
 }
+
+/**
+ * "₹3.1L", "₹12K", "₹1.2Cr" — chart axes and headline tiles, where the
+ * Indian lakh/crore units read faster than a long figure.
+ */
+export function formatShortPrice(paise) {
+  const value = Number(paise);
+  if (!Number.isFinite(value)) return "—";
+
+  const rupees = value / 100;
+  const abs = Math.abs(rupees);
+  if (abs >= 1e7) return `₹${trim(rupees / 1e7)}Cr`;
+  if (abs >= 1e5) return `₹${trim(rupees / 1e5)}L`;
+  if (abs >= 1e3) return `₹${trim(rupees / 1e3)}K`;
+  return `₹${Math.round(rupees)}`;
+}
+
+/** "21.7K" — counts on a chart axis. */
+export function formatShortNumber(value) {
+  const number = Number(value);
+  if (!Number.isFinite(number)) return "—";
+
+  const abs = Math.abs(number);
+  if (abs >= 1e7) return `${trim(number / 1e7)}Cr`;
+  if (abs >= 1e5) return `${trim(number / 1e5)}L`;
+  if (abs >= 1e3) return `${trim(number / 1e3)}K`;
+  return String(Math.round(number));
+}
+
+function trim(value) {
+  return value >= 100 ? String(Math.round(value)) : value.toFixed(1).replace(/\.0$/, "");
+}
+
+const COUNT = new Intl.NumberFormat("en-IN");
+
+export function formatCount(value) {
+  const number = Number(value);
+  return Number.isFinite(number) ? COUNT.format(number) : "—";
+}
+
+const IST_TIME = new Intl.DateTimeFormat("en-IN", {
+  timeZone: "Asia/Kolkata",
+  hour: "numeric",
+  minute: "2-digit",
+  hour12: true,
+});
+const IST_WEEKDAY = new Intl.DateTimeFormat("en-IN", {
+  timeZone: "Asia/Kolkata",
+  weekday: "long",
+});
+const IST_DAY_MONTH = new Intl.DateTimeFormat("en-IN", {
+  timeZone: "Asia/Kolkata",
+  day: "numeric",
+  month: "short",
+});
+const IST_DAY_MONTH_YEAR = new Intl.DateTimeFormat("en-IN", {
+  timeZone: "Asia/Kolkata",
+  day: "numeric",
+  month: "short",
+  year: "numeric",
+});
+const IST_KEY = new Intl.DateTimeFormat("en-CA", {
+  timeZone: "Asia/Kolkata",
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+});
+
+/**
+ * Shopify's order-list dates, in IST: "Today at 11:10 am", "Yesterday at
+ * 9:00 pm", "Thursday at 3:43 pm" within the week, then "16 Oct at 8:09 pm".
+ */
+export function formatRelativeDateTime(value, now = new Date()) {
+  if (!value) return "—";
+
+  const date = value instanceof Date ? value : new Date(value);
+  if (Number.isNaN(date.getTime())) return "—";
+
+  const day = IST_KEY.format(date);
+  const today = IST_KEY.format(now);
+  const daysAgo = Math.round(
+    (new Date(`${today}T00:00:00Z`) - new Date(`${day}T00:00:00Z`)) / MS_PER_DAY
+  );
+  const time = IST_TIME.format(date).replace(/\s?([AP]M)$/i, (_, m) => ` ${m.toLowerCase()}`);
+
+  if (daysAgo === 0) return `Today at ${time}`;
+  if (daysAgo === 1) return `Yesterday at ${time}`;
+  if (daysAgo > 1 && daysAgo < 7) return `${IST_WEEKDAY.format(date)} at ${time}`;
+  if (day.slice(0, 4) === today.slice(0, 4)) return `${IST_DAY_MONTH.format(date)} at ${time}`;
+  return `${IST_DAY_MONTH_YEAR.format(date)} at ${time}`;
+}

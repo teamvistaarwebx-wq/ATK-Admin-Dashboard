@@ -1,93 +1,152 @@
 import { Suspense } from "react";
+import Link from "next/link";
+import { Download, Inbox, Search } from "lucide-react";
+import { PageBody, PageHeader } from "@/components/layout/page-header";
+import { buttonClass } from "@/components/ui/button";
+import { chipClass } from "@/components/ui/chip";
+import { DateRangePicker } from "@/components/ui/date-range-picker";
 import { Skeleton, TableSkeleton } from "@/components/ui/skeleton";
-import {
-  OrdersCount,
-  OrdersSection,
-} from "@/features/orders/components/orders-section";
-import { getOrders } from "@/features/orders/queries/get-orders";
-import { Select } from "@/components/ui/select";
-import { ORDER_STATUS_VALUES } from "@/constants/enums";
-import { capitalize } from "@/lib/format";
+import { OrdersSection, OrdersStats, Stat } from "@/features/orders/components/orders-section";
+import { getOrderRangeStats, getOrders } from "@/features/orders/queries/get-orders";
+import { ORDER_VIEWS } from "@/features/orders/lib/order-status";
+import { buildOrdersHref } from "@/features/orders/lib/orders-url";
+import { requireAdmin } from "@/lib/auth/dal";
+import { formatRangeLabel, resolveDateRange } from "@/lib/date-range";
 
 export const metadata = { title: "Orders | AKT Gifting Admin" };
 
-const STATUS_OPTIONS = [
-  { value: "", label: "All" },
-  ...ORDER_STATUS_VALUES.map((value) => ({ value, label: capitalize(value) })),
-];
-
 /**
- * Orders list.
+ * Orders list, Shopify-style: a date range with the range's figures beside it,
+ * status tabs and search over one table, and an export of exactly what the
+ * table shows.
  *
- * Calls the query directly rather than its own HTTP API — it runs inside the
- * app that owns the model, so a network round trip would buy nothing.
- *
- * The query is started here and awaited nowhere: the heading and the filter
- * form need nothing from Mongo, so they render immediately while the table and
- * the count stream in off the one shared promise.
+ * Calls the queries directly rather than its own HTTP API — it runs inside the
+ * app that owns the model. Both are started here and awaited nowhere, so the
+ * header, tabs and search render while the table and strip stream in.
  */
 export default async function OrdersPage({ searchParams }) {
-  const params = await searchParams;
-  const status = params?.status ?? "";
-  const q = params?.q ?? "";
+  await requireAdmin();
 
-  const ordersPromise = getOrders({ status, q, page: params?.page });
+  const params = await searchParams;
+  const q = params?.q ?? "";
+  // `status` is the old single-status filter; existing bookmarks still work.
+  const view = params?.view ?? params?.status ?? "";
+
+  const range = resolveDateRange(
+    { range: params?.range, from: params?.from, to: params?.to },
+    { fallback: "all", allowAllTime: true }
+  );
+
+  // What every link on the page must carry forward.
+  const current = {
+    // "All time" is the default, so it needs no param of its own.
+    range: range.key === "custom" || range.key === "all" ? "" : range.key,
+    from: range.key === "custom" ? range.from : "",
+    to: range.key === "custom" ? range.to : "",
+    view,
+    q,
+  };
+
+  const ordersPromise = getOrders({ view, q, range, page: params?.page });
+  const statsPromise = getOrderRangeStats({ q, range });
+
+  const exportHref = buildOrdersHref(current, {}, "/api/orders/export");
 
   return (
-    <main className="mx-auto w-full max-w-6xl px-6 py-8">
-      <header className="flex flex-wrap items-baseline justify-between gap-3">
-        <h1 className="text-2xl font-semibold">Orders</h1>
-        <Suspense fallback={<Skeleton className="h-4 w-24" />}>
-          <OrdersCount ordersPromise={ordersPromise} />
-        </Suspense>
-      </header>
+    <>
+      <PageHeader title="Orders" icon={<Inbox className="h-5 w-5" strokeWidth={2} />}>
+        {/* A plain link: the browser handles the download, no JS needed. */}
+        <a href={exportHref} className={buttonClass("secondary")} download>
+          <Download className="h-4 w-4" strokeWidth={2} aria-hidden="true" />
+          Export
+        </a>
+      </PageHeader>
 
-      <form className="mt-6 flex flex-wrap items-end gap-3" action="/orders">
-        <label className="flex flex-col gap-1 text-xs text-gray-600">
-          Search
-          <input
-            type="search"
-            name="q"
-            defaultValue={q}
-            placeholder="Order number, phone or email"
-            className="w-72 rounded-md border border-gray-300 px-3 py-2 text-sm outline-none focus:border-gray-500"
-          />
-        </label>
-
-        {/* Labelled by id, not wrapped: see components/ui/select.jsx. */}
-        <div className="flex flex-col gap-1 text-xs text-gray-600">
-          <label id="orders-status-label" htmlFor="orders-status">
-            Status
-          </label>
-          <div className="w-52">
-            <Select
-              id="orders-status"
-              name="status"
-              options={STATUS_OPTIONS}
-              defaultValue={status}
-              aria-labelledby="orders-status-label"
-              size="sm"
+      <PageBody className="flex flex-col gap-4">
+        <section className="flex items-stretch overflow-x-auto rounded-xl bg-surface shadow-card">
+          <div className="flex shrink-0 items-center px-3 py-3">
+            <DateRangePicker
+              range={{
+                key: range.key,
+                label: range.label,
+                from: range.from,
+                to: range.to,
+                compare: range.compare,
+              }}
+              allowAllTime
             />
           </div>
-        </div>
+          <Suspense fallback={<StatsSkeleton />}>
+            <OrdersStats statsPromise={statsPromise} />
+          </Suspense>
+        </section>
 
-        <button
-          type="submit"
-          className="rounded-md bg-gray-900 px-4 py-2 text-sm text-white transition hover:bg-gray-700"
-        >
-          Filter
-        </button>
-      </form>
+        <section className="overflow-hidden rounded-xl bg-surface shadow-card">
+          <div className="flex flex-wrap items-center justify-between gap-2 px-2 py-2">
+            <nav aria-label="Order views" className="flex flex-wrap items-center gap-1">
+              {ORDER_VIEWS.map((item) => (
+                <Link
+                  key={item.key || "all"}
+                  href={buildOrdersHref(current, { view: item.key })}
+                  aria-current={view === item.key ? "page" : undefined}
+                  className={chipClass(view === item.key)}
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </nav>
 
-      <Suspense
-        fallback={
-          <div className="mt-6">
-            <TableSkeleton rows={8} columns={6} />
+            <form action="/orders" className="relative w-full sm:w-72">
+              {/* Searching keeps the range and tab. */}
+              {Object.entries(current).map(([key, value]) =>
+                key !== "q" && value ? (
+                  <input key={key} type="hidden" name={key} value={value} />
+                ) : null
+              )}
+              <Search
+                className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted"
+                strokeWidth={2}
+                aria-hidden="true"
+              />
+              <input
+                type="search"
+                name="q"
+                defaultValue={q}
+                placeholder="Search orders, customers, phone, company"
+                aria-label="Search orders"
+                className="h-8 w-full rounded-lg border border-border-strong bg-surface pl-8 pr-3 text-[0.8125rem] outline-none transition placeholder:text-subtle focus:border-foreground/50 focus:ring-2 focus:ring-black/5"
+              />
+            </form>
           </div>
-        }
-      >
-        <OrdersSection ordersPromise={ordersPromise} />
-      </Suspense>
-    </main>
+
+          <p className="border-t border-border px-4 py-2 text-xs text-muted">
+            {range.from
+              ? `Placed ${formatRangeLabel(range.from, range.to)} · ${range.label} (IST)`
+              : "Every order, newest first"}
+            {q ? ` matching “${q}”` : ""}
+          </p>
+
+          <Suspense fallback={<TableSkeleton rows={10} columns={8} />}>
+            <OrdersSection
+              ordersPromise={ordersPromise}
+              current={current}
+              filtered={Boolean(q || view || range.from)}
+            />
+          </Suspense>
+        </section>
+      </PageBody>
+    </>
+  );
+}
+
+function StatsSkeleton() {
+  return (
+    <>
+      {["Orders", "Items ordered", "Sales", "To fulfil", "Orders fulfilled", "Orders delivered"].map(
+        (label) => (
+          <Stat key={label} label={label} value={<Skeleton className="inline-block h-4 w-10" />} />
+        )
+      )}
+    </>
   );
 }

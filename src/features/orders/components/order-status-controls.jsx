@@ -2,6 +2,7 @@
 
 import { useActionState, useState } from "react";
 import { Loader2 } from "lucide-react";
+import { buttonClass } from "@/components/ui/button";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { ORDER_STATUS } from "@/constants/enums";
 import { updateOrderStatus } from "../actions/update-order-status";
@@ -46,10 +47,8 @@ const ACTIONS = {
 };
 
 const TONES = {
-  primary:
-    "bg-brand text-white hover:bg-brand/90 disabled:cursor-not-allowed disabled:opacity-60",
-  danger:
-    "border border-danger/30 bg-surface text-danger hover:bg-danger/8 disabled:cursor-not-allowed disabled:opacity-60",
+  primary: "primary",
+  danger: "secondary",
 };
 
 export function OrderStatusControls({ orderId, allowed }) {
@@ -75,8 +74,8 @@ export function OrderStatusControls({ orderId, allowed }) {
   }
 
   return (
-    <div className="flex flex-col gap-3">
-      <div className="flex flex-wrap items-center gap-3">
+    <div className="flex flex-col gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         {options.map((status) => {
           const action = ACTIONS[status];
 
@@ -88,7 +87,11 @@ export function OrderStatusControls({ orderId, allowed }) {
               onClick={() =>
                 action.confirm ? setConfirming(status) : submit(status)
               }
-              className={`inline-flex h-11 items-center justify-center gap-2 rounded-lg px-5 font-nunito text-sm font-semibold transition ${TONES[action.tone]}`}
+              className={buttonClass(
+                TONES[action.tone],
+                "md",
+                action.tone === "danger" ? "text-danger" : ""
+              )}
             >
               {isPending && pendingStatus === status ? (
                 <>
@@ -106,7 +109,7 @@ export function OrderStatusControls({ orderId, allowed }) {
       {state?.error ? (
         <p
           role="alert"
-          className="rounded-lg bg-danger/8 px-3 py-2.5 font-nunito text-sm text-danger"
+          className="rounded-lg bg-badge-critical px-3 py-2 text-[0.8125rem] text-badge-critical-ink"
         >
           {state.error}
         </p>

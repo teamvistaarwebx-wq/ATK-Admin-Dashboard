@@ -1,5 +1,6 @@
 /**
- * The white panel every dashboard section sits in.
+ * The white panel every section sits in — Shopify's flat card: a hairline
+ * edge, a 1px drop, no border colour of its own.
  *
  * `title` / `subtitle` / `action` are optional so the same component covers
  * both a titled panel and a bare container, and `children` is never wrapped
@@ -11,18 +12,16 @@ export function Card({ title, subtitle, action, className = "", children }) {
 
   return (
     <section
-      className={`overflow-hidden rounded-xl border border-border bg-surface ${className}`}
+      className={`overflow-hidden rounded-xl bg-surface shadow-card ${className}`}
     >
       {hasHeader ? (
-        <div className="flex items-start justify-between gap-4 px-5 pt-5">
-          <div>
+        <div className="flex items-start justify-between gap-4 px-4 pt-4">
+          <div className="min-w-0">
             {title ? (
-              <h2 className="font-newsreader text-lg font-semibold text-brand">
-                {title}
-              </h2>
+              <h2 className="text-sm font-semibold text-foreground">{title}</h2>
             ) : null}
             {subtitle ? (
-              <p className="mt-0.5 font-nunito text-xs text-muted">{subtitle}</p>
+              <p className="mt-0.5 text-xs text-muted">{subtitle}</p>
             ) : null}
           </div>
 

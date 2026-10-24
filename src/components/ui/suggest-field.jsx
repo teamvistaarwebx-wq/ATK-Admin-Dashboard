@@ -20,8 +20,8 @@ import { POPOVER_LIST_CLASS, popoverPosition } from "./popover-position";
  * (and only the list, not the drawer).
  */
 const BASE =
-  "font-nunito h-11 w-full rounded-lg border bg-surface px-3.5 text-sm text-foreground outline-none transition placeholder:text-muted/70 focus:ring-2 disabled:bg-background";
-const NEUTRAL = "border-border focus:border-brand/50 focus:ring-brand/10";
+  "h-9 w-full rounded-lg border bg-surface px-3 text-sm text-foreground outline-none transition placeholder:text-muted/70 focus:ring-2 disabled:bg-background";
+const NEUTRAL = "border-border-strong focus:border-foreground/50 focus:ring-black/5";
 const INVALID = "border-danger focus:border-danger focus:ring-danger/10";
 
 export function SuggestField({
@@ -165,7 +165,7 @@ export function SuggestField({
     <div className={`flex flex-col gap-1.5 ${className}`}>
       <label
         htmlFor={inputId}
-        className="font-nunito text-xs font-semibold text-foreground"
+        className="text-xs font-semibold text-foreground"
       >
         {label}
         {required ? (
@@ -226,7 +226,7 @@ export function SuggestField({
             onClick={() => choose(index)}
             onPointerMove={() => setActiveIndex(index)}
             className={`cursor-pointer rounded-md px-3 py-2 transition-colors ${
-              index === activeIndex ? "bg-brand-soft text-brand" : "text-foreground"
+              index === activeIndex ? "bg-surface-hover text-foreground" : "text-foreground"
             }`}
           >
             <Highlighted text={match} query={value} />
@@ -235,7 +235,7 @@ export function SuggestField({
       </ul>
 
       {error ? (
-        <p id={messageId} role="alert" className="font-nunito text-xs text-danger">
+        <p id={messageId} role="alert" className="text-xs text-danger">
           {error}
         </p>
       ) : hint ? (

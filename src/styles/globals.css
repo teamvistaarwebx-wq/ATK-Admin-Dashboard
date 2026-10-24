@@ -1,24 +1,66 @@
 @import "tailwindcss";
 
+/**
+ * Design tokens.
+ *
+ * The admin follows Shopify's admin aesthetic: a cool grey page, flat white
+ * cards with a hairline edge, near-black ink and a single dark primary
+ * action. The brand maroon is an accent — links, the active chart series,
+ * focus rings — not the colour of every heading, which is what made the old
+ * screens read as a template.
+ */
 :root {
-  /* Page sits a shade off-white so the white panels read as cards. */
-  --background: #f7f7f8;
+  --background: #f1f1f1;
   --surface: #ffffff;
-  --foreground: #1c1c1c;
+  /* Table headers, input wells and the hover row. */
+  --surface-subdued: #f7f7f7;
+  --surface-hover: #f3f3f3;
+  --foreground: #303030;
+  --muted: #616161;
+  --subtle: #8a8a8a;
+  --border: #e3e3e3;
+  --border-strong: #cccccc;
+
+  /* Primary action — Shopify's charcoal button, not the brand colour. */
+  --primary: #303030;
+  --primary-hover: #1a1a1a;
+
+  /* Inline links — Shopify's blue, so a link never reads as a status. */
+  --link: #005bd3;
+
+  --sidebar: #1a1a1a;
+  --sidebar-hover: #2b2b2b;
+  --sidebar-active: #3a3a3a;
+  --sidebar-ink: #e3e3e3;
+  --sidebar-muted: #9a9a9a;
 
   --brand: #7e0917;
-  /* Soft brand wash behind the chart track and spec cells. */
   --brand-tint: #f9ebec;
-  /* One step warmer than brand-tint — quick-action buttons. */
   --brand-soft: #fbeef0;
 
   --gold: #fce9a0;
-  --muted: #6b7280;
-  --border: #ebebeb;
-  /* Unfilled rail behind a progress bar. */
-  --track: #d9d9d9;
-  --success: #22c55e;
-  --danger: #dc2626;
+  --track: #e3e3e3;
+  --success: #29845a;
+  --danger: #c70a24;
+
+  /* Badge fills, after Polaris' tones. Text sits on these at AA. */
+  --badge-neutral: #e3e3e3;
+  --badge-neutral-ink: #303030;
+  --badge-success: #cdfee1;
+  --badge-success-ink: #0c5132;
+  --badge-attention: #ffeb78;
+  --badge-attention-ink: #4f4700;
+  --badge-warning: #ffd6a4;
+  --badge-warning-ink: #5e4200;
+  --badge-critical: #fedad9;
+  --badge-critical-ink: #8e1f0b;
+  --badge-info: #e0f0ff;
+  --badge-info-ink: #00527c;
+
+  /* Chart series: this period in brand, the comparison in a quiet grey. */
+  --chart-current: #7e0917;
+  --chart-previous: #a8a8a8;
+  --chart-grid: #ebebeb;
 
   --gradient-gold: linear-gradient(
     179.79deg,
@@ -30,35 +72,72 @@
 
 /**
  * `inline` matters: the utilities emit the resolved value rather than another
- * var() hop, so `font-newsreader` still works inside an element that has
- * redefined --newsreader.
- *
- * next/font owns --newsreader and --nunito on <html>; the theme keys below are
- * what Tailwind turns into class names. Keeping the two sets of names distinct
- * avoids a self-referential `--font-nunito: var(--font-nunito)`.
+ * var() hop. next/font owns --inter on <html>.
  */
 @theme inline {
-  --font-newsreader: var(--newsreader), Georgia, "Times New Roman", serif;
-  --font-nunito: var(--nunito), ui-sans-serif, system-ui, sans-serif;
-  /* Admin screens are dense and data-heavy, so the sans face is the default
-     and the serif is opted into for titles and figures. */
-  --font-sans: var(--nunito), ui-sans-serif, system-ui, sans-serif;
-  --font-serif: var(--newsreader), Georgia, "Times New Roman", serif;
+  --font-sans: var(--inter), ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", sans-serif;
 
   --color-background: var(--background);
   --color-surface: var(--surface);
+  --color-surface-subdued: var(--surface-subdued);
+  --color-surface-hover: var(--surface-hover);
   --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-subtle: var(--subtle);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-link: var(--link);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-hover: var(--sidebar-hover);
+  --color-sidebar-active: var(--sidebar-active);
+  --color-sidebar-ink: var(--sidebar-ink);
+  --color-sidebar-muted: var(--sidebar-muted);
   --color-brand: var(--brand);
   --color-brand-tint: var(--brand-tint);
   --color-brand-soft: var(--brand-soft);
   --color-gold: var(--gold);
-  --color-muted: var(--muted);
-  --color-border: var(--border);
   --color-track: var(--track);
   --color-success: var(--success);
   --color-danger: var(--danger);
 
+  --color-badge-neutral: var(--badge-neutral);
+  --color-badge-neutral-ink: var(--badge-neutral-ink);
+  --color-badge-success: var(--badge-success);
+  --color-badge-success-ink: var(--badge-success-ink);
+  --color-badge-attention: var(--badge-attention);
+  --color-badge-attention-ink: var(--badge-attention-ink);
+  --color-badge-warning: var(--badge-warning);
+  --color-badge-warning-ink: var(--badge-warning-ink);
+  --color-badge-critical: var(--badge-critical);
+  --color-badge-critical-ink: var(--badge-critical-ink);
+  --color-badge-info: var(--badge-info);
+  --color-badge-info-ink: var(--badge-info-ink);
+
+  --shadow-card: 0 1px 0 0 rgba(26, 26, 26, 0.07),
+    0 0 0 1px rgba(26, 26, 26, 0.06);
+  --shadow-button: 0 1px 0 0 rgba(0, 0, 0, 0.08),
+    inset 0 -1px 0 0 rgba(0, 0, 0, 0.12);
+  --shadow-primary: inset 0 1px 0 0 rgba(255, 255, 255, 0.24),
+    inset 0 -1px 0 0 #000, 0 1px 0 0 rgba(0, 0, 0, 0.2);
+  --shadow-popover: 0 4px 6px -2px rgba(26, 26, 26, 0.2),
+    0 0 0 1px rgba(26, 26, 26, 0.08);
+
   --background-image-gold: var(--gradient-gold);
+}
+
+body {
+  font-size: 0.8125rem;
+  line-height: 1.25rem;
+  font-feature-settings: "cv11", "ss01";
+}
+
+/* One focus ring everywhere, keyboard only. */
+:focus-visible {
+  outline: 2px solid #005bd3;
+  outline-offset: 1px;
 }
 
 /**

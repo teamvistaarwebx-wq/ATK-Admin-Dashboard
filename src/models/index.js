@@ -14,3 +14,4 @@ export { OtpCode } from "./otp-code.model";
 export { AdminUser } from "./admin-user.model";
 export { Inquiry, generateInquiryNumber } from "./inquiry.model";
 export { RateLimit } from "./rate-limit.model";
+export { SiteSession } from "./site-session.model";

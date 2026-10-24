@@ -48,14 +48,14 @@ export default async function InventoryPage({ searchParams }) {
       >
         <Link
           href="/inventory/movements"
-          className="inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-border bg-surface px-4 text-sm font-semibold text-foreground transition hover:bg-background"
+          className="h-8 rounded-lg bg-surface px-3 text-[0.8125rem] font-semibold shadow-button ring-1 ring-border-strong/70 hover:bg-surface-hover inline-flex items-center justify-center gap-2 text-foreground transition"
         >
           <History className="h-4 w-4" strokeWidth={2} aria-hidden="true" />
           History
         </Link>
       </PageHeader>
 
-      <div className="px-6 py-6 sm:px-8">
+      <div className="mx-auto w-full max-w-[1400px] px-4 pb-10 sm:px-6">
         {/* No "never stocked" banner any more: the table is built from
             products, so an uncounted SKU is simply a row reading 0 with its
             own Adjust button. Nothing is hidden, so nothing needs announcing. */}

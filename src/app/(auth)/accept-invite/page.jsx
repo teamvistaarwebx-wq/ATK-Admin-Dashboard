@@ -16,7 +16,7 @@ export default async function AcceptInvitePage({ searchParams }) {
   if (!token || !email) {
     return (
       <div className="flex flex-col gap-4">
-        <h1 className="font-newsreader text-3xl font-semibold text-brand">
+        <h1 className="text-3xl font-semibold text-brand">
           Invite link incomplete
         </h1>
         <p className="text-sm leading-relaxed text-muted">
@@ -33,7 +33,7 @@ export default async function AcceptInvitePage({ searchParams }) {
   return (
     <div className="flex flex-col gap-8">
       <header className="flex flex-col gap-1.5">
-        <h1 className="font-newsreader text-3xl font-semibold text-brand">
+        <h1 className="text-3xl font-semibold text-brand">
           Welcome aboard
         </h1>
         <p className="text-sm text-muted">

@@ -128,7 +128,7 @@ export function ProductImageUploader({
 
   return (
     <div className="flex flex-col gap-2">
-      <p className="font-nunito text-xs font-semibold text-foreground">
+      <p className="text-xs font-semibold text-foreground">
         Photos
         <span className="text-danger" aria-hidden="true">
           {" "}
@@ -159,7 +159,7 @@ export function ProductImageUploader({
             />
 
             {index === 0 ? (
-              <figcaption className="absolute inset-x-0 bottom-0 bg-brand/85 py-0.5 text-center font-nunito text-[0.625rem] font-semibold uppercase tracking-wide text-white">
+              <figcaption className="absolute inset-x-0 bottom-0 bg-brand/85 py-0.5 text-center text-[0.625rem] font-semibold uppercase tracking-wide text-white">
                 Featured
               </figcaption>
             ) : (
@@ -200,7 +200,7 @@ export function ProductImageUploader({
             ) : (
               <ImagePlus className="h-5 w-5" strokeWidth={2} aria-hidden="true" />
             )}
-            <span className="font-nunito text-[0.625rem] font-semibold">
+            <span className="text-[0.625rem] font-semibold">
               {isBusy ? "Uploading" : "Add photo"}
             </span>
           </button>
@@ -218,7 +218,7 @@ export function ProductImageUploader({
 
       {/* An upload that just failed outranks "you have no photos" — it is the
           more recent and more specific thing to fix. */}
-      <p aria-live="polite" className="font-nunito text-xs text-muted">
+      <p aria-live="polite" className="text-xs text-muted">
         {uploadError || error ? (
           <span className="text-danger">{uploadError || error}</span>
         ) : (

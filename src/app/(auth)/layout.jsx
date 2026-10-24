@@ -20,7 +20,7 @@ export default function AuthLayout({ children }) {
         />
 
         <div className="max-w-sm">
-          <h2 className="font-newsreader text-3xl leading-snug text-white">
+          <h2 className="text-3xl leading-snug text-white">
             Gifts woven from the heart of artisans.
           </h2>
           <p className="mt-4 text-sm leading-relaxed text-white/70">

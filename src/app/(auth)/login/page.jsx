@@ -25,7 +25,7 @@ export default async function LoginPage({ searchParams }) {
       />
 
       <header className="flex flex-col gap-1.5">
-        <h1 className="font-newsreader text-3xl font-semibold text-brand">
+        <h1 className="text-3xl font-semibold text-brand">
           Sign in
         </h1>
         <p className="text-sm text-muted">

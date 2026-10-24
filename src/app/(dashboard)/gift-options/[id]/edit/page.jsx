@@ -35,10 +35,10 @@ export default async function EditGiftOptionPage({ params }) {
         }
       />
 
-      <div className="px-6 py-6 sm:px-8">
+      <div className="mx-auto w-full max-w-[1400px] px-4 pb-10 sm:px-6">
         <Link
           href="/gift-options"
-          className="font-nunito text-sm text-muted underline-offset-2 hover:underline"
+          className="text-sm text-muted underline-offset-2 hover:underline"
         >
           ← All gift options
         </Link>

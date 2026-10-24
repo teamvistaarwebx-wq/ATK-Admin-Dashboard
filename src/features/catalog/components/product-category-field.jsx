@@ -63,7 +63,7 @@ export function CategorySelect({
 export function FieldSkeleton({ label }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <span className="font-nunito text-xs font-semibold text-foreground">
+      <span className="text-xs font-semibold text-foreground">
         {label}
       </span>
       <div

@@ -18,7 +18,7 @@ export function InventoryTable({ items, buildAdjustHref }) {
   return (
     <div className="overflow-x-auto rounded-xl border border-border bg-surface">
       <table className="w-full min-w-3xl text-left text-sm">
-        <thead className="border-b border-border bg-background font-nunito text-xs uppercase tracking-wide text-muted">
+        <thead className="border-b border-border bg-background text-xs uppercase tracking-wide text-muted">
           <tr>
             <th scope="col" className="px-4 py-3 font-semibold">Product</th>
             <th scope="col" className="px-4 py-3 text-right font-semibold">On hand</th>
@@ -54,7 +54,7 @@ export function InventoryTable({ items, buildAdjustHref }) {
                     <p className="truncate font-semibold text-foreground">
                       {row.title}
                     </p>
-                    <p className="truncate font-nunito text-xs text-muted">
+                    <p className="truncate text-xs text-muted">
                       {row.sku}
                     </p>
                   </div>

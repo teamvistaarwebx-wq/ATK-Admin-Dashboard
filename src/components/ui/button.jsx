@@ -1,17 +1,34 @@
 const BASE =
-  "inline-flex items-center justify-center gap-2 rounded-lg text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60";
+  "inline-flex shrink-0 items-center justify-center gap-1.5 rounded-lg font-semibold whitespace-nowrap transition disabled:cursor-not-allowed disabled:opacity-50";
 
+/**
+ * Shopify's button set: one charcoal primary per screen, white secondaries
+ * with a pressed-in bottom edge, and a plain text style for tertiary links.
+ * Brand red is kept out of buttons on purpose — it is the accent, and an
+ * accent on every control stops meaning anything.
+ */
 const VARIANTS = {
-  primary: "bg-brand text-white hover:bg-brand/90",
-  secondary: "bg-brand-soft text-brand hover:bg-brand-tint",
-  ghost: "text-brand hover:bg-brand-soft",
-  outline: "border border-border bg-surface text-foreground hover:bg-background",
+  primary: "bg-primary text-white shadow-primary hover:bg-primary-hover",
+  secondary:
+    "bg-surface text-foreground shadow-button ring-1 ring-border-strong/70 hover:bg-surface-hover",
+  plain: "text-foreground hover:bg-surface-hover",
+  critical: "bg-danger text-white shadow-primary hover:bg-danger/90",
+  // Kept so existing call sites read the same; maps onto the new set.
+  ghost: "text-foreground hover:bg-surface-hover",
+  outline:
+    "bg-surface text-foreground shadow-button ring-1 ring-border-strong/70 hover:bg-surface-hover",
 };
 
 const SIZES = {
-  sm: "h-9 px-3",
-  md: "h-11 px-4",
+  sm: "h-7 px-2.5 text-xs",
+  md: "h-8 px-3 text-[0.8125rem]",
+  lg: "h-10 px-4 text-sm",
 };
+
+/** For a <Link> that should look like a button. */
+export function buttonClass(variant = "primary", size = "md", className = "") {
+  return `${BASE} ${VARIANTS[variant] ?? VARIANTS.primary} ${SIZES[size] ?? SIZES.md} ${className}`;
+}
 
 export function Button({
   variant = "primary",
@@ -19,10 +36,5 @@ export function Button({
   className = "",
   ...props
 }) {
-  return (
-    <button
-      className={`${BASE} ${VARIANTS[variant] ?? VARIANTS.primary} ${SIZES[size] ?? SIZES.md} ${className}`}
-      {...props}
-    />
-  );
+  return <button className={buttonClass(variant, size, className)} {...props} />;
 }

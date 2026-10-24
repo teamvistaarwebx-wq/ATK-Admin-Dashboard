@@ -1,35 +1,23 @@
 import { PageHeaderSkeleton, Skeleton } from "@/components/ui/skeleton";
-import { KpiRowSkeleton } from "@/features/dashboard/components/panel-skeletons";
 
 /**
- * The dashboard's own route-transition fallback.
- *
- * It mirrors the panel grid rather than showing a generic block, because the
- * page it replaces already streams panel by panel — a fallback of a different
- * shape would make the screen reflow twice on the way in. Every other section
- * has its own `loading.jsx` for the same reason; this file is not a shared
- * default.
+ * The home screen's route-transition fallback, the same shape as the page so
+ * the screen does not reflow twice on the way in.
  */
 export default function DashboardLoading() {
   return (
     <>
       <PageHeaderSkeleton />
 
-      <div className="flex flex-col gap-5 px-6 py-6 sm:px-8">
-        <KpiRowSkeleton />
-
-        <div className="grid gap-5 lg:grid-cols-3">
-          <div className="flex flex-col gap-5 lg:col-span-2">
-            <Skeleton className="h-96 rounded-xl" />
-            <Skeleton className="h-80 rounded-xl" />
-          </div>
-
-          <div className="flex flex-col gap-5">
-            <Skeleton className="h-40 rounded-xl" />
-            <Skeleton className="h-64 rounded-xl" />
-            <Skeleton className="h-64 rounded-xl" />
-            <Skeleton className="h-56 rounded-xl" />
-          </div>
+      <div className="mx-auto flex w-full max-w-[1400px] flex-col gap-4 px-4 pb-10 sm:px-6">
+        <div className="flex gap-2">
+          <Skeleton className="h-8 w-36 rounded-lg" />
+          <Skeleton className="h-8 w-44 rounded-lg" />
+        </div>
+        <Skeleton className="h-[22rem] rounded-xl" />
+        <div className="grid gap-4 lg:grid-cols-3">
+          <Skeleton className="h-96 rounded-xl lg:col-span-2" />
+          <Skeleton className="h-96 rounded-xl" />
         </div>
       </div>
     </>

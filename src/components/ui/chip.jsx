@@ -1,13 +1,13 @@
 /**
- * The pill-shaped filter buttons above the product and inventory tables.
+ * The view tabs above the product and inventory tables — Shopify's
+ * "All · Active · Draft" strip at the top of an index table.
  *
  * One definition, because two lists that filter the same way should not drift
  * into looking different.
  */
-const BASE = "rounded-full border px-4 py-2 font-nunito text-sm transition";
-const ON = "border-brand bg-brand-tint font-semibold text-brand";
-const OFF =
-  "border-border bg-surface text-foreground hover:border-brand/40 hover:bg-brand-soft";
+const BASE = "rounded-lg px-3 py-1 text-xs font-semibold transition";
+const ON = "bg-black/[0.08] text-foreground";
+const OFF = "text-muted hover:bg-black/[0.05] hover:text-foreground";
 
 export function chipClass(active) {
   return `${BASE} ${active ? ON : OFF}`;

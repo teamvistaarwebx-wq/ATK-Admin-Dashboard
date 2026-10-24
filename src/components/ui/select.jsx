@@ -225,19 +225,19 @@ export function Select({
         disabled={disabled}
         onClick={() => (open ? hide() : show())}
         onKeyDown={handleKeyDown}
-        className={`group inline-flex ${size === "sm" ? "h-9.5" : "h-11"} w-full items-center justify-between gap-2 rounded-lg border bg-surface px-3 text-left font-nunito text-sm outline-none transition focus-visible:ring-2 disabled:cursor-not-allowed disabled:bg-background disabled:opacity-70 ${
+        className={`group inline-flex ${size === "sm" ? "h-8" : "h-9"} w-full items-center justify-between gap-2 rounded-lg border bg-surface px-3 text-left text-sm outline-none transition focus-visible:ring-2 disabled:cursor-not-allowed disabled:bg-background disabled:opacity-70 ${
           invalid
             ? "border-danger focus-visible:border-danger focus-visible:ring-danger/10"
             : open
-              ? "border-brand/50 ring-2 ring-brand/10"
-              : "border-border hover:border-brand/30 focus-visible:border-brand/50 focus-visible:ring-brand/10"
+              ? "border-foreground/50 ring-2 ring-black/5"
+              : "border-border-strong hover:border-foreground/40 focus-visible:border-foreground/50 focus-visible:ring-black/5"
         } ${className}`}
       >
         <span className={`truncate ${selected ? "text-foreground" : "text-muted"}`}>
           {selected ? selected.label : placeholder}
         </span>
         <ChevronDown
-          className={`h-4 w-4 shrink-0 text-muted transition ${open ? "rotate-180 text-brand" : ""}`}
+          className={`h-4 w-4 shrink-0 text-muted transition ${open ? "rotate-180 text-foreground" : ""}`}
           strokeWidth={2}
           aria-hidden="true"
         />
@@ -323,12 +323,12 @@ function Option({ option, index, listId, current, activeIndex, onHover, onChoose
       onClick={() => onChoose(index)}
       onPointerMove={() => onHover(index)}
       className={`flex cursor-pointer items-center justify-between gap-3 rounded-md px-3 py-2 transition-colors ${
-        isActive ? "bg-brand-soft" : ""
-      } ${isSelected ? "font-semibold text-brand" : "text-foreground"}`}
+        isActive ? "bg-surface-hover" : ""
+      } ${isSelected ? "font-semibold text-foreground" : "text-foreground"}`}
     >
       <span>{option.label}</span>
       {isSelected ? (
-        <Check className="h-4 w-4 shrink-0 text-brand" strokeWidth={2} aria-hidden="true" />
+        <Check className="h-4 w-4 shrink-0 text-foreground" strokeWidth={2} aria-hidden="true" />
       ) : null}
     </li>
   );

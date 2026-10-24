@@ -1,8 +1,8 @@
 /** Placeholder body for the sections that are not built yet. */
 export function EmptyState({ title, description }) {
   return (
-    <div className="rounded-xl border border-dashed border-border bg-surface px-6 py-16 text-center">
-      <p className="font-newsreader text-lg font-semibold text-brand">
+    <div className="rounded-xl bg-surface px-6 py-16 text-center shadow-card">
+      <p className="text-base font-semibold text-foreground">
         {title}
       </p>
       {description ? (

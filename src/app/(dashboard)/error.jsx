@@ -16,11 +16,11 @@
 export default function DashboardError({ error, reset }) {
   return (
     <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4 px-6 text-center">
-      <h2 className="font-newsreader text-xl font-semibold text-brand">
+      <h2 className="text-xl font-semibold text-brand">
         Something went wrong
       </h2>
 
-      <p className="max-w-md font-nunito text-sm text-muted">
+      <p className="max-w-md text-sm text-muted">
         This screen could not be loaded. It is usually a dropped database
         connection, and trying again is often enough.
       </p>
@@ -30,7 +30,7 @@ export default function DashboardError({ error, reset }) {
           matches this failure to a line in the server logs, so it is worth
           showing to whoever is about to report the problem. */}
       {error?.digest ? (
-        <p className="font-nunito text-xs text-muted">
+        <p className="text-xs text-muted">
           Reference: <code>{error.digest}</code>
         </p>
       ) : null}
@@ -38,7 +38,7 @@ export default function DashboardError({ error, reset }) {
       <button
         type="button"
         onClick={reset}
-        className="mt-2 inline-flex h-11 items-center justify-center rounded-lg bg-brand px-5 text-sm font-semibold text-white transition hover:bg-brand/90"
+        className="h-8 rounded-lg bg-primary px-3 text-[0.8125rem] font-semibold shadow-primary hover:bg-primary-hover mt-2 inline-flex items-center justify-center text-white transition"
       >
         Try again
       </button>

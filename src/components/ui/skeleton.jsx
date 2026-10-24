@@ -16,7 +16,7 @@
 export function Skeleton({ className = "" }) {
   return (
     <div
-      className={`animate-pulse rounded-md bg-border/60 ${className}`}
+      className={`animate-pulse rounded-md bg-black/[0.06] ${className}`}
       aria-hidden="true"
     />
   );
@@ -30,13 +30,11 @@ export function Skeleton({ className = "" }) {
  */
 export function PageHeaderSkeleton({ hasAction = false }) {
   return (
-    <header className="sticky top-0 z-20 flex flex-wrap items-start justify-between gap-4 border-b border-border bg-background px-6 py-5 sm:px-8">
-      <div>
-        <Skeleton className="h-8 w-40" />
-        <Skeleton className="mt-2 h-4 w-72 max-w-full" />
+    <header className="sticky top-0 z-20 bg-background">
+      <div className="mx-auto flex w-full max-w-[1400px] flex-wrap items-center justify-between gap-3 px-4 py-4 sm:px-6">
+        <Skeleton className="h-7 w-40" />
+        {hasAction ? <Skeleton className="h-8 w-28 rounded-lg" /> : null}
       </div>
-
-      {hasAction ? <Skeleton className="h-11 w-36 rounded-lg" /> : null}
     </header>
   );
 }
@@ -44,11 +42,9 @@ export function PageHeaderSkeleton({ hasAction = false }) {
 /** The search box and chip row above a table. */
 export function FilterBarSkeleton({ chips = 6 }) {
   return (
-    <div className="flex flex-wrap items-center gap-3">
-      <Skeleton className="h-10 w-72 max-w-full rounded-full" />
-
+    <div className="flex flex-wrap items-center gap-2">
       {Array.from({ length: chips }, (_, i) => (
-        <Skeleton key={i} className="h-10 w-28 rounded-full" />
+        <Skeleton key={i} className="h-7 w-20 rounded-lg" />
       ))}
     </div>
   );
@@ -63,8 +59,8 @@ export function FilterBarSkeleton({ chips = 6 }) {
  */
 export function TableSkeleton({ rows = 8, columns = 5 }) {
   return (
-    <div className="overflow-hidden rounded-xl border border-border bg-surface">
-      <div className="flex gap-4 border-b border-border bg-background px-4 py-3">
+    <div className="overflow-hidden rounded-xl bg-surface shadow-card">
+      <div className="flex gap-4 border-b border-border bg-surface-subdued px-4 py-3">
         {Array.from({ length: columns }, (_, i) => (
           <Skeleton key={i} className="h-3 flex-1" />
         ))}
@@ -121,7 +117,9 @@ export function PageSkeleton({ hasAction = false, children }) {
   return (
     <>
       <PageHeaderSkeleton hasAction={hasAction} />
-      <div className="px-6 py-6 sm:px-8">{children}</div>
+      <div className="mx-auto w-full max-w-[1400px] px-4 pb-10 sm:px-6">
+        {children}
+      </div>
     </>
   );
 }

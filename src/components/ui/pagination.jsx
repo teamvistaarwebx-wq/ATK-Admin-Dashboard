@@ -16,7 +16,7 @@ export function Pagination({ page, totalPages, total, noun, buildHref }) {
   return (
     <nav
       aria-label="Pagination"
-      className="mt-4 flex flex-wrap items-center justify-between gap-3 font-nunito text-sm"
+      className="mt-4 flex flex-wrap items-center justify-between gap-3 text-xs"
     >
       <p className="text-muted">
         Page {page} of {totalPages} · {total}{" "}
@@ -40,7 +40,7 @@ export function Pagination({ page, totalPages, total, noun, buildHref }) {
 function PageLink({ href, disabled, children }) {
   if (disabled) {
     return (
-      <span className="rounded-lg border border-border px-3 py-1.5 text-muted opacity-50">
+      <span className="rounded-lg px-3 py-1 text-xs font-semibold text-muted opacity-50 ring-1 ring-border">
         {children}
       </span>
     );
@@ -49,7 +49,7 @@ function PageLink({ href, disabled, children }) {
   return (
     <Link
       href={href}
-      className="rounded-lg border border-border bg-surface px-3 py-1.5 text-foreground transition hover:border-brand hover:text-brand"
+      className="rounded-lg bg-surface px-3 py-1 text-xs font-semibold text-foreground shadow-button ring-1 ring-border-strong/70 transition hover:bg-surface-hover"
     >
       {children}
     </Link>

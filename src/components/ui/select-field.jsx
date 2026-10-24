@@ -36,7 +36,7 @@ export function SelectField({
       <label
         id={labelId}
         htmlFor={id}
-        className="font-nunito text-xs font-semibold text-foreground"
+        className="text-xs font-semibold text-foreground"
       >
         {label}
         {required ? (
@@ -62,7 +62,7 @@ export function SelectField({
       />
 
       {error ? (
-        <p id={messageId} role="alert" className="font-nunito text-xs text-danger">
+        <p id={messageId} role="alert" className="text-xs text-danger">
           {error}
         </p>
       ) : hint ? (

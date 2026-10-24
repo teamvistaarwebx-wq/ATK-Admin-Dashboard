@@ -17,7 +17,7 @@ export async function GET(request) {
 
     return ok(
       await getOrders({
-        status: params.get("status") ?? "",
+        view: params.get("view") ?? params.get("status") ?? "",
         q: params.get("q") ?? "",
         page: params.get("page") ?? "",
         limit: params.get("limit") ?? "",

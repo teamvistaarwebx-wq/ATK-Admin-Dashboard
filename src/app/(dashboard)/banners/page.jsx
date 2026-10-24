@@ -32,13 +32,13 @@ export default async function BannersPage() {
       >
         <Link
           href="/banners/new"
-          className="inline-flex h-11 items-center justify-center rounded-lg bg-brand px-4 text-sm font-semibold text-white transition hover:bg-brand/90"
+          className="h-8 rounded-lg bg-primary px-3 text-[0.8125rem] font-semibold shadow-primary hover:bg-primary-hover inline-flex items-center justify-center text-white transition"
         >
           New banner
         </Link>
       </PageHeader>
 
-      <div className="px-6 py-6 sm:px-8">
+      <div className="mx-auto w-full max-w-[1400px] px-4 pb-10 sm:px-6">
         {banners.length === 0 ? (
           <EmptyState
             title="No banners yet"
@@ -64,22 +64,22 @@ export default async function BannersPage() {
                     </Link>
 
                     {banner.isActive ? (
-                      <span className="rounded-full bg-emerald-100 px-2.5 py-1 font-nunito text-xs font-medium text-emerald-800">
+                      <span className="rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-medium text-emerald-800">
                         Live
                       </span>
                     ) : (
-                      <span className="rounded-full bg-gray-100 px-2.5 py-1 font-nunito text-xs font-medium text-gray-500">
+                      <span className="rounded-full bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-500">
                         Draft
                       </span>
                     )}
                   </div>
 
-                  <p className="mt-1 font-nunito text-xs text-muted">
+                  <p className="mt-1 text-xs text-muted">
                     Updated {formatDateTime(banner.updatedAt)}
                   </p>
 
                   {banner.desktop?.width ? (
-                    <p className="mt-0.5 font-nunito text-xs text-muted">
+                    <p className="mt-0.5 text-xs text-muted">
                       Desktop {banner.desktop.width} × {banner.desktop.height}
                       {banner.mobile?.width
                         ? ` · Mobile ${banner.mobile.width} × ${banner.mobile.height}`
@@ -126,7 +126,7 @@ function BannerThumb({ image, label, narrow = false }) {
           />
         ) : null}
       </div>
-      <figcaption className="mt-1 text-center font-nunito text-[0.625rem] uppercase tracking-wide text-muted">
+      <figcaption className="mt-1 text-center text-[0.625rem] uppercase tracking-wide text-muted">
         {label}
       </figcaption>
     </figure>

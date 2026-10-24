@@ -21,7 +21,7 @@ export default async function SettingsPage() {
         subtitle="Who can sign in to this admin, and what they can reach."
       />
 
-      <div className="flex flex-col gap-6 px-6 py-6 sm:px-8">
+      <div className="flex flex-col gap-6 mx-auto w-full max-w-[1400px] px-4 pb-10 sm:px-6">
         {isSuperAdmin ? (
           <Card
             title="Invite a team member"
