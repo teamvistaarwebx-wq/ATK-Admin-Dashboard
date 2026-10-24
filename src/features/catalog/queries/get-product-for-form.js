@@ -26,7 +26,7 @@ const FORM_FIELDS =
   "shortDescription details images price compareAtPrice costPrice taxable " +
   "taxClass hsnCode trackInventory allowBackorder lowStockThreshold weight " +
   "isGiftable allowGiftMessage giftWrapAvailable giftBoxCompatible " +
-  "internalNotes status fulfillment";
+  "internalNotes status fulfillment seo";
 
 export async function getProductForForm(id) {
   if (!mongoose.Types.ObjectId.isValid(id)) return null;
@@ -42,22 +42,31 @@ export async function getProductForForm(id) {
   if (!doc) return null;
 
   /**
-   * Read-only on the edit form: it is shown so somebody knows where they
-   * stand, with a link to the Inventory screen where a change is logged with a
-   * reason. Summed across warehouses, matching how availability is counted
-   * everywhere else.
+   * Editable on the form, as in Shopify: the product page is where stock is
+   * set, with no separate trip to Inventory. The save turns a changed count
+   * into a logged adjustment (see saveProduct). Summed across warehouses,
+   * matching how availability is counted everywhere else; `reserved` is shown
+   * beside it so nobody counts held stock as gone.
    */
   const [stock] = await Inventory.aggregate([
     { $match: { productId: doc._id } },
-    { $group: { _id: null, onHand: { $sum: "$onHand" } } },
+    {
+      $group: {
+        _id: null,
+        onHand: { $sum: "$onHand" },
+        reserved: { $sum: "$reserved" },
+      },
+    },
   ]);
 
   return {
     onHand: stock?.onHand ?? 0,
+    reserved: stock?.reserved ?? 0,
     id: String(doc._id),
     title: doc.title ?? "",
-    // Read-only in the drawer. The slug is the product's public web address,
-    // so it is shown but never re-editable; the SKU is generated.
+    // Read-only in the drawer once saved. The slug is the product's public
+    // web address and the SKU keys its inventory rows; changing either would
+    // orphan what points at it.
     slug: doc.slug ?? "",
     sku: doc.sku ?? "",
 
@@ -100,6 +109,8 @@ export async function getProductForForm(id) {
     giftBoxCompatible: Boolean(doc.giftBoxCompatible),
 
     internalNotes: doc.internalNotes ?? "",
+    seoTitle: doc.seo?.metaTitle ?? "",
+    seoDescription: doc.seo?.metaDescription ?? "",
     status: doc.status ?? "",
     // Older products have no field at all — they are in stock.
     fulfillment: doc.fulfillment ?? FULFILLMENT.IN_STOCK,

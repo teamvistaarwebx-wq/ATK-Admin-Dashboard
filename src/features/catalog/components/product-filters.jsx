@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, useTransition } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { chipClass } from "@/components/ui/chip";
 import { STOCK_FILTER } from "@/constants/catalog-query";
 
 /**
@@ -22,15 +23,16 @@ import { STOCK_FILTER } from "@/constants/catalog-query";
 const SEARCH_DEBOUNCE_MS = 300;
 
 const STOCK_CHIPS = [
-  { value: STOCK_FILTER.ALL, label: "All stock" },
+  { value: STOCK_FILTER.ALL, label: "All" },
   { value: STOCK_FILTER.IN, label: "In stock" },
   { value: STOCK_FILTER.OUT, label: "Sold out" },
 ];
 
-const CHIP = "rounded-full border px-4 py-2 text-sm transition";
-const CHIP_ON = "border-brand bg-brand-tint font-semibold text-brand";
-const CHIP_OFF =
-  "border-border bg-surface text-foreground hover:border-brand/40 hover:bg-brand-soft";
+/** Category filters: Shopify's dashed-outline filter pills. */
+const PILL = "rounded-lg border px-2.5 py-0.5 text-xs font-medium transition";
+const PILL_ON = "border-foreground bg-foreground text-white";
+const PILL_OFF =
+  "border-dashed border-border-strong text-muted hover:border-foreground/50 hover:text-foreground";
 
 export function ProductFilters({
   q,
@@ -100,12 +102,38 @@ export function ProductFilters({
   }
 
   return (
-    <>
-      <div className="flex flex-wrap items-center gap-3">
-        <div className="relative">
+    <section className="overflow-hidden rounded-xl bg-surface shadow-card">
+      <div className="flex flex-wrap items-center justify-between gap-2 px-2 py-2">
+        {/* Made to order has no stock to filter by, so its strip is a lone
+            "All" tab. */}
+        <div className="flex flex-wrap items-center gap-1" role="group" aria-label="Stock">
+          {(showStock ? STOCK_CHIPS : STOCK_CHIPS.slice(0, 1)).map((chip) => {
+            const active = chip.value === stock;
+
+            return (
+              <button
+                key={chip.value}
+                type="button"
+                aria-pressed={active}
+                // "All" is the default, so it drops the param instead of
+                // spelling it out in the URL.
+                onClick={() =>
+                  applyNow({
+                    stock: chip.value === STOCK_FILTER.ALL ? "" : chip.value,
+                  })
+                }
+                className={chipClass(active)}
+              >
+                {chip.label}
+              </button>
+            );
+          })}
+        </div>
+
+        <div className="relative w-full sm:w-72">
           <span
             aria-hidden="true"
-            className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-muted"
+            className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-muted"
           >
             {searchIcon}
           </span>
@@ -114,62 +142,44 @@ export function ProductFilters({
             type="search"
             value={term}
             onChange={handleSearchChange}
-            placeholder="Search products…"
+            placeholder="Search products"
             aria-label="Search products"
-            className="w-72 max-w-full rounded-full border border-border bg-surface py-2.5 pl-10 pr-4 text-sm text-foreground outline-none transition placeholder:text-muted focus:border-brand"
+            className="h-8 w-full rounded-lg border border-border-strong bg-surface pl-8 pr-3 text-[0.8125rem] text-foreground outline-none transition placeholder:text-subtle focus:border-foreground/50 focus:ring-2 focus:ring-black/5"
           />
         </div>
-
-        {subcategories.map((sub) => {
-          const active = sub.slug === subcategory;
-
-          return (
-            <button
-              key={sub.slug}
-              type="button"
-              aria-pressed={active}
-              // Clicking the lit chip clears it — the row doubles as its own
-              // "all categories" control, so it needs no extra chip.
-              onClick={() => applyNow({ subcategory: active ? "" : sub.slug })}
-              className={`${CHIP} ${active ? CHIP_ON : CHIP_OFF}`}
-            >
-              {sub.name}
-            </button>
-          );
-        })}
-
-        {/* Made to order has no stock to filter by. */}
-        {(showStock ? STOCK_CHIPS : []).map((chip) => {
-          const active = chip.value === stock;
-
-          return (
-            <button
-              key={chip.value}
-              type="button"
-              aria-pressed={active}
-              // "All stock" is the default, so it drops the param instead of
-              // spelling it out in the URL.
-              onClick={() =>
-                applyNow({
-                  stock: chip.value === STOCK_FILTER.ALL ? "" : chip.value,
-                })
-              }
-              className={`${CHIP} ${active ? CHIP_ON : CHIP_OFF}`}
-            >
-              {chip.label}
-            </button>
-          );
-        })}
       </div>
+
+      {subcategories.length > 0 ? (
+        <div className="flex flex-wrap items-center gap-1.5 border-t border-border px-3 py-2">
+          <span className="mr-1 text-xs text-muted">Category</span>
+          {subcategories.map((sub) => {
+            const active = sub.slug === subcategory;
+
+            return (
+              <button
+                key={sub.slug}
+                type="button"
+                aria-pressed={active}
+                // Clicking the lit pill clears it — the row doubles as its own
+                // "all categories" control, so it needs no extra pill.
+                onClick={() => applyNow({ subcategory: active ? "" : sub.slug })}
+                className={`${PILL} ${active ? PILL_ON : PILL_OFF}`}
+              >
+                {sub.name}
+              </button>
+            );
+          })}
+        </div>
+      ) : null}
 
       <div
         aria-busy={isPending}
-        className={`mt-6 transition-opacity duration-150 ${
+        className={`transition-opacity duration-150 ${
           isPending ? "opacity-50" : "opacity-100"
         }`}
       >
         {children}
       </div>
-    </>
+    </section>
   );
 }

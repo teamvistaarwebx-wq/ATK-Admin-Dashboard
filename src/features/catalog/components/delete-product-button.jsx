@@ -50,7 +50,7 @@ export function DeleteProductButton({ id, title, icon }) {
         type="button"
         onClick={() => setOpen(true)}
         aria-label={`Delete ${title}`}
-        className="rounded-md p-2 text-danger transition hover:bg-danger/10"
+        className="rounded-lg p-1.5 text-muted transition hover:bg-badge-critical hover:text-danger"
       >
         {icon}
       </button>

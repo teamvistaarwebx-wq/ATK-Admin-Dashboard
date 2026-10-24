@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import Link from "next/link";
-import { Search } from "lucide-react";
+import { Search, Tag } from "lucide-react";
+import { buttonClass } from "@/components/ui/button";
 import { PageHeader } from "@/components/layout/page-header";
 import { FilterBarSkeleton, TableSkeleton } from "@/components/ui/skeleton";
 import { ProductDrawer } from "@/features/catalog/components/product-drawer";
@@ -92,8 +93,15 @@ export default async function ProductsPage({ searchParams }) {
     <>
       <PageHeader
         title="Products"
-        subtitle="Add products, update photos and details, and mark items sold out."
+        icon={<Tag className="h-5 w-5" strokeWidth={2} />}
       >
+        {/* A plain link — a download, not a page for the router. */}
+        <a href="/api/products/export" download className={buttonClass("secondary")}>
+          Export
+        </a>
+        <Link href="/products/import" className={buttonClass("secondary")}>
+          Import
+        </Link>
         <Link
           href={buildProductsHref({
             q,
@@ -102,9 +110,9 @@ export default async function ProductsPage({ searchParams }) {
             page,
             drawer: { new: "1" },
           })}
-          className="h-8 rounded-lg bg-primary px-3 text-[0.8125rem] font-semibold shadow-primary hover:bg-primary-hover inline-flex items-center justify-center text-white transition"
+          className={buttonClass("primary")}
         >
-          + Add Product
+          Add product
         </Link>
       </PageHeader>
 
@@ -118,7 +126,7 @@ export default async function ProductsPage({ searchParams }) {
           fallback={
             <>
               <FilterBarSkeleton />
-              <div className="mt-6">
+              <div className="mt-3">
                 <TableSkeleton rows={8} columns={5} />
               </div>
             </>

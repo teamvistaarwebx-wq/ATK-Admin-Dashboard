@@ -16,16 +16,16 @@ const HISTORY_ICON = <History className="h-4 w-4" strokeWidth={2} />;
 
 export function InventoryTable({ items, buildAdjustHref }) {
   return (
-    <div className="overflow-x-auto rounded-xl border border-border bg-surface">
-      <table className="w-full min-w-3xl text-left text-sm">
-        <thead className="border-b border-border bg-background text-xs uppercase tracking-wide text-muted">
+    <div className="overflow-x-auto">
+      <table className="w-full min-w-3xl text-left text-[0.8125rem]">
+        <thead className="border-y border-border bg-surface-subdued text-xs text-muted">
           <tr>
-            <th scope="col" className="px-4 py-3 font-semibold">Product</th>
-            <th scope="col" className="px-4 py-3 text-right font-semibold">On hand</th>
-            <th scope="col" className="px-4 py-3 text-right font-semibold">Held</th>
-            <th scope="col" className="px-4 py-3 text-right font-semibold">Available</th>
-            <th scope="col" className="px-4 py-3 font-semibold">Status</th>
-            <th scope="col" className="px-4 py-3">
+            <th scope="col" className="px-4 py-2 font-medium">Product</th>
+            <th scope="col" className="px-4 py-2 text-right font-medium">On hand</th>
+            <th scope="col" className="px-4 py-2 text-right font-medium">Held</th>
+            <th scope="col" className="px-4 py-2 text-right font-medium">Available</th>
+            <th scope="col" className="px-4 py-2 font-medium">Status</th>
+            <th scope="col" className="px-4 py-2">
               <span className="sr-only">Actions</span>
             </th>
           </tr>
@@ -33,10 +33,10 @@ export function InventoryTable({ items, buildAdjustHref }) {
 
         <tbody className="divide-y divide-border">
           {items.map((row) => (
-            <tr key={row.id} className="transition hover:bg-background">
-              <td className="px-4 py-3">
+            <tr key={row.id} className="transition hover:bg-surface-subdued">
+              <td className="px-4 py-2">
                 <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 shrink-0 overflow-hidden rounded-md border border-border bg-background">
+                  <div className="h-10 w-10 shrink-0 overflow-hidden rounded-lg border border-border bg-surface-subdued">
                     {row.imageUrl ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img
@@ -61,11 +61,11 @@ export function InventoryTable({ items, buildAdjustHref }) {
                 </div>
               </td>
 
-              <td className="px-4 py-3 text-right tabular-nums text-foreground">
+              <td className="px-4 py-2 text-right tabular-nums text-foreground">
                 {row.onHand}
               </td>
 
-              <td className="px-4 py-3 text-right tabular-nums text-muted">
+              <td className="px-4 py-2 text-right tabular-nums text-muted">
                 {/* A dash reads better than a 0 in a column that is usually
                     empty — it says "nothing to see", not "a measured zero". */}
                 {row.reserved > 0 ? row.reserved : "—"}
@@ -79,7 +79,7 @@ export function InventoryTable({ items, buildAdjustHref }) {
                 {row.available}
               </td>
 
-              <td className="px-4 py-3">
+              <td className="px-4 py-2">
                 <AvailabilityPill
                   available={row.available}
                   threshold={row.threshold}
@@ -88,12 +88,12 @@ export function InventoryTable({ items, buildAdjustHref }) {
                 />
               </td>
 
-              <td className="px-4 py-3">
+              <td className="px-4 py-2">
                 <div className="flex items-center justify-end gap-1">
                   <Link
                     href={`/inventory/movements?sku=${encodeURIComponent(row.sku)}`}
                     aria-label={`History for ${row.sku}`}
-                    className="rounded-md p-2 text-muted transition hover:bg-background hover:text-brand"
+                    className="rounded-lg p-1.5 text-muted transition hover:bg-black/5 hover:text-foreground"
                   >
                     {HISTORY_ICON}
                   </Link>
@@ -101,7 +101,7 @@ export function InventoryTable({ items, buildAdjustHref }) {
                   <Link
                     href={buildAdjustHref(row.id)}
                     aria-label={`Adjust stock for ${row.sku}`}
-                    className="rounded-md p-2 text-brand transition hover:bg-brand-soft"
+                    className="rounded-lg p-1.5 text-muted transition hover:bg-black/5 hover:text-foreground"
                   >
                     {ADJUST_ICON}
                   </Link>

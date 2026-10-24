@@ -15,7 +15,7 @@ import { STOCK_VIEW } from "@/constants/inventory";
 const SEARCH_DEBOUNCE_MS = 300;
 
 const VIEWS = [
-  { value: STOCK_VIEW.ALL, label: "All stock" },
+  { value: STOCK_VIEW.ALL, label: "All" },
   { value: STOCK_VIEW.LOW, label: "Low stock" },
   { value: STOCK_VIEW.OUT, label: "Sold out" },
   { value: STOCK_VIEW.OVERSOLD, label: "Oversold" },
@@ -68,12 +68,36 @@ export function InventoryFilters({ q, view, searchIcon, children }) {
   }
 
   return (
-    <>
-      <div className="flex flex-wrap items-center gap-3">
-        <div className="relative">
+    <section className="overflow-hidden rounded-xl bg-surface shadow-card">
+      <div className="flex flex-wrap items-center justify-between gap-2 px-2 py-2">
+        <div className="flex flex-wrap items-center gap-1" role="group" aria-label="Stock views">
+          {VIEWS.map((chip) => {
+            const active = chip.value === view;
+
+            return (
+              <button
+                key={chip.value}
+                type="button"
+                aria-pressed={active}
+                // "All" is the default, so it drops the param instead of
+                // spelling it out in the URL.
+                onClick={() =>
+                  applyNow({
+                    view: chip.value === STOCK_VIEW.ALL ? "" : chip.value,
+                  })
+                }
+                className={chipClass(active)}
+              >
+                {chip.label}
+              </button>
+            );
+          })}
+        </div>
+
+        <div className="relative w-full sm:w-72">
           <span
             aria-hidden="true"
-            className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-muted"
+            className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-muted"
           >
             {searchIcon}
           </span>
@@ -82,43 +106,21 @@ export function InventoryFilters({ q, view, searchIcon, children }) {
             type="search"
             value={term}
             onChange={handleSearchChange}
-            placeholder="Search SKU or product…"
+            placeholder="Search SKU or product"
             aria-label="Search stock"
-            className="w-72 max-w-full rounded-full border border-border bg-surface py-2.5 pl-10 pr-4 text-sm text-foreground outline-none transition placeholder:text-muted focus:border-brand"
+            className="h-8 w-full rounded-lg border border-border-strong bg-surface pl-8 pr-3 text-[0.8125rem] text-foreground outline-none transition placeholder:text-subtle focus:border-foreground/50 focus:ring-2 focus:ring-black/5"
           />
         </div>
-
-        {VIEWS.map((chip) => {
-          const active = chip.value === view;
-
-          return (
-            <button
-              key={chip.value}
-              type="button"
-              aria-pressed={active}
-              // "All stock" is the default, so it drops the param instead of
-              // spelling it out in the URL.
-              onClick={() =>
-                applyNow({
-                  view: chip.value === STOCK_VIEW.ALL ? "" : chip.value,
-                })
-              }
-              className={chipClass(active)}
-            >
-              {chip.label}
-            </button>
-          );
-        })}
       </div>
 
       <div
         aria-busy={isPending}
-        className={`mt-6 transition-opacity duration-150 ${
+        className={`transition-opacity duration-150 ${
           isPending ? "opacity-50" : "opacity-100"
         }`}
       >
         {children}
       </div>
-    </>
+    </section>
   );
 }

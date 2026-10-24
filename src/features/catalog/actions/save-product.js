@@ -5,10 +5,13 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { after } from "next/server";
 import { connectDb } from "@/db/connect";
-import { Product } from "@/models/product.model";
 import { Subcategory } from "@/models/subcategory.model";
-import { PRODUCT_STATUS } from "@/constants/enums";
-import { parseProductForm, slugify } from "@/features/catalog/lib/product-input";
+import { parseProductForm } from "@/features/catalog/lib/product-input";
+import {
+  DUPLICATE_KEY,
+  createProduct,
+  updateProduct,
+} from "@/features/catalog/lib/product-writer";
 import { adjustStock } from "@/features/inventory/lib/stock-ledger";
 import { MOVEMENT_REASON } from "@/constants/enums";
 import { requireAdmin } from "@/lib/auth/dal";
@@ -17,20 +20,6 @@ import { revalidateStorefront } from "@/lib/revalidate-storefront";
 /** The two lists a saved product can be returned to. */
 const RETURN_PATHS = ["/products", "/made-to-order"];
 
-/** Mongo's duplicate-key error. The index name tells us which field clashed. */
-const DUPLICATE_KEY = 11000;
-
-/** Every generated SKU looks like AKI/SAR/1569. */
-const SKU_BRAND = "AKI";
-const SKU_PATTERN = /^AKI\/[A-Z]+\/\d+$/;
-/** Where a brand-new subcategory's block starts: 1101, 2101, 3101… */
-const BLOCK_SIZE = 1000;
-const BLOCK_START = 101;
-
-/** Two admins saving at once can pick the same number; step past it. */
-const SKU_ATTEMPTS = 4;
-
-const REGEX_SPECIALS = /[.*+?^${}()|[\]\\]/g;
 
 /**
  * Creates or updates a product.
@@ -60,7 +49,7 @@ export async function saveProduct(_prevState, formData) {
   const parsed = parseProductForm(formData);
   if (parsed.errors) return { errors: parsed.errors };
 
-  const { values, openingStock } = parsed;
+  const { values, openingStock, stockDelta, sku } = parsed;
 
   await connectDb();
 
@@ -82,17 +71,45 @@ export async function saveProduct(_prevState, formData) {
     if (isUpdate) {
       const saved = await updateProduct(id, document, session.adminId);
       if (!saved) return { errors: { _form: "That product no longer exists." } };
+
+      /**
+       * Stock is edited on the product, like Shopify, rather than on a
+       * separate screen. It still goes through the ledger: the form posts the
+       * count it opened with, the difference is logged as a correction, and
+       * the sum of movements keeps matching what is on the shelf.
+       */
+      if (stockDelta !== 0 && saved.trackInventory && saved.sku) {
+        const result = await adjustStock({
+          productId: saved._id,
+          sku: saved.sku,
+          delta: stockDelta,
+          reason: MOVEMENT_REASON.ADJUSTMENT,
+          note: "Changed on the product page",
+          actor: session.adminId,
+        });
+        if (result.error) {
+          return {
+            errors: {
+              stockQuantity: `Product saved, but the stock was not changed: ${result.error}`,
+            },
+          };
+        }
+      }
     } else {
-      const created = await createProduct(document, session.adminId, subcategory);
+      const created = await createProduct(
+        document,
+        session.adminId,
+        subcategory,
+        sku
+      );
 
       /**
        * Opening stock goes through the ledger like every other quantity, so a
        * new product's first units are logged as a restock rather than
        * appearing from nowhere. Without this a product is born Sold Out.
        *
-       * Only on create: an edit must not silently re-add stock every time
-       * somebody fixes a typo in the description. Corrections are the
-       * Inventory screen's job.
+       * An edit adjusts by the difference instead (above), so fixing a typo
+       * in the description never re-adds the opening count.
        */
       if (openingStock > 0) {
         await adjustStock({
@@ -106,7 +123,7 @@ export async function saveProduct(_prevState, formData) {
       }
     }
   } catch (error) {
-    const fieldErrors = toFieldErrors(error);
+    const fieldErrors = toFieldErrors(error, sku);
     if (fieldErrors) return { errors: fieldErrors };
     throw error;
   }
@@ -128,167 +145,17 @@ export async function saveProduct(_prevState, formData) {
 }
 
 /**
- * new + save(), not create(): the pre-validate hook clears variant fields,
- * renumbers details and enforces exactly one featured image, and it only runs
- * on a document instance.
- *
- * The slug and SKU are minted here rather than typed. Both are unique indexes,
- * so a hand-entered duplicate is a hard failure at exactly the wrong moment,
- * and neither is a decision anyone benefits from making.
- */
-async function createProduct(document, adminId, subcategory) {
-  const slug = await generateSlug(document.title);
-
-  for (let attempt = 0; attempt < SKU_ATTEMPTS; attempt += 1) {
-    const product = new Product({
-      ...document,
-      slug,
-      sku: await generateSku(subcategory, attempt),
-      // Live from the moment it is created, if that is how it was saved.
-      publishedAt:
-        document.status === PRODUCT_STATUS.ACTIVE ? new Date() : undefined,
-      createdBy: adminId,
-      updatedBy: adminId,
-    });
-
-    try {
-      await product.save();
-      return product;
-    } catch (error) {
-      const clashed = Object.keys(error?.keyPattern ?? {})[0];
-      // Someone else claimed that number between our read and our write.
-      if (error?.code === DUPLICATE_KEY && clashed === "sku") continue;
-      throw error;
-    }
-  }
-
-  throw new Error("Could not allocate a unique SKU");
-}
-
-/**
- * Loaded and saved rather than findOneAndUpdate, so the same pre-validate hook
- * runs on an edit as on a create.
- *
- * The slug is deliberately never rewritten: it is the product's public web
- * address, and changing it on a rename would break every link and search
- * result already pointing at it.
- */
-async function updateProduct(id, document, adminId) {
-  const product = await Product.findOne({ _id: id, isDeleted: false });
-  if (!product) return null;
-
-  const wasPublished = Boolean(product.publishedAt);
-
-  // Fixed at creation. Flipping an in-stock product to made to order would
-  // strand its stock rows; the other way, its enquiries.
-  const editable = { ...document };
-  delete editable.fulfillment;
-
-  for (const [key, value] of Object.entries(editable)) {
-    product.set(key, value);
-  }
-  product.set("updatedBy", adminId);
-
-  // Stamped on the first activation only — publishedAt is when it first went
-  // live, not when it was last touched. `updatedAt` covers the latter.
-  if (!wasPublished && document.status === PRODUCT_STATUS.ACTIVE) {
-    product.set("publishedAt", new Date());
-  }
-
-  await product.save();
-  return product;
-}
-
-/**
- * A unique, readable web address derived from the name.
- *
- * Collisions get a numeric suffix rather than an error: two products really
- * can be called "Rust Orange Chanderi Silk Saree", and refusing the second one
- * over a URL would be a strange thing to explain to whoever is adding it.
- */
-async function generateSlug(title) {
-  const base = slugify(title);
-
-  // One indexed read covers the base and every suffix of it, instead of a
-  // query per candidate.
-  const taken = await Product.find({
-    slug: new RegExp(`^${base.replace(REGEX_SPECIALS, "\\$&")}(-\\d+)?$`),
-  })
-    .select("slug")
-    .lean();
-
-  const used = new Set(taken.map((row) => row.slug));
-  if (!used.has(base)) return base;
-
-  for (let suffix = 2; ; suffix += 1) {
-    const candidate = `${base}-${suffix}`;
-    if (!used.has(candidate)) return candidate;
-  }
-}
-
-/**
- * AKI/SAR/1569 — brand, a code for the subcategory, then a number.
- *
- * The numbering deliberately follows the catalogue's existing convention: each
- * subcategory owns a block of a thousand (sarees 15xx, dupattas 21xx,
- * jewellery 31xx, ties 61xx) and a new product continues its own block. One
- * global counter would be simpler, but it would hand the next saree the number
- * after an unrelated muffler and the blocks would stop meaning anything.
- *
- * The letter code is the subcategory, not the hand-picked fabric-and-colour
- * initials of the seeded rows (BSDT, TSEG). Those encode a judgement no
- * generator can make; a stable three letters is the point of not asking.
- */
-async function generateSku(subcategory, offset = 0) {
-  const code =
-    String(subcategory.name ?? "")
-      .replace(/[^a-z]/gi, "")
-      .slice(0, 3)
-      .toUpperCase() || "GEN";
-
-  const [ownBlock, anyBlock] = await Promise.all([
-    highestSkuNumber({ subcategory: subcategory._id }),
-    highestSkuNumber({}),
-  ]);
-
-  // Continue this subcategory's block, or open the next free one above every
-  // block already in use when it is the first product of its kind.
-  const next = ownBlock
-    ? ownBlock + 1
-    : Math.floor(anyBlock / BLOCK_SIZE) * BLOCK_SIZE + BLOCK_SIZE + BLOCK_START;
-
-  return `${SKU_BRAND}/${code}/${next + offset}`;
-}
-
-/**
- * Deleted products count on purpose: the unique index still holds their SKUs,
- * so skipping them would hand out one that cannot be saved.
- *
- * Compared in the database rather than in JS — as a string "999" sorts above
- * "1000", so the numeric part has to be extracted before any max is taken.
- */
-async function highestSkuNumber(match) {
-  const [row] = await Product.aggregate([
-    { $match: { ...match, sku: { $regex: SKU_PATTERN } } },
-    {
-      $project: {
-        number: { $toInt: { $arrayElemAt: [{ $split: ["$sku", "/"] }, 2] } },
-      },
-    },
-    { $group: { _id: null, max: { $max: "$number" } } },
-  ]);
-
-  return row?.max ?? 0;
-}
-
-/**
  * Turns the failures an admin can actually cause into a message under the
  * right field. Anything else is a real bug and should reach the error boundary
  * rather than be flattened into a form message.
  */
-function toFieldErrors(error) {
+function toFieldErrors(error, typedSku = "") {
   if (error?.code === DUPLICATE_KEY) {
     const field = Object.keys(error.keyPattern ?? {})[0] ?? "";
+    // A typed SKU that is already taken — say so under the SKU field.
+    if (typedSku && field.includes("sku")) {
+      return { sku: "Another product already uses this SKU." };
+    }
     // Both are generated now, so a clash here means a race we lost rather than
     // anything typed — say something retryable instead of naming a field the
     // form no longer shows.

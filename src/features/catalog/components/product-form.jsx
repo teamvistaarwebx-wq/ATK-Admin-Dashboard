@@ -32,9 +32,13 @@ import { ProductImageUploader } from "./product-image-uploader";
  * stock is being counted, gift options when it is giftable. A form that shows
  * every field at once is how a catalogue ends up full of half-right data.
  *
- * The slug and the SKU are deliberately absent. Both are unique keys, both are
- * generated in the action, and a hand-typed duplicate of either fails the save
- * outright — asking a person to invent one is asking for the error.
+ * The slug is never typed — it is generated in the action. The SKU may be
+ * typed on a new product (a supplier's code) or left blank to be generated;
+ * once saved it is read-only, because the stock rows are keyed by it.
+ *
+ * Inventory is an always-open group rather than a collapsed section: in
+ * Shopify, adding a product is where its stock is set, and editing one is
+ * where its count is corrected.
  *
  * `noValidate` on purpose: the browser's own bubbles appear one at a time,
  * float over the layout and cannot be styled. The action returns every problem
@@ -128,24 +132,17 @@ export function ProductForm({
           disabled={isPending}
         />
 
-        {/* Read-only, because both are generated and the slug can never change
-            once set — it is the product's public web address. Shown so the
-            SKU can be read out or copied. */}
+        {/* Read-only once saved: the slug is the product's public web address
+            and the SKU keys its stock rows. */}
         {product.id ? (
           <p className="-mt-3 text-xs text-muted">
-            SKU <span className="font-semibold text-foreground">{product.sku}</span>
-            {" · "}
             URL{" "}
             <span className="font-semibold text-foreground">
               {madeToOrder ? "/made-to-order/" : "/products/"}
               {product.slug}
             </span>
           </p>
-        ) : (
-          <p className="-mt-3 text-xs text-muted">
-            A SKU and web address are created automatically when you save.
-          </p>
-        )}
+        ) : null}
 
         <div className="grid grid-cols-2 gap-4">
           {/* The one field in the drawer that cannot be drawn without the
@@ -241,6 +238,103 @@ export function ProductForm({
           />
         </div>
 
+        {/* Inventory is part of the product, as in Shopify — creating one
+            creates its stock, and editing the count here is logged like any
+            other adjustment. No separate trip to the Inventory screen. */}
+        <Group title="Inventory">
+          {product.id ? (
+            <p className="text-xs text-muted">
+              SKU <span className="font-semibold text-foreground">{product.sku || "—"}</span>
+            </p>
+          ) : (
+            <TextField
+              id="product-sku"
+              name="sku"
+              label="SKU (stock keeping unit)"
+              defaultValue=""
+              placeholder="Leave blank to generate, e.g. AKI/SAR/1569"
+              hint="Optional. Use your own code, or leave it blank and one is created."
+              error={errors.sku}
+              disabled={isPending}
+            />
+          )}
+
+          {madeToOrder ? (
+            <p className="text-xs leading-relaxed text-muted">
+              Made to order — woven once a customer commits to a quantity, so
+              no stock is counted and it never appears on the Inventory screen.
+            </p>
+          ) : (
+            <Checkbox
+              name="trackInventory"
+              label="Track quantity"
+              checked={trackInventory}
+              onChange={setTrackInventory}
+              disabled={isPending}
+            />
+          )}
+
+          {trackInventory && !madeToOrder ? (
+            <>
+              <div className="grid grid-cols-2 gap-4">
+                {/* The count it was opened with rides along, so the save
+                    applies the difference — a sale landing while this is open
+                    is not overwritten. */}
+                {product.id ? (
+                  <input type="hidden" name="stockOriginal" value={product.onHand ?? 0} />
+                ) : null}
+                <TextField
+                  id="product-stock"
+                  name="stockQuantity"
+                  label={product.id ? "On hand" : "Quantity"}
+                  type="number"
+                  min="0"
+                  step="1"
+                  inputMode="numeric"
+                  defaultValue={product.id ? String(product.onHand ?? 0) : ""}
+                  placeholder="0"
+                  hint={
+                    product.id
+                      ? product.reserved > 0
+                        ? `${product.reserved} held for checkouts · ${Math.max(0, (product.onHand ?? 0) - product.reserved)} available`
+                        : "Changes are logged in stock history."
+                      : "How many you have now. 0 reads Sold out until stocked."
+                  }
+                  error={errors.stockQuantity}
+                  disabled={isPending}
+                />
+
+                <TextField
+                  id="product-low-stock"
+                  name="lowStockThreshold"
+                  label="Low stock alert at"
+                  type="number"
+                  min="0"
+                  defaultValue={product.lowStockThreshold ?? 5}
+                  hint="Flagged on Home and Inventory."
+                  disabled={isPending}
+                />
+              </div>
+
+              <Checkbox
+                name="allowBackorder"
+                label="Continue selling when out of stock"
+                defaultChecked={Boolean(product.allowBackorder)}
+                disabled={isPending}
+              />
+
+              {product.id && product.sku ? (
+                <Link
+                  href={`/inventory/movements?sku=${encodeURIComponent(product.sku)}`}
+                  className="text-xs font-semibold text-link hover:underline"
+                >
+                  View stock history
+                </Link>
+              ) : null}
+            </>
+          ) : null}
+        </Group>
+
         <TextareaField
           id="product-description"
           name="description"
@@ -303,79 +397,7 @@ export function ProductForm({
           />
         </Section>
 
-        <Section title={madeToOrder ? "Shipping" : "Stock & shipping"}>
-          {madeToOrder ? (
-            <p className="text-xs leading-relaxed text-muted">
-              Made to order — woven once a customer commits to a quantity, so
-              no stock is counted and it never appears on the Inventory screen.
-            </p>
-          ) : (
-            <Checkbox
-              name="trackInventory"
-              label="Count stock for this product"
-              checked={trackInventory}
-              onChange={setTrackInventory}
-              disabled={isPending}
-            />
-          )}
-
-          {/* All three are meaningless when nothing is being counted. */}
-          {trackInventory && !madeToOrder ? (
-            <>
-              {/* Only on a new product. Changing this on an edit would let a
-                  typo in the description quietly re-add stock — corrections
-                  belong on the Inventory screen, where they are logged with a
-                  reason. */}
-              {product.id ? (
-                <p className="text-xs leading-relaxed text-muted">
-                  Stock: <strong className="text-foreground">{product.onHand ?? 0}</strong>{" "}
-                  on hand.{" "}
-                  {/* Straight to this SKU's adjust form, rather than to a
-                      search the person then has to repeat. */}
-                  <Link
-                    href={`/inventory?adjust=${encodeURIComponent(product.sku ?? "")}`}
-                    className="text-brand underline-offset-2 hover:underline"
-                  >
-                    Adjust stock
-                  </Link>
-                  , where every change is logged with a reason.
-                </p>
-              ) : (
-                <TextField
-                  id="product-stock"
-                  name="stockQuantity"
-                  label="Opening stock"
-                  type="number"
-                  min="0"
-                  step="1"
-                  inputMode="numeric"
-                  defaultValue=""
-                  placeholder="0"
-                  hint="How many you have right now. Leave at 0 and it will read Sold Out until you stock it."
-                  error={errors.stockQuantity}
-                  disabled={isPending}
-                />
-              )}
-
-              <Checkbox
-                name="allowBackorder"
-                label="Keep selling at zero stock (backorder)"
-                defaultChecked={Boolean(product.allowBackorder)}
-                disabled={isPending}
-              />
-
-              <TextField
-                id="product-low-stock"
-                name="lowStockThreshold"
-                label="Warn below this many"
-                type="number"
-                min="0"
-                defaultValue={product.lowStockThreshold ?? 5}
-                disabled={isPending}
-              />
-            </>
-          ) : null}
-
+        <Section title="Shipping">
           <TextField
             id="product-weight"
             name="weight"
@@ -427,6 +449,33 @@ export function ProductForm({
           ) : null}
         </Section>
 
+        <Section title="Search engine listing">
+          <p className="text-xs leading-relaxed text-muted">
+            How this product looks on Google. Left blank, the product name and
+            the start of the description are used.
+          </p>
+          <TextField
+            id="product-seo-title"
+            name="seoTitle"
+            label="Page title"
+            defaultValue={product.seoTitle ?? ""}
+            placeholder="Rust Orange Chanderi Silk Saree | Atulya Karigari"
+            hint="Up to 70 characters; Google shows about 60."
+            maxLength={70}
+            disabled={isPending}
+          />
+          <TextareaField
+            id="product-seo-description"
+            name="seoDescription"
+            label="Meta description"
+            rows={3}
+            defaultValue={product.seoDescription ?? ""}
+            hint="Up to 320 characters; Google shows about 160."
+            maxLength={320}
+            disabled={isPending}
+          />
+        </Section>
+
         <Section title="More details">
           <TextareaField
             id="product-short-description"
@@ -470,7 +519,7 @@ export function ProductForm({
         {errors._form || hasFieldError ? (
           <p
             role="alert"
-            className="mb-3 rounded-lg bg-danger/8 px-3 py-2.5 text-sm text-danger"
+            className="mb-3 rounded-lg bg-badge-critical px-3 py-2 text-[0.8125rem] text-badge-critical-ink"
           >
             {errors._form ?? "Check the highlighted fields above."}
           </p>
@@ -508,16 +557,30 @@ export function ProductForm({
   );
 }
 
+/** A collapsed group for the fields most products never need. */
 function Section({ title, children }) {
   return (
-    <details className="rounded-lg border border-border">
-      <summary className="cursor-pointer px-4 py-3 text-xs font-semibold uppercase tracking-wide text-muted transition hover:text-brand">
+    <details className="group rounded-xl border border-border">
+      <summary className="flex cursor-pointer list-none items-center justify-between px-4 py-3 text-[0.8125rem] font-semibold text-foreground transition hover:bg-surface-subdued">
         {title}
+        <span aria-hidden="true" className="text-muted transition group-open:rotate-180">
+          ▾
+        </span>
       </summary>
       <div className="flex flex-col gap-4 border-t border-border px-4 py-4">
         {children}
       </div>
     </details>
+  );
+}
+
+/** An always-open group — the fields every product needs. */
+function Group({ title, children }) {
+  return (
+    <section className="flex flex-col gap-4 rounded-xl border border-border px-4 py-4">
+      <h3 className="text-[0.8125rem] font-semibold text-foreground">{title}</h3>
+      {children}
+    </section>
   );
 }
 
@@ -528,7 +591,7 @@ function Section({ title, children }) {
  */
 function Checkbox({ name, label, checked, onChange, defaultChecked, disabled }) {
   return (
-    <label className="flex items-center gap-2.5 text-sm text-foreground">
+    <label className="flex items-center gap-2.5 text-[0.8125rem] text-foreground">
       <input
         type="checkbox"
         name={name}
@@ -536,7 +599,7 @@ function Checkbox({ name, label, checked, onChange, defaultChecked, disabled }) 
           ? { checked, onChange: (event) => onChange(event.target.checked) }
           : { defaultChecked })}
         disabled={disabled}
-        className="h-4 w-4 shrink-0 accent-brand"
+        className="h-4 w-4 shrink-0 accent-[#303030]"
       />
       {label}
     </label>

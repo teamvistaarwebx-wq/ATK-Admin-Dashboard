@@ -97,11 +97,16 @@ export function csvToObjects(text) {
     rows: body.map((cells, index) => {
       const record = { _line: index + 2 };
       keys.forEach((key, column) => {
-        if (key) record[key] = (cells[column] ?? "").trim();
+        if (key) record[key] = undefuse((cells[column] ?? "").trim());
       });
       return record;
     }),
   };
+}
+
+/** Undoes `cell()`'s apostrophe, so an exported file imports unchanged. */
+function undefuse(text) {
+  return /^'[=+\-@\t\r]/.test(text) ? text.slice(1) : text;
 }
 
 export function normaliseHeader(value) {

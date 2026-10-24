@@ -94,6 +94,9 @@ const JOIN_STAGES = [
       subcategoryName: { $first: "$sub.name" },
       subcategorySlug: { $first: "$sub.slug" },
       inStock: IN_STOCK_EXPRESSION,
+      available: {
+        $sum: { $map: { input: "$stock", as: "row", in: AVAILABLE_PER_ROW } },
+      },
     },
   },
 ];
@@ -115,6 +118,12 @@ const LIST_PROJECTION = {
   "images.isFeatured": 1,
   subcategoryName: 1,
   inStock: 1,
+  available: 1,
+  sku: 1,
+  vendor: 1,
+  trackInventory: 1,
+  allowBackorder: 1,
+  lowStockThreshold: 1,
   occasion: { $first: "$suggestedOccasions" },
 };
 
@@ -207,7 +216,14 @@ function toRow(doc) {
     price,
     priceVaries,
     status: doc.status,
+    type: doc.type ?? "",
+    sku: doc.sku ?? "",
+    vendor: doc.vendor ?? "",
     inStock: doc.inStock === true,
+    available: doc.available ?? 0,
+    trackInventory: doc.trackInventory !== false,
+    allowBackorder: Boolean(doc.allowBackorder),
+    lowStockThreshold: doc.lowStockThreshold ?? 5,
     // Product images are served from the storefront's public/ — see
     // lib/storefront.js for why a raw path would 404 in here.
     imageUrl: resolveImageUrl(image?.url),

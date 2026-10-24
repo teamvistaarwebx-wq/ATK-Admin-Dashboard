@@ -21,11 +21,12 @@ export async function InventorySection({ inventoryPromise, q, view }) {
     <>
       {items.length === 0 ? (
         <EmptyState
+          bare
           title={isFiltered ? "Nothing matches" : "No stock yet"}
           description={
             isFiltered
               ? "Try a different search, or switch back to All stock."
-              : "Add a product with opening stock and it will appear here."
+              : "Add a product with a quantity, or import a CSV, and it will appear here."
           }
         />
       ) : (
@@ -40,13 +41,17 @@ export async function InventorySection({ inventoryPromise, q, view }) {
         />
       )}
 
-      <Pagination
-        page={page}
-        totalPages={totalPages}
-        total={total}
-        noun="SKU"
-        buildHref={(target) => buildInventoryHref({ q, view, page: target })}
-      />
+      {totalPages > 1 ? (
+        <div className="border-t border-border px-4 pb-3">
+          <Pagination
+            page={page}
+            totalPages={totalPages}
+            total={total}
+            noun="SKU"
+            buildHref={(target) => buildInventoryHref({ q, view, page: target })}
+          />
+        </div>
+      ) : null}
     </>
   );
 }

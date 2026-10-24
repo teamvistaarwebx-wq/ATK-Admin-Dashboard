@@ -19,7 +19,7 @@ import { MAX_PRODUCT_IMAGES } from "@/constants/media";
  * hook is still the boundary: it re-checks the sku, the price and the featured
  * image regardless of what this returns.
  *
- * Fields the form no longer asks for — seo, suggestedRecipient, dimensions,
+ * Fields the form does not ask for — suggestedRecipient, dimensions,
  * requiresShipping, weightUnit, vendor — are deliberately absent from the
  * returned values. `updateProduct` only writes the keys it is handed, so
  * leaving them out preserves whatever an existing product already has instead
@@ -36,6 +36,27 @@ const COLOUR_KEY = "colour";
 export const MAX_TITLE = 200;
 export const MAX_SHORT_DESCRIPTION = 300;
 export const MAX_INTERNAL_NOTES = 2000;
+/** Google shows about 60 characters of a title and 160 of a description. */
+export const MAX_SEO_TITLE = 70;
+export const MAX_SEO_DESCRIPTION = 320;
+/** Past this a stock count is a typo, not a delivery. */
+export const MAX_STOCK = 100000;
+
+/**
+ * A typed SKU: letters, digits and / - _ . — what the catalogue's existing
+ * "AKI/SAR/1569" style and most suppliers' codes use. Spaces are refused
+ * because a SKU gets read out over the phone and pasted into couriers' forms.
+ */
+const SKU_PATTERN = /^[A-Z0-9][A-Z0-9/_.-]{1,47}$/;
+
+/** " aki/sar/1569 " → "AKI/SAR/1569", or "" when blank. */
+export function normaliseSku(value) {
+  return String(value ?? "").trim().toUpperCase();
+}
+
+export function isValidSku(value) {
+  return SKU_PATTERN.test(value);
+}
 
 /** "Rust Orange Chanderi Silk Saree" → "rust-orange-chanderi-silk-saree" */
 export function slugify(value) {
@@ -176,9 +197,10 @@ function pickEnum(value, allowed, fallback) {
  * somebody fix a form one field per round trip is the reason people give up
  * halfway through.
  *
- * `slug` and `sku` are absent by design — both are generated in the action.
- * They are the two fields most likely to be typed wrong, and a duplicate of
- * either is a hard database failure rather than a warning.
+ * `slug` is generated in the action. `sku` is optional on a new product — a
+ * blank one is generated, a typed one (a supplier's code, or one from a CSV)
+ * is checked for shape here and for uniqueness by the index. It is never read
+ * on an edit: inventory rows are keyed by it.
  *
  * `category` is not read either: it is implied by the subcategory, and asking
  * for both would let the two disagree.
@@ -232,19 +254,35 @@ export function parseProductForm(formData) {
   const isGiftable = toBoolean(formData, "isGiftable");
 
   /**
-   * Opening stock is NOT part of the product document — quantities live in
+   * Stock is NOT part of the product document — quantities live in
    * Inventory. It is returned alongside so the action can hand it to the stock
    * ledger, which is the only thing allowed to write a quantity.
+   *
+   * On a new product it is the opening count. On an edit the form also posts
+   * the count it was opened with, and the difference is what changed — a
+   * delta, so a sale that lands while the drawer is open is not overwritten.
    */
   const stock = toNumber(formData.get("stockQuantity"));
-  if (trackInventory && stock != null && stock > 100000) {
-    errors.stockQuantity = "That looks like a typo.";
+  if (trackInventory && stock != null) {
+    if (!Number.isInteger(stock)) errors.stockQuantity = "Use a whole number.";
+    else if (stock > MAX_STOCK) errors.stockQuantity = "That looks like a typo.";
+  }
+  const stockOriginal = toNumber(formData.get("stockOriginal"));
+
+  const sku = normaliseSku(formData.get("sku"));
+  if (sku && !isValidSku(sku)) {
+    errors.sku = "Letters, numbers and / - _ . only, 2 to 48 characters.";
   }
 
   if (Object.keys(errors).length > 0) return { errors };
 
   return {
+    sku,
     openingStock: trackInventory ? (stock ?? 0) : 0,
+    stockDelta:
+      trackInventory && stock != null && stockOriginal != null
+        ? stock - stockOriginal
+        : 0,
     values: {
       fulfillment,
       title,
@@ -294,6 +332,13 @@ export function parseProductForm(formData) {
         !madeToOrder && isGiftable && toBoolean(formData, "giftBoxCompatible"),
 
       internalNotes: toText(formData.get("internalNotes"), MAX_INTERNAL_NOTES),
+      seo: {
+        metaTitle: toText(formData.get("seoTitle"), MAX_SEO_TITLE),
+        metaDescription: toText(
+          formData.get("seoDescription"),
+          MAX_SEO_DESCRIPTION
+        ),
+      },
       status: pickEnum(
         formData.get("status"),
         [PRODUCT_STATUS.DRAFT, PRODUCT_STATUS.ACTIVE, PRODUCT_STATUS.ARCHIVED],

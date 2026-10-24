@@ -4,18 +4,14 @@ import { useRef, useState } from "react";
 import { ImagePlus, Loader2, Star, X } from "lucide-react";
 import {
   IMAGE_ACCEPT,
-  MAX_IMAGE_BYTES,
   MAX_IMAGE_MB,
   MAX_PRODUCT_IMAGES,
 } from "@/constants/media";
+import { uploadProductImage } from "../lib/upload-product-image";
 
 /**
- * Product photos, uploaded straight to Cloudflare R2.
- *
- * The bytes never pass through our server: we ask an authenticated route for a
- * one-shot signed URL, then PUT the file to R2 from here. A server action would
- * cap the request body at 1MB, and raising that would still stream every photo
- * through the Next process.
+ * Product photos, uploaded straight to Cloudflare R2 (see
+ * lib/upload-product-image.js for why the bytes skip our server).
  *
  * The resulting list posts as one hidden JSON field. Position is list order and
  * the first image is the featured one, which is also what the model enforces.
@@ -32,36 +28,7 @@ export function ProductImageUploader({
   const inputRef = useRef(null);
 
   async function uploadOne(file) {
-    // Checked here as well as on the server: a presigned PUT cannot enforce a
-    // size, so stopping it before the upload starts is the only way the person
-    // finds out before waiting for it.
-    if (file.size > MAX_IMAGE_BYTES) {
-      throw new Error(`"${file.name}" is over ${MAX_IMAGE_MB}MB.`);
-    }
-
-    const signed = await fetch("/api/uploads/product-image", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ contentType: file.type, size: file.size }),
-    });
-
-    const payload = await signed.json().catch(() => ({}));
-    if (!signed.ok) throw new Error(payload.error ?? "Could not start the upload");
-
-    const { uploadUrl, publicUrl } = payload.data;
-
-    // The Content-Type is part of the signature — send anything else and R2
-    // rejects it. A failure here with no status is almost always the bucket's
-    // CORS policy, not the credentials.
-    const put = await fetch(uploadUrl, {
-      method: "PUT",
-      body: file,
-      headers: { "Content-Type": file.type },
-    });
-
-    if (!put.ok) throw new Error(`Upload failed (${put.status})`);
-
-    return { url: publicUrl, alt: "" };
+    return { url: await uploadProductImage(file), alt: "" };
   }
 
   /**
@@ -159,7 +126,7 @@ export function ProductImageUploader({
             />
 
             {index === 0 ? (
-              <figcaption className="absolute inset-x-0 bottom-0 bg-brand/85 py-0.5 text-center text-[0.625rem] font-semibold uppercase tracking-wide text-white">
+              <figcaption className="absolute inset-x-0 bottom-0 bg-black/65 py-0.5 text-center text-[0.625rem] font-semibold uppercase tracking-wide text-white">
                 Featured
               </figcaption>
             ) : (
@@ -168,7 +135,7 @@ export function ProductImageUploader({
                 disabled={disabled}
                 onClick={() => makeFeatured(image.url)}
                 aria-label="Make this the featured photo"
-                className="absolute bottom-1 left-1 rounded-md bg-surface/90 p-1 text-muted opacity-0 transition group-hover:opacity-100 focus-visible:opacity-100 hover:text-brand"
+                className="absolute bottom-1 left-1 rounded-md bg-surface/90 p-1 text-muted opacity-0 transition group-hover:opacity-100 focus-visible:opacity-100 hover:text-foreground"
               >
                 <Star className="h-3.5 w-3.5" strokeWidth={2} aria-hidden="true" />
               </button>
@@ -193,7 +160,7 @@ export function ProductImageUploader({
             type="button"
             disabled={disabled || isBusy}
             onClick={() => inputRef.current?.click()}
-            className="flex h-24 w-24 flex-col items-center justify-center gap-1 rounded-lg border border-dashed border-border bg-background text-muted transition hover:border-brand/50 hover:text-brand disabled:cursor-not-allowed disabled:opacity-60"
+            className="flex h-24 w-24 flex-col items-center justify-center gap-1 rounded-lg border border-dashed border-border bg-background text-muted transition hover:border-foreground/40 hover:text-foreground disabled:cursor-not-allowed disabled:opacity-60"
           >
             {isBusy ? (
               <Loader2 className="h-5 w-5 animate-spin" aria-hidden="true" />

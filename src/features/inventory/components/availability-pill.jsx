@@ -6,31 +6,27 @@
  * is somebody who has paid for something we do not have, and it must not look
  * the same as an ordinary sold-out row.
  */
+import { Badge } from "@/components/ui/badge";
+
 export function AvailabilityPill({
   available,
   threshold,
   allowBackorder,
   hasStockRecord = true,
 }) {
-  const { label, className } = describe(
+  const { label, tone } = describe(
     available,
     threshold,
     allowBackorder,
     hasStockRecord
   );
 
-  return (
-    <span
-      className={`inline-block rounded-full px-2.5 py-1 text-xs font-medium ${className}`}
-    >
-      {label}
-    </span>
-  );
+  return <Badge tone={tone}>{label}</Badge>;
 }
 
 function describe(available, threshold, allowBackorder, hasStockRecord) {
   if (available < 0) {
-    return { label: "Oversold", className: "bg-red-600 text-white" };
+    return { label: "Oversold", tone: "critical" };
   }
 
   /**
@@ -39,18 +35,18 @@ function describe(available, threshold, allowBackorder, hasStockRecord) {
    * problem — and they need different actions from whoever is looking.
    */
   if (!hasStockRecord) {
-    return { label: "Not stocked", className: "bg-gray-200 text-gray-700" };
+    return { label: "Not stocked", tone: "neutral" };
   }
 
   if (available === 0) {
     return allowBackorder
-      ? { label: "On backorder", className: "bg-amber-100 text-amber-800" }
-      : { label: "Sold Out", className: "bg-red-100 text-red-700" };
+      ? { label: "On backorder", tone: "warning" }
+      : { label: "Sold out", tone: "critical" };
   }
 
   if (available <= threshold) {
-    return { label: "Low stock", className: "bg-amber-100 text-amber-800" };
+    return { label: "Low stock", tone: "attention" };
   }
 
-  return { label: "In Stock", className: "bg-emerald-100 text-emerald-800" };
+  return { label: "In stock", tone: "success" };
 }

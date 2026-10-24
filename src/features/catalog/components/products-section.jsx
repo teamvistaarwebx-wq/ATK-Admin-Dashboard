@@ -37,6 +37,7 @@ export async function ProductsSection({
     <>
       {items.length === 0 ? (
         <EmptyState
+          bare
           title={
             isFiltered
               ? "No matching products"
@@ -75,15 +76,19 @@ export async function ProductsSection({
         />
       )}
 
-      <Pagination
-        page={page}
-        totalPages={totalPages}
-        total={total}
-        noun="product"
-        buildHref={(target) =>
-          buildProductsHref({ q, subcategory, stock, page: target, basePath })
-        }
-      />
+      {totalPages > 1 ? (
+        <div className="border-t border-border px-4 pb-3">
+          <Pagination
+            page={page}
+            totalPages={totalPages}
+            total={total}
+            noun="product"
+            buildHref={(target) =>
+              buildProductsHref({ q, subcategory, stock, page: target, basePath })
+            }
+          />
+        </div>
+      ) : null}
     </>
   );
 }

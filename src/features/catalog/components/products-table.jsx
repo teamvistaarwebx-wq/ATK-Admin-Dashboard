@@ -1,12 +1,14 @@
 import Link from "next/link";
 import { Pencil, Trash2 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { PRODUCT_STATUS } from "@/constants/enums";
 import { formatPrice } from "@/lib/format";
 import { DeleteProductButton } from "./delete-product-button";
-import { StockPill } from "./stock-pill";
 
 /**
- * The catalogue table.
+ * The catalogue table, laid out like Shopify's product index: thumbnail and
+ * title, a status badge, inventory as a count ("4 in stock", red when it is
+ * at or under the product's warning level), then category, type and price.
  *
  * A server component: nothing in a row is interactive except the two action
  * controls, and only one of those needs state. Hoisted at module scope so the
@@ -15,6 +17,12 @@ import { StockPill } from "./stock-pill";
 const EDIT_ICON = <Pencil className="h-4 w-4" strokeWidth={2} />;
 const DELETE_ICON = <Trash2 className="h-4 w-4" strokeWidth={2} />;
 
+const STATUS_BADGE = {
+  [PRODUCT_STATUS.ACTIVE]: { tone: "success", label: "Active" },
+  [PRODUCT_STATUS.DRAFT]: { tone: "info", label: "Draft" },
+  [PRODUCT_STATUS.ARCHIVED]: { tone: "neutral", label: "Archived" },
+};
+
 export function ProductsTable({
   items,
   canDelete,
@@ -22,25 +30,31 @@ export function ProductsTable({
   showStock = true,
 }) {
   return (
-    <div className="overflow-x-auto rounded-xl border border-border bg-surface">
-      <table className="w-full min-w-[48rem] text-left text-sm">
-        <thead className="border-b border-border bg-background text-xs uppercase tracking-wide text-muted">
+    <div className="overflow-x-auto">
+      <table className="w-full min-w-[56rem] text-left text-[0.8125rem]">
+        <thead className="border-y border-border bg-surface-subdued text-xs text-muted">
           <tr>
-            <th scope="col" className="px-4 py-3 font-semibold">
+            <th scope="col" className="py-2 pl-4 pr-3 font-medium">
               Product
             </th>
-            <th scope="col" className="px-4 py-3 font-semibold">
-              Category
-            </th>
-            <th scope="col" className="px-4 py-3 font-semibold">
-              Price
+            <th scope="col" className="px-3 py-2 font-medium">
+              Status
             </th>
             {showStock ? (
-              <th scope="col" className="px-4 py-3 font-semibold">
-                Stock
+              <th scope="col" className="px-3 py-2 font-medium">
+                Inventory
               </th>
             ) : null}
-            <th scope="col" className="px-4 py-3">
+            <th scope="col" className="px-3 py-2 font-medium">
+              Category
+            </th>
+            <th scope="col" className="px-3 py-2 font-medium">
+              Type
+            </th>
+            <th scope="col" className="px-3 py-2 text-right font-medium">
+              Price
+            </th>
+            <th scope="col" className="py-2 pl-3 pr-4">
               <span className="sr-only">Actions</span>
             </th>
           </tr>
@@ -63,17 +77,18 @@ export function ProductsTable({
 }
 
 function ProductRow({ product, canDelete, showStock, editHref }) {
+  const status = STATUS_BADGE[product.status] ?? STATUS_BADGE[PRODUCT_STATUS.DRAFT];
+
   return (
-    <tr className="transition hover:bg-background">
-      <td className="px-4 py-3">
+    <tr className="group transition hover:bg-surface-subdued">
+      <td className="py-2 pl-4 pr-3">
         <div className="flex items-center gap-3">
-          <div className="h-12 w-12 shrink-0 overflow-hidden rounded-md border border-border bg-background">
+          <div className="h-10 w-10 shrink-0 overflow-hidden rounded-lg border border-border bg-surface-subdued">
             {product.imageUrl ? (
               /**
-               * A plain <img>, not next/image: these are 48px thumbnails on
-               * an internal page, and next/image would need every storefront
-               * host allow-listed in next.config.mjs to render them. Same
-               * call as the enquiry detail page.
+               * A plain <img>, not next/image: these are thumbnails on an
+               * internal page, and next/image would need every storefront
+               * host allow-listed in next.config.mjs to render them.
                *
                * Empty alt because the title sits right beside it — a screen
                * reader announcing it twice is noise, not information.
@@ -82,8 +97,8 @@ function ProductRow({ product, canDelete, showStock, editHref }) {
               <img
                 src={product.imageUrl}
                 alt=""
-                width={48}
-                height={48}
+                width={40}
+                height={40}
                 loading="lazy"
                 className="h-full w-full object-cover"
               />
@@ -91,50 +106,47 @@ function ProductRow({ product, canDelete, showStock, editHref }) {
           </div>
 
           <div className="min-w-0">
-            <p className="flex items-center gap-2 font-semibold text-foreground">
-              <span className="truncate">{product.title}</span>
-
-              {/* Only when it is NOT live. Without this a draft reads exactly
-                  like something a customer can buy today. */}
-              {product.status !== PRODUCT_STATUS.ACTIVE ? (
-                <span className="shrink-0 rounded-full border border-border px-2 py-0.5 text-[0.625rem] font-medium uppercase tracking-wide text-muted">
-                  {product.status}
-                </span>
-              ) : null}
-            </p>
-
-            {product.subtitle ? (
-              <p className="truncate text-xs text-muted">
-                {product.subtitle}
-              </p>
+            {/* Opens the drawer over this list, keeping the active filters —
+                editing the third Saree lands back among the Sarees. */}
+            <Link
+              href={editHref}
+              className="line-clamp-2 font-semibold text-foreground hover:underline"
+            >
+              {product.title}
+            </Link>
+            {product.sku ? (
+              <p className="truncate text-xs text-muted">{product.sku}</p>
             ) : null}
           </div>
         </div>
       </td>
 
-      <td className="px-4 py-3 text-foreground">{product.category || "—"}</td>
+      <td className="px-3 py-2">
+        <Badge tone={status.tone}>{status.label}</Badge>
+      </td>
 
-      <td className="px-4 py-3 font-medium text-foreground">
+      {showStock ? (
+        <td className="whitespace-nowrap px-3 py-2">
+          <Inventory product={product} />
+        </td>
+      ) : null}
+
+      <td className="px-3 py-2 text-foreground">{product.category || "—"}</td>
+      <td className="px-3 py-2 text-foreground">{product.type || "—"}</td>
+
+      <td className="whitespace-nowrap px-3 py-2 text-right tabular-nums text-foreground">
         {/* Variant products price from their cheapest active variant, so the
             figure is a floor rather than the price. */}
         {product.priceVaries ? "From " : ""}
         {formatPrice(product.price)}
       </td>
 
-      {showStock ? (
-        <td className="px-4 py-3">
-          <StockPill inStock={product.inStock} />
-        </td>
-      ) : null}
-
-      <td className="px-4 py-3">
-        <div className="flex items-center justify-end gap-1">
-          {/* Opens the drawer over this list, keeping the active filters —
-              editing the third Saree lands back among the Sarees. */}
+      <td className="py-2 pl-3 pr-4">
+        <div className="flex items-center justify-end gap-0.5 opacity-60 transition group-hover:opacity-100">
           <Link
             href={editHref}
             aria-label={`Edit ${product.title}`}
-            className="rounded-md p-2 text-brand transition hover:bg-brand-soft"
+            className="rounded-lg p-1.5 text-muted transition hover:bg-black/5 hover:text-foreground"
           >
             {EDIT_ICON}
           </Link>
@@ -149,5 +161,26 @@ function ProductRow({ product, canDelete, showStock, editHref }) {
         </div>
       </td>
     </tr>
+  );
+}
+
+/**
+ * "Inventory not tracked" when nothing is counted, otherwise the sellable
+ * count — red at or under the warning level, the way Shopify flags it.
+ */
+function Inventory({ product }) {
+  if (!product.trackInventory) {
+    return <span className="text-muted">Inventory not tracked</span>;
+  }
+
+  const low = product.available <= product.lowStockThreshold;
+
+  return (
+    <span className={low ? "text-danger" : "text-foreground"}>
+      {product.available} in stock
+      {product.allowBackorder && product.available <= 0 ? (
+        <span className="text-muted"> · backorder</span>
+      ) : null}
+    </span>
   );
 }

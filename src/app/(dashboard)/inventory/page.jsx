@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import Link from "next/link";
-import { History, Search } from "lucide-react";
+import { History, Search, Warehouse } from "lucide-react";
+import { buttonClass } from "@/components/ui/button";
 import { PageHeader } from "@/components/layout/page-header";
 import { TableSkeleton } from "@/components/ui/skeleton";
 import { AdjustStockDrawer } from "@/features/inventory/components/adjust-stock-drawer";
@@ -44,8 +45,15 @@ export default async function InventoryPage({ searchParams }) {
     <>
       <PageHeader
         title="Inventory"
-        subtitle="What is on the shelf, what is held for unpaid orders, and what can still be sold."
+        icon={<Warehouse className="h-5 w-5" strokeWidth={2} />}
+        subtitle="Stock is set on each product. Adjust counts here, or update many at once by CSV."
       >
+        <a href="/api/products/export" download className={buttonClass("secondary")}>
+          Export
+        </a>
+        <Link href="/products/import" className={buttonClass("secondary")}>
+          Import
+        </Link>
         <Link
           href="/inventory/movements"
           className="h-8 rounded-lg bg-surface px-3 text-[0.8125rem] font-semibold shadow-button ring-1 ring-border-strong/70 hover:bg-surface-hover inline-flex items-center justify-center gap-2 text-foreground transition"

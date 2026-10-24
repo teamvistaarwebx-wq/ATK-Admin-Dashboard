@@ -1,7 +1,10 @@
-/** Placeholder body for the sections that are not built yet. */
-export function EmptyState({ title, description }) {
+/**
+ * What a list shows when it has nothing to show. `bare` drops the card frame
+ * for use inside a card that already has one.
+ */
+export function EmptyState({ title, description, bare = false }) {
   return (
-    <div className="rounded-xl bg-surface px-6 py-16 text-center shadow-card">
+    <div className={`bg-surface px-6 py-16 text-center ${bare ? "" : "rounded-xl shadow-card"}`}>
       <p className="text-base font-semibold text-foreground">
         {title}
       </p>

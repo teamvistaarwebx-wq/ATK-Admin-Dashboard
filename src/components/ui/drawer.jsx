@@ -58,7 +58,7 @@ export function Drawer({ title, onClose, children }) {
       aria-labelledby={titleId}
       onCancel={handleEscape}
       onClick={handleBackdropClick}
-      className="drawer-panel m-0 ml-auto h-dvh max-h-dvh w-[min(34rem,100vw)] max-w-none rounded-none border-l border-border bg-surface p-0 text-foreground"
+      className="drawer-panel m-0 ml-auto h-dvh max-h-dvh w-[min(40rem,100vw)] max-w-none rounded-none border-l border-border bg-surface p-0 text-foreground"
     >
       <div className="flex h-full flex-col">
         <header className="flex shrink-0 items-center justify-between gap-4 border-b border-border px-5 py-3.5">
